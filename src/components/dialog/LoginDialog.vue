@@ -1,0 +1,166 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useField, useForm } from 'vee-validate';
+import { Form } from 'vee-validate';
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+} from '@headlessui/vue'
+import * as zod from 'zod';
+
+import { mapActions, mapGetters } from "@/lib/map-state";
+import { useStore } from "@/store";
+import { ActionEnums, MutationEnums } from "@/store/types";
+import Input from "@/core/components/forms/Input.vue";
+import Button from "@/core/components/Button.vue";
+import { logger } from "@/core/helper";
+import { validationLoginSchema } from "@/lib/validations/auth";
+
+const store = useStore()
+const { getOpenLoginDialog: isOpenDialog } = mapGetters()
+const { loginUser } = mapActions()
+const isSubmitted = ref(false);
+const isLoading = ref(false);
+
+type FormData = zod.infer<typeof validationLoginSchema>
+
+const { handleSubmit, errors, resetForm, setErrors } = useForm<FormData>({
+  validationSchema: validationLoginSchema,
+  validateOnMount: false
+});
+
+const { value: email } = useField('email');
+const { value: password } = useField('password');
+
+const validate = (e: Event) => {
+  isSubmitted.value = true
+  logger.debug('execute validate: errors', errors.value, 'src/components/dialog/RegisterDialog.vue')
+  if (Object.keys(errors.value).length === 0) {
+    onSubmit(e)
+  }
+}
+
+const onSubmit = handleSubmit(async (vals: FormData) => {
+  const data = { user: vals };
+  isLoading.value = true
+  logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue')
+  const message = await store.dispatch(ActionEnums.LOGIN, data)
+  // const message = await loginUser(data)
+  isLoading.value = false
+  if (message) {
+    setErrors({ email: message })
+    return
+  }
+  resetForm()
+});
+
+function closeDialog() {
+  store.commit(MutationEnums.SET_LOGIN_DIALOG, false)
+  resetForm()
+}
+
+function openDialog() {
+  store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
+}
+
+const openRegisterDialog = () => {
+  store.commit(MutationEnums.SET_REGISTER_DIALOG, true)
+  closeDialog()
+}
+
+// watch(values, () => {
+//   if (isSubmitted.value) {
+//     isSubmitted.value = false
+//   }
+// })
+
+</script>
+
+
+<template>
+  <button
+      type="button"
+      @click="openDialog"
+      class="rounded-full bg-black px-8 py-1.5  text-sm font-semibold text-white hover:bg-opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+  >
+    Log In
+  </button>
+
+  <TransitionRoot appear :show="isOpenDialog" as="template">
+    <Dialog as="div" @close="closeDialog" class="relative z-50">
+      <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25"/>
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+          <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+                class="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white py-6 px-8 text-left shadow-xl transition-all"
+            >
+              <div class="mx-auto flex flex-col">
+                <div class="flex flex-col gap-5 block bg-white">
+                  <div class="text-center">
+                    <h1 class="text-2xl mb-1 text-black">Welcome Back</h1>
+                    <p class="text-sm text-gray-700 font-light">We're so excited to see you again!</p>
+                  </div>
+                  <div class="flex flex-col gap-5  block bg-white">
+                    <form @submit.prevent="validate" class="login-form">
+                      <Input
+                          :disabled="isLoading"
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Email"
+                          v-model="email"
+                          :helper-text=" isSubmitted ? errors.email : '' "
+                      />
+                      <Input
+                          :disabled="isLoading"
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Password"
+                          v-model="password"
+                          type="password"
+                          :helper-text=" isSubmitted ? errors.password : '' "
+                      />
+                      <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700"> Forgot
+                        password? </p>
+                      <Button :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit">
+                        Log in
+                      </Button>
+                    </form>
+                    <div class="text-center">
+                      <span class="text-[#787c7d] font-light mr-1">New to Meepo?</span>
+                      <span
+                          @click="openRegisterDialog"
+                          class="hover:underline hover:underline-offset-2 cursor-pointer"
+                      >Sign up </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+</template>
