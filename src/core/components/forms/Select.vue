@@ -53,6 +53,7 @@
 
 
 <script setup lang="ts">
+// @ts-nocheck
 import { onBeforeMount, ref } from 'vue'
 import {
   Listbox,

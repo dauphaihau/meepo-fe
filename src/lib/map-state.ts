@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-// import { useStore } from 'vuex'
-import { key, useStore } from "@/store";
+import { useStore } from 'vuex'
+// import { key, useStore } from "@/store";
 
 // export const mapState = () => {
 //   const store = useStore()
@@ -22,18 +22,20 @@ export const mapGetters = () => {
   )
 }
 
-export const mapMutations = () => {
-  const store = useStore()
-  return Object.fromEntries(
-    Object.keys(store._mutations).map(
-      mutation => [mutation, value => store.commit(mutation, value)]
-    )
-  )
-}
-
+// export const mapMutations = () => {
+//   const store = useStore()
+//   return Object.fromEntries(
+//     Object.keys(store._mutations).map(
+//       mutation => [mutation, value => store.commit(mutation, value)]
+//     )
+//   )
+// }
+//
 export const mapActions = () => {
   const store = useStore()
   return Object.fromEntries(
+    // Object.keys(store.actions).map(
+    // @ts-ignore
     Object.keys(store._actions).map(
       action => [action, value => store.dispatch(action, value)]
     )

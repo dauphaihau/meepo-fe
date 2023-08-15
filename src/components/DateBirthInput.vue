@@ -32,14 +32,14 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import Select from "@/core/components/forms/select.vue";
+import Select from "@/core/components/forms/Select.vue";
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
 
 interface Props {
-  modelValue: string
+  // modelValue: string
   classWrapper?: string
   label?: string
   helperText?: string
@@ -49,7 +49,8 @@ interface Props {
    error type cause by IDE: https://stackoverflow.com/questions/76313288/error-when-using-both-withdefaults-and-defineprops-in-script-setup-in-vite-v
    issue happens only for non-boolean fields: https://stackoverflow.com/questions/76322580/after-update-of-vue-3-withdefaults-throws-a-typescript-error
  */
-const { classWrapper, label, helperText, modelValue } = withDefaults(defineProps<Props>(), {
+// @ts-ignore
+const { classWrapper, label, helperText } = withDefaults(defineProps<Props>(), {
   helperText: '',
 })
 
@@ -89,7 +90,7 @@ onBeforeMount(() => {
 
 })
 
-const onChangeSelect = (option) => {
+const onChangeSelect = (option: {name: string, value: string}) => {
   switch (option.name) {
     case 'month':
       month.value = option.value

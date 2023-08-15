@@ -8,8 +8,9 @@ import {
 
 import sessionManager from "./modules/session_manager";
 import { IAction, GetterTypes, IRootState, MutationTypes, MutationEnums, StoreTypes } from "@/store/types";
+import { ISessionState } from "@/store/modules/session_manager_types";
 
-const state: IRootState = {
+const state: Pick<IRootState, 'openRegisterDialog' | 'openLoginDialog'> = {
   openLoginDialog: false,
   openRegisterDialog: false,
 };
@@ -33,7 +34,8 @@ const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
 // actions
 const actions: ActionTree<IRootState, IRootState> & IAction = {};
 
-// const session: Module<ISessionState, IRootState> = sessionManager
+
+const session: Module<ISessionState, IRootState> = sessionManager
 
 export const store = createStore({
   state,
@@ -41,8 +43,8 @@ export const store = createStore({
   actions,
   getters,
   modules: {
-    // session
-    sessionManager
+    session
+    // sessionManager
   },
 });
 

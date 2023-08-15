@@ -2,25 +2,25 @@
   <button
       :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius])"
       v-bind="$attrs"
-      v-on="$listeners"
   >
+<!--      v-on="$listeners"-->
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
-import { defineProps, withDefaults } from "vue";
 
 interface Props {
-  size: 'sm' | 'md' | 'lg' | 'xl'
-  radius: 'sm' | 'md' | 'lg' | 'xl'
-  color: 'primary'
-  variant: 'primary' | 'secondary'
-  icon: Element,
-  isLoading: boolean
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  radius?: 'sm' | 'md' | 'lg' | 'xl'
+  color?: 'primary'
+  variant?: 'primary' | 'secondary'
+  icon?: Element,
+  disabled?: boolean
 }
 
+// @ts-ignore
 const { size, variant, radius } = withDefaults(defineProps<Props>(), {
   size: 'sm', radius: 'xl', color: 'primary', variant: 'primary'
 })

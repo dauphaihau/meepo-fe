@@ -18,7 +18,7 @@ import { ActionEnums, MutationEnums } from "@/store/types";
 import { logger } from "@/core/helper";
 import { validationRegisterSchema } from "@/lib/validations/auth";
 
-type FormData = zod.infer<typeof validationRegisterSchema>
+// type FormData = zod.infer<typeof validationRegisterSchema>
 
 const store = useStore()
 const { getOpenRegisterDialog: isOpenDialog } = mapGetters()
@@ -33,10 +33,10 @@ const errorDate = ref('');
 const isSubmitted = ref(false);
 const isLoading = ref(false);
 
-const { value: name } = useField('name');
-const { value: username } = useField('username');
-const { value: email } = useField('email');
-const { value: password } = useField('password');
+const { value: name } = useField<string>('name');
+const { value: username } = useField<string>('username');
+const { value: email } = useField<string>('email');
+const { value: password } = useField<string>('password');
 const { value: dob } = useField('dob');
 
 const validate = (e: Event) => {
@@ -47,7 +47,8 @@ const validate = (e: Event) => {
   }
 }
 
-const onSubmit = handleSubmit(async (values: FormData) => {
+// const onSubmit = handleSubmit(async (values: FormData) => {
+const onSubmit = handleSubmit(async (values) => {
   const data = { user: values };
   isLoading.value = true
   logger.debug('RegisterDialog execute onSubmit', data, 'src/components/dialog/RegisterDialog.vue')

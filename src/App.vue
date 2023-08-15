@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 import { Toaster } from 'vue-sonner'
 import Header from "@/components/layout/Header.vue";
 

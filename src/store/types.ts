@@ -1,12 +1,18 @@
-import { ActionContext, CommitOptions, DispatchOptions, Store as VuexStore, } from "vuex";
+import { CommitOptions, DispatchOptions, Store as VuexStore, } from "vuex";
 import { ISessionAction, ISessionState } from "@/store/modules/session_manager_types";
 
 // root state types
-export interface IRootState {
+export interface IRootState extends ISessionState{
   openLoginDialog: boolean,
   openRegisterDialog: boolean,
-  sessionManager?: ISessionState
+  // sessionManager?: ISessionState
 }
+
+// export interface IRootState {
+//   openLoginDialog: boolean,
+//   openRegisterDialog: boolean,
+//   sessionManager?: ISessionState
+// }
 
 // Getter types
 export type GetterTypes = {

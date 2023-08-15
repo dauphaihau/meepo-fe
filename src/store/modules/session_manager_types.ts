@@ -29,26 +29,23 @@ export type SessionGetterTypes = {
   getAuthToken(state: ISessionState): string;
 };
 
-
 // Mutation types
-export type SessionMutationTypes<S = ISessionAction> = {
-  [MutationEnums.SET_USER_INFO]?(state: S, payload: object): void;
+export type SessionMutationTypes<S = IRootState> = {
+  [MutationEnums.SET_USER_INFO]?(state: S, payload: ISessionState['user']): void;
   [MutationEnums.RESET_USER_INFO]?(state: S): void;
 };
-
 
 type AugmentedActionContext = {
   commit<K extends keyof SessionMutationTypes>(
     key: K,
-    payload: Parameters<SessionMutationTypes[K]>[1]
+    payload?: Parameters<SessionMutationTypes[K]>[1]
   ): ReturnType<SessionMutationTypes[K]>;
 } & Omit<ActionContext<ISessionState, ISessionState>, "commit">;
 
-
 // actions interface
 export interface ISessionAction {
-  [ActionEnums.REGISTER]({ commit }: AugmentedActionContext, payload: object): string | void;
-  [ActionEnums.LOGIN]({ commit }: AugmentedActionContext, payload: object): void;
+  [ActionEnums.REGISTER]({ commit }: AugmentedActionContext, payload: object);
+  [ActionEnums.LOGIN]({ commit }: AugmentedActionContext, payload: object);
   [ActionEnums.LOGIN_WITH_TOKEN]({ commit }: AugmentedActionContext): void;
   [ActionEnums.LOGOUT]({ commit }: AugmentedActionContext): void;
 }

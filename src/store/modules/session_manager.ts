@@ -33,7 +33,7 @@ const getters: GetterTree<ISessionState, ISessionState> & SessionGetterTypes = {
 };
 
 const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
-  async [ActionEnums.REGISTER]({ commit }, payload): string | void {
+  async [ActionEnums.REGISTER]({ commit }, payload) {
     try {
       const res: IAxiosResponse = await apiHelper.post(`/users`, payload)
       console.log('dauphaihau debug: res', res)
@@ -68,9 +68,9 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
         logger.info(res.data.message, 'src/store/modules/session_manager.ts')
       }
 
-      // if (res.status === 401) {
-      //   return res.data
-      // }
+      if (res.status === 401) {
+        return res.data
+      }
 
       if (!res.headers.authorization) {
         logger.info('authorization is null', 'src/store/modules/session_manager.ts')

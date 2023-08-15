@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate';
 import { Form } from 'vee-validate';
 import {
@@ -24,15 +24,16 @@ const { loginUser } = mapActions()
 const isSubmitted = ref(false);
 const isLoading = ref(false);
 
-type FormData = zod.infer<typeof validationLoginSchema>
+// type FormData = zod.infer<typeof validationLoginSchema>
 
-const { handleSubmit, errors, resetForm, setErrors } = useForm<FormData>({
+// const { handleSubmit, errors, resetForm, setErrors } = useForm<FormData>({
+const { handleSubmit, errors, resetForm, setErrors, setFieldError } = useForm({
   validationSchema: validationLoginSchema,
   validateOnMount: false
 });
 
-const { value: email } = useField('email');
-const { value: password } = useField('password');
+const { value: email } = useField<string>('email');
+const { value: password } = useField<string>('password');
 
 const validate = (e: Event) => {
   isSubmitted.value = true
@@ -42,7 +43,8 @@ const validate = (e: Event) => {
   }
 }
 
-const onSubmit = handleSubmit(async (vals: FormData) => {
+// const onSubmit = handleSubmit(async (vals: FormData) => {
+const onSubmit = handleSubmit(async (vals ) => {
   const data = { user: vals };
   isLoading.value = true
   logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue')
@@ -50,7 +52,7 @@ const onSubmit = handleSubmit(async (vals: FormData) => {
   // const message = await loginUser(data)
   isLoading.value = false
   if (message) {
-    setErrors({ email: message })
+    setFieldError('email', message)
     return
   }
   resetForm()
@@ -143,7 +145,8 @@ const openRegisterDialog = () => {
                       />
                       <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700"> Forgot
                         password? </p>
-                      <Button :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit">
+                      <Button
+                          :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit">
                         Log in
                       </Button>
                     </form>

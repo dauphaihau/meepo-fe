@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
 
-const { size, classWrapper, label, helperText, modelValue, shape, disabled } = defineProps({
+const { size, classWrapper, label, helperText, modelValue, shape } = defineProps({
   modelValue: { type: String, default: '' },
   classWrapper: { type: String },
   size: { type: String, default: 'sm' },
