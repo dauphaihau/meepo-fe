@@ -8,25 +8,21 @@ import {
   Dialog,
   DialogPanel,
 } from '@headlessui/vue'
-import * as zod from 'zod';
 
-import { mapActions, mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
-import { ActionEnums, MutationEnums } from "@/store/types";
+import { ActionEnums, MutationEnums } from "@/types/store/root";
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
 import { logger } from "@/core/helper";
 import { validationLoginSchema } from "@/lib/validations/auth";
+import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
-const { getOpenLoginDialog: isOpenDialog } = mapGetters()
-const { loginUser } = mapActions()
+const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
+
 const isSubmitted = ref(false);
 const isLoading = ref(false);
 
-// type FormData = zod.infer<typeof validationLoginSchema>
-
-// const { handleSubmit, errors, resetForm, setErrors } = useForm<FormData>({
 const { handleSubmit, errors, resetForm, setErrors, setFieldError } = useForm({
   validationSchema: validationLoginSchema,
   validateOnMount: false
@@ -43,8 +39,7 @@ const validate = (e: Event) => {
   }
 }
 
-// const onSubmit = handleSubmit(async (vals: FormData) => {
-const onSubmit = handleSubmit(async (vals ) => {
+const onSubmit = handleSubmit(async (vals) => {
   const data = { user: vals };
   isLoading.value = true
   logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue')
@@ -146,7 +141,8 @@ const openRegisterDialog = () => {
                       <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700"> Forgot
                         password? </p>
                       <Button
-                          :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit">
+                          :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
+                      >
                         Log in
                       </Button>
                     </form>

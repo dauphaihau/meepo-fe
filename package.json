@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build-type-check": "vue-tsc --noEmit && vite build",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "serve": "vue-cli-service serve",
     "prod": "npx serve dist"

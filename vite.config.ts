@@ -13,9 +13,11 @@ export default ({ mode }) => {
       sourcemap: true, // enable production source maps
     },
     resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+      alias: [
+        { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+        { find: '@assets', replacement: fileURLToPath(new URL('./src/assets', import.meta.url)) },
+        { find: '@components', replacement: fileURLToPath(new URL('./src/components', import.meta.url)) },
+      ],
     }
   });
 }

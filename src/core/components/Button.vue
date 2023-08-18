@@ -1,27 +1,29 @@
 <template>
   <button
-      :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius])"
+      :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
+      {'opacity-50': isLoading}
+      )"
       v-bind="$attrs"
   >
-<!--      v-on="$listeners"-->
+    <Loading v-if="isLoading" classes="w-3.5 h-3.5"/>
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
+import Loading from "@/core/components/Loading.vue";
 
 interface Props {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   radius?: 'sm' | 'md' | 'lg' | 'xl'
   color?: 'primary'
   variant?: 'primary' | 'secondary'
-  icon?: Element,
-  disabled?: boolean
+  isLoading?: boolean,
 }
 
 // @ts-ignore
-const { size, variant, radius } = withDefaults(defineProps<Props>(), {
+const { size, variant, radius, isLoading } = withDefaults(defineProps<Props>(), {
   size: 'sm', radius: 'xl', color: 'primary', variant: 'primary'
 })
 
@@ -53,6 +55,7 @@ const SIZE_MAPS = {
 .button {
   @apply shadow-sm disabled:opacity-50
   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+  flex items-center justify-center
 }
 
 </style>

@@ -1,11 +1,29 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HelloWorld from '../components/HelloWorld.vue';
+import Home from "@/components/pages/home.vue";
+import Post from "@/components/pages/post.vue";
+import Profile from "@/components/pages/profile.vue";
+import Test from "@/components/pages/test.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: HelloWorld
+    component: Home
+  },
+  {
+    path: '/posts/:id',
+    name: 'post',
+    component: Post
+  },
+  {
+    path: '/user/:username',
+    name: 'profile',
+    component: Profile
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: Test
   },
 ]
 
@@ -15,17 +33,9 @@ const router = createRouter({
   scrollBehavior: function (to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition;
+    } else {
+      return { top: 0 }
     }
-    // if (savedPosition) {
-    //   return savedPosition;
-    // }
-    // if (to.hash) {
-    //   return { el: to.hash, behavior: 'smooth' };
-    // } else {
-    //   setTimeout(() => {
-    //     window.scrollTo(0, 0);
-    //   }, 500);
-    // }
   },
 });
 

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useStore } from 'vuex'
-// import { key, useStore } from "@/store";
+import { useStore } from "@/store";
+import { GetterTypes } from "@/types/store/root";
 
 // export const mapState = () => {
 //   const store = useStore()
@@ -13,13 +13,12 @@ import { useStore } from 'vuex'
 // }
 
 export const mapGetters = () => {
-  // const store = useStore()
   const store = useStore()
   return Object.fromEntries(
     Object.keys(store.getters).map(
       getter => [getter, computed(() => store.getters[getter])]
     )
-  )
+  ) as { [K in keyof GetterTypes]: any }
 }
 
 // export const mapMutations = () => {
@@ -31,49 +30,14 @@ export const mapGetters = () => {
 //   )
 // }
 //
-export const mapActions = () => {
-  const store = useStore()
-  return Object.fromEntries(
-    // Object.keys(store.actions).map(
-    // @ts-ignore
-    Object.keys(store._actions).map(
-      action => [action, value => store.dispatch(action, value)]
-    )
-  )
-}
 
-// export const mapGetters = (module: string | undefined) => {
-//   const store = useStore();
-//   // const store = useStore(key);
+// export const mapActions = () => {
+//   const store = useStore()
 //   return Object.fromEntries(
-//     Object.keys(store.getters).map(getter =>
-//       module !== undefined && getter.startsWith(module)
-//         ? [getter.substring(module.length + 1), computed(() => store.getters[getter])]
-//         : [getter, computed(() => store.getters[getter])]
+//     // Object.keys(store.actions).map(
+//     // @ts-ignore
+//     Object.keys(store._actions).map(
+//       action => [action, value => store.dispatch(action, value)]
 //     )
-//   );
-// };
-
-// export const mapMutations = (module: string | undefined) => {
-//   const store = useStore();
-//   return Object.fromEntries(
-//     Object.keys(store._mutations[module]).map(mutation =>
-//       module !== undefined && mutation.startsWith(module)
-//         ? [mutation.substring(module.length + 1), (value: any) => store.commit(mutation, value)]
-//         : [mutation, (value: any) => store.commit(mutation, value)]
-//     )
-//   );
-// };
-
-// export const mapActions = (module: string | undefined) => {
-//   const store = useStore();
-//   return Object.fromEntries(
-//     Object.keys(store._actions).map(action =>
-//       module !== undefined && action.startsWith(module)
-//         ? [action.substring(module.length + 1), (value: any) => store.dispatch(action, value)]
-//         : [action, (value: any) => store.dispatch(action, value)]
-//     )
-//   );
-// };
-
-
+//   )
+// }

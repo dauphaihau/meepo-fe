@@ -1,12 +1,12 @@
 import { apiHelper } from "@/lib/axios";
-import { ActionEnums, MutationEnums } from "@/store/types";
+import { ActionEnums, IRootState, MutationEnums } from "@/types/store/root";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
   IAxiosResponse,
   ISessionAction,
   ISessionState,
   SessionGetterTypes, SessionMutationTypes
-} from "@/store/modules/session_manager_types";
+} from "@/types/store/session";
 import { logger } from "@/core/helper";
 
 const state: ISessionState = {
@@ -19,7 +19,7 @@ const state: ISessionState = {
   },
 };
 
-const getters: GetterTree<ISessionState, ISessionState> & SessionGetterTypes = {
+const getters: GetterTree<ISessionState, IRootState> & SessionGetterTypes = {
   getAuthToken(state) {
     return state.auth_token;
   },
@@ -32,24 +32,24 @@ const getters: GetterTree<ISessionState, ISessionState> & SessionGetterTypes = {
   },
 };
 
-const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
+const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
   async [ActionEnums.REGISTER]({ commit }, payload) {
     try {
       const res: IAxiosResponse = await apiHelper.post(`/users`, payload)
       console.log('dauphaihau debug: res', res)
 
       // if (res.status !== 200) {
-      //   logger.info(res.data.message, 'src/store/modules/session_manager.ts')
+      //   logger.info(res.data.message, 'src/store/modules/session.ts')
       //   return
       // }
 
       if (res.status === 409) {
-        logger.error(res.data, 'src/store/modules/session_manager.ts')
+        logger.error(res.data, 'src/store/modules/session.ts')
         return res.data.message
       }
 
       if (!res.headers.authorization) {
-        logger.error('authorization is null', 'src/store/modules/session_manager.ts')
+        logger.error('authorization is null', 'src/store/modules/session.ts')
         return
       }
 
@@ -57,7 +57,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
       localStorage.setItem("auth_token", res.headers.authorization);
       commit(MutationEnums.SET_USER_INFO, res.data.user);
     } catch (error) {
-      logger.error(error, 'src/store/modules/session_manager.ts')
+      logger.error(error, 'src/store/modules/session.ts')
     }
   },
   async [ActionEnums.LOGIN]({ commit }, payload) {
@@ -65,7 +65,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
       const res: IAxiosResponse = await apiHelper.post(`/users/sign_in`, payload)
 
       if (res.status !== 200) {
-        logger.info(res.data.message, 'src/store/modules/session_manager.ts')
+        logger.info(res.data.message, 'src/store/modules/session.ts')
       }
 
       if (res.status === 401) {
@@ -73,7 +73,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
       }
 
       if (!res.headers.authorization) {
-        logger.info('authorization is null', 'src/store/modules/session_manager.ts')
+        logger.info('authorization is null', 'src/store/modules/session.ts')
         return
       }
 
@@ -81,7 +81,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
       localStorage.setItem("auth_token", res.headers.authorization);
       commit(MutationEnums.SET_USER_INFO, res.data.user);
     } catch (error) {
-      logger.error(error, 'src/store/modules/session_manager.ts')
+      logger.error(error, 'src/store/modules/session.ts')
     }
   },
   async [ActionEnums.LOGOUT]({ commit }) {
@@ -91,7 +91,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
         commit(MutationEnums.RESET_USER_INFO)
       }
     } catch (error) {
-      logger.error(error, 'src/store/modules/session_manager.ts')
+      logger.error(error, 'src/store/modules/session.ts')
     }
   },
   async [ActionEnums.LOGIN_WITH_TOKEN]({ commit }) {
@@ -111,7 +111,7 @@ const actions: ActionTree<ISessionState, ISessionState> & ISessionAction = {
   },
 };
 
-const mutations: MutationTree<ISessionState> & SessionMutationTypes = {
+const mutations: MutationTree<Partial<ISessionState>> & SessionMutationTypes = {
   [MutationEnums.SET_USER_INFO](state, dataUser) {
     state.user = dataUser;
     state.auth_token = localStorage.getItem('auth_token')

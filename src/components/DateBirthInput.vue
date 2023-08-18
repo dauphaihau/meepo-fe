@@ -39,7 +39,6 @@ const emit = defineEmits<{
 }>()
 
 interface Props {
-  // modelValue: string
   classWrapper?: string
   label?: string
   helperText?: string

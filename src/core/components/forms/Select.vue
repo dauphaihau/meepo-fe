@@ -76,6 +76,7 @@ interface Props {
   shape?: 'input'
 }
 
+//    @ts-ignore
 let {
   name,
   placeholder,

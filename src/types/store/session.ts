@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { ActionEnums, IRootState, MutationEnums } from "@/store/types";
+import { ActionEnums, IRootState, MutationEnums } from "@/types/store/root";
 import { ActionContext } from "vuex";
 
 export interface IAxiosResponse<T = any> {
@@ -24,7 +24,7 @@ export interface ISessionState {
 }
 
 export type SessionGetterTypes = {
-  getUser(state: ISessionState): object;
+  getUser(state: ISessionState): ISessionState['user'];
   isLoggedIn(state: ISessionState): boolean;
   getAuthToken(state: ISessionState): string;
 };
@@ -40,7 +40,7 @@ type AugmentedActionContext = {
     key: K,
     payload?: Parameters<SessionMutationTypes[K]>[1]
   ): ReturnType<SessionMutationTypes[K]>;
-} & Omit<ActionContext<ISessionState, ISessionState>, "commit">;
+} & Omit<ActionContext<ISessionState, IRootState>, "commit">;
 
 // actions interface
 export interface ISessionAction {

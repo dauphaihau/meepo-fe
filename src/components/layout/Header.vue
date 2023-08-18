@@ -19,12 +19,13 @@
         </button>
       </div>
 
+      <!--      Search bar-->
       <div class="col-span-3"></div>
 
       <div class="hidden lg:block col-span-1 lg:flex lg:flex-1 lg:justify-end items-center">
 
         <LoginDialog v-if="!isLoggedIn"/>
-        <SignUpDialog v-if="!isLoggedIn"/>
+        <RegisterDialog v-if="!isLoggedIn"/>
 
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
           <div>
@@ -85,19 +86,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 
 import { Bars3Icon, } from '@heroicons/vue/24/outline'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import LoginDialog from "@/components/dialog/LoginDialog.vue";
-import SignUpDialog from "@/components/dialog/RegisterDialog.vue";
-import { mapGetters } from "@/lib/map-state";
-import { ActionEnums } from "@/store/types";
+import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
+import { ActionEnums } from "@/types/store/root";
 import { useStore } from "@/store";
+import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
-
-
 const { isLoggedIn, getUser } = mapGetters()
+
 const mobileMenuOpen = ref(false)
 
 const logout = () => store.dispatch(ActionEnums.LOGOUT)

@@ -12,7 +12,7 @@ const getTime = () => {
 
 export class logger {
   static info(content, filePath = '', line?: number) {
-    // if (import.meta.env.MODE === "production") return
+    if (import.meta.env.MODE === "production") return
     console.info(`[${getTime()}]-[INFO]-[${filePath}:${line ?? ''}] \n`, JSON.stringify(content, null, 2))
   }
 

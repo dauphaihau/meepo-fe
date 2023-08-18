@@ -2,7 +2,7 @@
   <div role="status">
     <svg
         aria-hidden="true"
-        class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-black"
+        :class="cn('w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-black', classes)"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +19,15 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { cn } from '@/core/helper.js'
+
+interface Props {
+  classes?: string
+}
+
+// @ts-ignore
+const { classes } = withDefaults(defineProps<Props>(), {})
 </script>
 
 <style scoped>

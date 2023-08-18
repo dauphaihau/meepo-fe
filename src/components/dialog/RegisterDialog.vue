@@ -7,24 +7,20 @@ import {
   DialogPanel,
 } from '@headlessui/vue'
 import { useField, useForm } from "vee-validate";
-import * as zod from "zod";
 
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
 import DateBirthInput from "@/components/DateBirthInput.vue";
-import { mapActions, mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
-import { ActionEnums, MutationEnums } from "@/store/types";
+import { ActionEnums, MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { validationRegisterSchema } from "@/lib/validations/auth";
-
-// type FormData = zod.infer<typeof validationRegisterSchema>
+import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
 const { getOpenRegisterDialog: isOpenDialog } = mapGetters()
-const { registerUser } = mapActions()
 
-const { handleSubmit, errors, resetForm, setFieldError } = useForm({
+const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
   validationSchema: validationRegisterSchema,
   validateOnMount: false,
 });
@@ -47,12 +43,10 @@ const validate = (e: Event) => {
   }
 }
 
-// const onSubmit = handleSubmit(async (values: FormData) => {
 const onSubmit = handleSubmit(async (values) => {
   const data = { user: values };
   isLoading.value = true
   logger.debug('RegisterDialog execute onSubmit', data, 'src/components/dialog/RegisterDialog.vue')
-  // const message = registerUser(data);
   const message = await store.dispatch(ActionEnums.REGISTER, data)
   isLoading.value = false
   if (message) {
