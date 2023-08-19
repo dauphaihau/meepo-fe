@@ -195,64 +195,65 @@ const paramsPostId = route.params.id
 
 const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 
-const ws = new WebSocket(`ws://${process.env.BASE_URL_WEBSOCKET}/cable`);
+// const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+//
+// ws.onopen = () => {
+//   // console.log("Connected to websocket server");
+//   guid.value = Math.random().toString(36).substring(2, 15)
+//
+//   ws.send(
+//       JSON.stringify({
+//         identifier: JSON.stringify({
+//           command: "subscribe",
+//           id: guid,
+//           channel: "PostsChannel",
+//         }),
+//       })
+//   );
+// };
+//
+// ws.onmessage = (e) => {
+//   const data = JSON.parse(e.data);
+//   if (data.type === "ping") return;
+//   if (data.type === "welcome") return;
+//   if (data.type === "confirm_subscription") return;
+//
+//   // console.log('dauphaihau debug: data', data.message)
+//
+//   if (!data.message) {
+//     return;
+//   }
+//
+//   const dataPost = post.value
+//   if (post.value.id === data.message.post.id) {
+//
+//     if (data.message?.post.likes_count !== post.value.likes_count) {
+//       handleAnimationCount('likes_count')
+//     }
+//
+//     if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
+//       handleAnimationCount('sub_posts_count')
+//     }
+//
+//   }
+//
+//   function handleAnimationCount(key) {
+//     const isUp = data.message.post[key] > dataPost[key]
+//     let animation = key === 'likes_count' ? animationLikes : animationComments
+//     // 1. Old number goes up
+//     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+//
+//     // 2. Incrementing the counter
+//     setTimeout(() => dataPost[key] = data.message.post[key], 100);
+//
+//     // 3. New number waits down
+//     setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+//
+//     // 4. New number stays in the middle
+//     setTimeout(() => animation.value = 'initial', 200);
+//   }
+// };
 
-ws.onopen = () => {
-  // console.log("Connected to websocket server");
-  guid.value = Math.random().toString(36).substring(2, 15)
-
-  ws.send(
-      JSON.stringify({
-        identifier: JSON.stringify({
-          command: "subscribe",
-          id: guid,
-          channel: "PostsChannel",
-        }),
-      })
-  );
-};
-
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
-
-  // console.log('dauphaihau debug: data', data.message)
-
-  if (!data.message) {
-    return;
-  }
-
-  const dataPost = post.value
-  if (post.value.id === data.message.post.id) {
-
-    if (data.message?.post.likes_count !== post.value.likes_count) {
-      handleAnimationCount('likes_count')
-    }
-
-    if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
-      handleAnimationCount('sub_posts_count')
-    }
-
-  }
-
-  function handleAnimationCount(key) {
-    const isUp = data.message.post[key] > dataPost[key]
-    let animation = key === 'likes_count' ? animationLikes : animationComments
-    // 1. Old number goes up
-    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
-
-    // 2. Incrementing the counter
-    setTimeout(() => dataPost[key] = data.message.post[key], 100);
-
-    // 3. New number waits down
-    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
-
-    // 4. New number stays in the middle
-    setTimeout(() => animation.value = 'initial', 200);
-  }
-};
 
 onBeforeMount(() => {
   getDetailPost()
@@ -280,17 +281,25 @@ async function likePost() {
     return
   }
 
-  const res = await apiHelper.post('/posts/likes', {
+  const {data} = await apiHelper.post('/posts/likes', {
     user_id: getUser.value.id,
     post_id: postId,
   })
 
-  const data = await res.data
-  isLike.value = data.status === 1
-  if (data.status === 1) {
-    post.value.likes_count += 1
-  } else {
-    post.value.likes_count -= 1
+  if (data) {
+    const isUp = data.likes_count > post.value.likes_count
+    isLike.value = isUp
+    // 1. Old number goes up
+    setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
+
+    // 2. Incrementing the counter
+    setTimeout(() => post.value.likes_count = data.likes_count, 100);
+
+    // 3. New number waits down
+    setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
+
+    // 4. New number stays in the middle
+    setTimeout(() => animationLikes.value = 'initial', 200);
   }
 }
 
