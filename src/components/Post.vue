@@ -183,7 +183,7 @@ onBeforeMount(() => {
   }
 })
 
-const ws = new WebSocket(`ws://${process.env.BASE_URL_WEBSOCKET}/cable`);
+const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
 
 ws.onopen = () => {
   logger.info('Connected to websocket server', 'src/components/Post.vue')
