@@ -266,7 +266,7 @@ async function likePost() {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
-  const { data } = await postAPI.like()
+  const { data } = await postAPI.like(postId)
 
   if (data) {
     const isUp = data.likes_count > post.value.likes_count
