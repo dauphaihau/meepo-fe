@@ -2,11 +2,12 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from "@/components/pages/home.vue";
 import Post from "@/components/pages/post.vue";
 import Profile from "@/components/pages/profile.vue";
+import Follow from "@/components/pages/follow.vue";
 import Test from "@/components/pages/test.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: Home
   },
@@ -24,6 +25,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/test',
     name: 'test',
     component: Test
+  },
+  {
+    path: '/user/:username/following',
+    name: 'following',
+    component: Follow,
+    props: true
+  },
+  {
+    path: '/user/:username/followers',
+    name: 'followers',
+    component: Follow,
+    props: true
   },
 ]
 

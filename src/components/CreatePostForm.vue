@@ -92,8 +92,12 @@
 
         </div>
 
-        <Button :isLoading="isLoading" :disabled="!content" @click.prevent="createPost">Post</Button>
-
+        <Button
+            :key="isLoading.toString()"
+            :isLoading="isLoading"
+            :disabled="!content"
+            @click.prevent="createPost"
+        >Post</Button>
       </div>
     </div>
   </div>
@@ -113,6 +117,7 @@ import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
+import { commonAPI } from "@/apis/common";
 
 const store = useStore()
 const route = useRoute()
@@ -144,6 +149,8 @@ type Payload = Partial<Pick<IPost, 'pin_status' | 'content' | 'image_url' | 'who
 
 const createPost = async () => {
 
+  if (isLoading.value) return
+
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
@@ -161,10 +168,10 @@ const createPost = async () => {
   }
 
   if (fileImage.value) {
-    const responseUploadImage = await postAPI.uploadImage(fileImage.value);
-    logger.debug('execute postAPI.uploadImage', responseUploadImage, 'src/components/CreatePostForm.vue')
-    if (responseUploadImage?.data?.url) {
-      payload.image_url = responseUploadImage.data.url
+    const { data } = await commonAPI.uploadImage(fileImage.value);
+    logger.debug('execute postAPI.uploadImage', data, 'src/components/CreatePostForm.vue')
+    if (data?.url) {
+      payload.image_url = data.url
     } else {
       logger.error('error upload image')
       return
@@ -175,9 +182,9 @@ const createPost = async () => {
     payload.parent_id = Number(route.params.id)
   }
 
-
   logger.debug('execute postAPI.create', payload, 'src/components/CreatePostForm.vue')
   const { status } = await postAPI.create(payload)
+
   isLoading.value = false
 
   if (status === 201) {

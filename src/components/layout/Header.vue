@@ -1,14 +1,16 @@
 <template>
   <header class="header">
     <nav class="nav" aria-label="Global">
-      <div class="col-span-1">
+<!--      <div class="col-span-1">-->
+      <div class="">
         <router-link to="/" class="flex gap-1 items-center  h-full w-fit 2xl:pl-2">
           <img class="h-10 w-auto" src="../../assets/logo.png" alt=""/>
           <span class="text-xl font-bold text-black">Meepo</span>
         </router-link>
       </div>
 
-      <div class="col-span-1 lg:hidden">
+<!--      <div class="col-span-1 lg:hidden">-->
+      <div class="lg:hidden">
         <button
             type="button"
             class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -22,7 +24,8 @@
       <!--      Search bar-->
       <div class="col-span-3"></div>
 
-      <div class="hidden lg:block col-span-1 lg:flex lg:flex-1 lg:justify-end items-center">
+<!--      <div class="hidden lg:block col-span-1 lg:flex lg:flex-1 lg:justify-end items-center">-->
+      <div class="hidden lg:block lg:flex lg:flex-1 lg:justify-end items-center">
 
         <LoginDialog v-if="!isLoggedIn"/>
         <RegisterDialog v-if="!isLoggedIn"/>
@@ -106,11 +109,12 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 
 <style scoped>
 .header {
-  @apply bg-white fixed top-0 w-full z-50 h-fit  border-b border-zinc-200 px-6;
+  @apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;
 }
 
 .nav {
-  @apply mx-auto grid grid-cols-5 max-w-7xl py-2 lg:px-0
+  @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex
+  /*@apply mx-auto grid grid-cols-5 max-w-7xl py-2 lg:px-0*/
 }
 
 </style>

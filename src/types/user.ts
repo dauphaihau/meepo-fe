@@ -3,12 +3,16 @@ export interface IUser {
   email: string,
   username: string,
   name: string,
-  bio: string,
-  avatar_url: string,
-  website: string,
-  location: string,
+  bio?: string,
+  avatar_url?: string,
+  website?: string,
+  location?: string,
   posts_count: number,
-  dob: Date,
-  created_at: Date
+  dob: string,
+  created_at: string
+  // created_at: Date
   updated_at: Date
+  followers_count?: number
+  followed_count?: number
+  is_current_user_following?: boolean
 }

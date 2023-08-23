@@ -1,8 +1,8 @@
 <template>
-  <div class="w-[275px]"></div>
+  <div class="w-[275px] xl:w-[259px]"></div>
 
-  <div class="fixed top-[11%] w-[275px] flex flex-col gap-6 pl-4">
-    <router-link to="/" class="link" active-class="active">Home</router-link>
+  <div class="fixed top-[11%] w-[275px] xl:w-[259px] flex flex-col gap-6 pl-4 xl:pl-0">
+    <router-link to="/home" class="link" active-class="active">Home</router-link>
 
     <div class="link opacity-50">Explore</div>
     <div v-if="isLoggedIn" class="link opacity-50">Settings</div>
@@ -29,7 +29,7 @@ const { getUser, isLoggedIn } = mapGetters()
 }
 
 .link {
-  @apply text-black text-2xl hover:bg-gray-100 py-2 px-3 rounded-full w-fit cursor-pointer
+  @apply text-black text-2xl hover:bg-zinc-100 py-2 px-3 rounded-full w-fit cursor-pointer
 }
 
 </style>

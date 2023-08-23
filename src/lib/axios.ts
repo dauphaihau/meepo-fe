@@ -1,5 +1,26 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosResponseHeaders,
+  InternalAxiosRequestConfig
+} from 'axios';
 import { logger } from "@/core/helper";
+
+export interface IAxiosResponse<T = any> extends AxiosResponse {
+  data: T;
+  status: number;
+  statusText: string;
+  request?: any;
+  // config: IConfigReq;
+  // headers: Record<string, string>;
+  // config: AxiosRequestConfig<T>;
+}
+
+export interface IConfigReq extends InternalAxiosRequestConfig {
+  whereSrcRequest?: string
+}
+
 
 const axiosInstance = axios.create({
   baseURL: process.env.BASE_URL,
@@ -8,17 +29,17 @@ const axiosInstance = axios.create({
   }
 });
 
-const onRequest = (configReq: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-  const { method, url } = configReq;
+const onRequest = (configReq: IConfigReq): IConfigReq => {
+  const { method, url, whereSrcRequest } = configReq;
   const auth_token = localStorage.getItem("auth_token");
   if (auth_token) {
     configReq.headers.Authorization = auth_token;
   }
-  logger.debug(`🚀 src/lib/axios.ts [API] ${method?.toUpperCase()} ${url} | Request`, configReq.data, 'src/lib/axios.ts');
+  logger.debug(`🔺 Request | [API] ${method?.toUpperCase()} ${url} `, configReq.data ?? 'req with undefined data', whereSrcRequest);
   if (method === "get") {
     configReq.timeout = 15000;
   }
-  return configReq;
+  return configReq as IConfigReq;
 }
 
 const onRequestError = (error: AxiosError): Promise<AxiosError> => {
@@ -26,18 +47,18 @@ const onRequestError = (error: AxiosError): Promise<AxiosError> => {
   return Promise.reject(error);
 }
 
-const onResponse = (response: AxiosResponse): AxiosResponse => {
-  const { method, url } = response.config;
+const onResponse = (response: IAxiosResponse): IAxiosResponse => {
+  const { method, url, whereSrcRequest } = response.config as IConfigReq;
   const { status } = response;
-  logger.debug(`🚀 [API] ${method?.toUpperCase()} ${url} | Response ${status}`, response, 'src/lib/axios.ts');
+  logger.debug(`🔻 Response | [API] ${method?.toUpperCase()} ${url} ${status}`, response, whereSrcRequest);
   return response;
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
   const { message } = error;
-  const { method, url } = error.config as AxiosRequestConfig;
+  const { method, url, whereSrcRequest } = error.config as IConfigReq;
   const { status } = error.response as AxiosResponse ?? {};
-  logger.error(`🚨 [API] ${method?.toUpperCase()} ${url} | Error ${status} ${message}`, 'src/lib/axios.ts');
+  logger.error(`🚨 [API] | Error ${method?.toUpperCase()} ${url} ${status} ${message}`, whereSrcRequest);
   return Promise.reject(error);
 }
 

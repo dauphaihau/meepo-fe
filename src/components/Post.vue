@@ -10,7 +10,7 @@
 
         <!--         Pin Post-->
         <div
-            v-if="currentRouteName === 'profile' && dataPost.pin_status === PIN_STATUS.PIN"
+            v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
             class="flex gap-3 items-center  text-gray-500 mb-1 ml-[30px]"
         >
           <StarIcon class="h-4 w-4"/>
@@ -119,19 +119,18 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
 
 import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
-import { apiHelper } from "@/lib/axios";
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
 import { IPost, PIN_STATUS } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
-import { logger } from "@/core/helper";
+import { postAPI } from "@/apis/post";
 
 // Unresolved function or method updateLocale()
 // @ts-ignore
@@ -163,17 +162,18 @@ const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
+const { isLoggedIn, getUser } = mapGetters()
+const emit = defineEmits(['onDeletePost', 'onPinPost'])
+
 const guid = ref('')
 const isLike = ref(false)
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
 const keyOptionsPost = ref(0)
-const currentRouteName = route.params.name
 const redirecting = ref('')
 const openMenu = ref(false)
 
-const { isLoggedIn, getUser } = mapGetters()
-const emit = defineEmits(['onDeletePost', 'onPinPost'])
+const currentRouteName = route.name
 
 onBeforeMount(() => {
   if (isLoggedIn.value) {
@@ -256,12 +256,8 @@ const likePost = async () => {
     return
   }
 
-  const { data } = await apiHelper.post('/posts/likes', {
-    user_id: getUser.value.id,
-    post_id: dataPost.id,
-  })
+  const { data } = await postAPI.like(dataPost.id)
 
-  console.log('dauphaihau debug: res-data', data)
   if (data) {
     const isUp = data.likes_count > dataPost.likes_count
     isLike.value = isUp
@@ -298,7 +294,6 @@ const handleClickDetailPost = (type = '') => {
       break
   }
 
-  // console.log('dauphaihau debug: redirecting-value', redirecting.value)
   if (!redirecting.value && type === 'post') {
     router.push('/posts/' + dataPost.id)
   }

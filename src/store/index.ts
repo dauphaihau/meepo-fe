@@ -13,9 +13,10 @@ const state: IRootState = {
   openLoginDialog: false,
   openRegisterDialog: false,
   getKeyMutatePosts: 0,
+  stateRouter: null
 };
 
-// define mutations
+// mutations
 const mutations: MutationTree<IRootState> & MutationTypes = {
   [MutationEnums.SET_LOGIN_DIALOG](state: IRootState, payload: boolean) {
     state.openLoginDialog = payload;
@@ -26,6 +27,9 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
   [MutationEnums.SET_REGISTER_DIALOG](state: IRootState, payload: boolean) {
     state.openRegisterDialog = payload;
   },
+  [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload: any) {
+    state.stateRouter = payload;
+  },
 };
 
 // getters
@@ -33,6 +37,7 @@ const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
   getOpenLoginDialog: state => state.openLoginDialog,
   getOpenRegisterDialog: state => state.openRegisterDialog,
   getKeyMutatePosts: state => state.getKeyMutatePosts,
+  getStateRouter: state => state.stateRouter,
 };
 
 // actions

@@ -48,7 +48,7 @@
             >
               <!--                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"-->
               {{
-                dataPost.pin_status === PIN_STATUS.PIN ? 'Unpin from profile' : 'Pin to your profile'
+                dataPost.pin_status_int === PIN_STATUS.PIN ? 'Unpin from profile' : 'Pin to your profile'
               }}
             </span>
           </MenuItem>
@@ -110,10 +110,10 @@ const onDelete = async () => {
 }
 
 const onPin = async () => {
-  const payload = { pin_status: dataPost.pin_status === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
+  const payload = { pin_status: dataPost.pin_status_int === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
   const { status } = await postAPI.update(dataPost.id, payload)
   if (status === 200) {
-    dataPost.pin_status = payload.pin_status
+    dataPost.pin_status_int = payload.pin_status
     emit('onPinPost')
   }
 }

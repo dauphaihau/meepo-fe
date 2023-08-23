@@ -42,6 +42,12 @@ interface Props {
   classWrapper?: string
   label?: string
   helperText?: string
+  modelValue?: string
+  // modelValue?: {
+  //   day: string
+  //   month: string
+  //   year: string
+  // }
 }
 
 /*
@@ -49,7 +55,7 @@ interface Props {
    issue happens only for non-boolean fields: https://stackoverflow.com/questions/76322580/after-update-of-vue-3-withdefaults-throws-a-typescript-error
  */
 // @ts-ignore
-const { classWrapper, label, helperText } = withDefaults(defineProps<Props>(), {
+const { classWrapper, label, helperText, modelValue } = withDefaults(defineProps<Props>(), {
   helperText: '',
 })
 
@@ -64,6 +70,17 @@ const days = ref([])
 const years = ref([])
 
 onBeforeMount(() => {
+  console.log('dauphaihau debug: model-value', modelValue)
+  if (modelValue) {
+    // console.log('dauphaihau debug: user', user.dob)
+    const dobSplited = modelValue.split(' ')
+    dob.value = {
+      day: dobSplited[0].charAt(0) === '0' ? dobSplited[0].charAt(1) : dobSplited[0],
+      month: dobSplited[1],
+      year: dobSplited[2],
+    }
+  }
+
   months.value = [
     { name: 'January' },
     { name: 'February' },
@@ -90,6 +107,7 @@ onBeforeMount(() => {
 })
 
 const onChangeSelect = (option: {name: string, value: string}) => {
+  console.log('dauphaihau debug: option', option)
   switch (option.name) {
     case 'month':
       month.value = option.value
@@ -102,10 +120,18 @@ const onChangeSelect = (option: {name: string, value: string}) => {
       break
   }
 
+  if (modelValue) {
+    const output = `${year.value ? year.value : dob.value.year}-${month.value ? month.value : dob.value.month}-${day.value ? day.value : dob.value.day} `
+    console.log('dauphaihau debug: output', output)
+    emit('update:modelValue', output)
+    return
+  }
+
   if (![month.value, day.value, year.value].includes('')) {
     const output = `${year.value}-${month.value}-${day.value}`
     emit('update:modelValue', output)
   }
+
 }
 </script>
 

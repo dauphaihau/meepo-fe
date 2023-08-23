@@ -67,12 +67,6 @@ const openRegisterDialog = () => {
   closeDialog()
 }
 
-// watch(values, () => {
-//   if (isSubmitted.value) {
-//     isSubmitted.value = false
-//   }
-// })
-
 </script>
 
 
@@ -138,10 +132,12 @@ const openRegisterDialog = () => {
                           type="password"
                           :helper-text=" isSubmitted ? errors.password : '' "
                       />
-                      <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700"> Forgot
+                      <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700 cursor-pointer"> Forgot
                         password? </p>
                       <Button
-                          :disabled="isLoading" radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
+                          :key="isLoading.toString()"
+                          :isLoading="isLoading"
+                          radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
                       >
                         Log in
                       </Button>

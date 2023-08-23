@@ -1,65 +1,77 @@
 <template>
   <div class="">
-    <div class="grid grid-cols-2 fixed top-0 pt-[60px] w-[599px] border-b border-r bg-white z-30">
 
-      <div v-for="tab of tabs">
-        <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
-          <div
-              class="font-semibold"
-              :class="tab.id === currentTab ? 'text-black' : 'text-gray-500' "
-          >{{ tab.name }}
+    <!--    Header-->
+    <!--    <div class="header-mini">-->
+    <!--      <div v-if="isLoggedIn" class="grid grid-cols-2">-->
+    <!--        <div v-for="tab of tabs">-->
+    <!--          <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">-->
+    <!--            <div-->
+    <!--                class="font-semibold"-->
+    <!--                :class="tab.id === currentTab ? 'text-black' : 'text-gray-500' "-->
+    <!--            >{{ tab.name }}-->
+    <!--            </div>-->
+    <!--            <div v-if="tab.id === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--      -->
+    <!--      <div v-else class="p-4 h-14">-->
+    <!--        <h3 class="text-xl font-bold">Home</h3>-->
+    <!--      </div>-->
+    <!--      -->
+    <!--    </div>-->
+
+    <HeaderMini v-if="isLoggedIn">
+      <template v-slot:tabs>
+        <div class="grid grid-cols-2">
+          <div v-for="tab of tabs">
+            <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
+              <div
+                  class="font-semibold"
+                  :class="tab.id === currentTab ? 'text-black' : 'text-gray-500' "
+              >{{ tab.name }}
+              </div>
+              <div v-if="tab.id === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>
+            </div>
           </div>
-          <div v-if="tab.id === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>
         </div>
-      </div>
-    </div>
+      </template>
+    </HeaderMini>
 
     <Posts
-        :by="this.currentTab"
+        :by="currentTab"
         :key="keyPostsComp"
-        class="pt-12"
+        class="pt-16"
     />
+<!--        class="pt-[10px]"-->
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { watch, ref } from "vue";
 import Posts from "@/components/Posts.vue";
-import { mapActions, mapGetters } from "vuex";
 import { FILTER_POST_BY } from "@/config/const";
+import { mapGetters } from "@/lib/map-state";
+import HeaderMini from "@components/HeaderMini.vue";
 
-export default {
-  name: "Homepage",
-  components: {
-    Posts: Posts
-  },
-  created() {},
-  computed: {
-    ...mapGetters(["getAuthToken", "isLoggedIn"]),
-  },
-  data() {
-    return {
-      tabs: [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }],
-      currentTab: 0,
-      keyPostsComp: 0,
-    };
-  },
-  methods: {
-    changeTab(status) {
-      if (status === this.currentTab) return
-      this.keyPostsComp += 1
-      this.currentTab = status
-    }
-  },
-  watch: {
-    '$store.state.mutatePosts': function () {
-      console.log('dauphaihau debug: change')
-      this.keyPostsComp += 1
-    }
-  }
+const { isLoggedIn, getKeyMutatePosts } = mapGetters()
+const tabs = [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }]
+const currentTab = ref(0)
+const keyPostsComp = ref(0)
+
+function changeTab(index) {
+  if (index === currentTab.value) return
+  keyPostsComp.value += 1
+  currentTab.value = index
 }
+
+watch(getKeyMutatePosts, () => {
+  keyPostsComp.value++
+})
+
 
 </script>
 
 <style scoped>
-
 </style>

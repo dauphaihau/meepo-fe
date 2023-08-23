@@ -6,6 +6,7 @@ export interface IRootState extends Partial<ISessionState>{
   openLoginDialog: boolean,
   openRegisterDialog: boolean,
   getKeyMutatePosts: number,
+  stateRouter: any,
 }
 
 // Getter types
@@ -13,6 +14,7 @@ export type GetterTypes = {
   getOpenLoginDialog(state: IRootState): boolean;
   getOpenRegisterDialog(state: IRootState): boolean;
   getKeyMutatePosts(state: IRootState): number;
+  getStateRouter(state: IRootState): any;
 } & Partial<SessionGetterTypes>;
 
 // mutations and action enums
@@ -22,6 +24,7 @@ export enum MutationEnums {
   SET_USER_INFO = "SET_USER_INFO",
   RESET_USER_INFO = 'RESET_USER_INFO',
   MUTATE_POSTS = 'MUTATE_POSTS',
+  SET_STATE_ROUTER = 'SET_STATE_ROUTER',
 }
 
 export enum ActionEnums {
@@ -36,6 +39,7 @@ export type MutationTypes<S = IRootState> = {
   [MutationEnums.SET_LOGIN_DIALOG](state: S, payload: boolean): void;
   [MutationEnums.SET_REGISTER_DIALOG](state: S, payload: boolean): void;
   [MutationEnums.MUTATE_POSTS](state: S): void;
+  [MutationEnums.SET_STATE_ROUTER](state: S, payload: any): void;
 };
 
 // actions interface

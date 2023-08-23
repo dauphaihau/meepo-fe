@@ -1,4 +1,4 @@
-import { apiHelper } from "../lib/axios";
+import { apiHelper } from "@/lib/axios";
 import axios from "axios";
 
 export const commonAPI = {
@@ -18,19 +18,13 @@ export const commonAPI = {
     formData.append("upload_preset", uploadPreset)
     formData.append("folder", folderName)
 
-    // const postImage = async () => {
     try {
-      return await axios.post(
+      return await axios.post<{url: string}>(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         formData
       )
-      // setImageData(response.data)
     } catch (error) {
       console.error(error)
     }
-
-  }
-
-  // return postImage()
-// }
+  },
 }

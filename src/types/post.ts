@@ -35,4 +35,11 @@ export interface IPost {
   author_username?: string
   is_current_user_can_comment?: boolean
   who_can_comment_int?: number
+  pin_status_int?: number
+  author?: IUser
+}
+
+export interface IHashtag {
+  name: string,
+  count?: number,
 }

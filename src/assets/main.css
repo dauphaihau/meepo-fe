@@ -17,5 +17,8 @@
   .animate {
     @apply transition transform duration-200 ease-in-out;
   }
-
 }
+
+
+
+

@@ -1,13 +1,13 @@
+import { ActionTree, GetterTree, MutationTree } from "vuex";
 import { apiHelper } from "@/lib/axios";
 import { ActionEnums, IRootState, MutationEnums } from "@/types/store/root";
-import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
-  IAxiosResponse,
   ISessionAction,
   ISessionState,
   SessionGetterTypes, SessionMutationTypes
 } from "@/types/store/session";
 import { logger } from "@/core/helper";
+import { userAPI } from "@/apis/user";
 
 const state: ISessionState = {
   auth_token: '',
@@ -20,12 +20,8 @@ const state: ISessionState = {
 };
 
 const getters: GetterTree<ISessionState, IRootState> & SessionGetterTypes = {
-  getAuthToken(state) {
-    return state.auth_token;
-  },
-  getUser(state) {
-    return state.user;
-  },
+  getAuthToken: state => state.auth_token,
+  getUser: state => state.user,
   isLoggedIn(state) {
     const loggedOut = state.auth_token === ''
     return !loggedOut;
@@ -35,59 +31,53 @@ const getters: GetterTree<ISessionState, IRootState> & SessionGetterTypes = {
 const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
   async [ActionEnums.REGISTER]({ commit }, payload) {
     try {
-      const res: IAxiosResponse = await apiHelper.post(`/users`, payload)
-      console.log('dauphaihau debug: res', res)
+      const { data, status, headers } = await userAPI.register(payload)
 
-      // if (res.status !== 200) {
-      //   logger.info(res.data.message, 'src/store/modules/session.ts')
-      //   return
-      // }
-
-      if (res.status === 409) {
-        logger.error(res.data, 'src/store/modules/session.ts')
-        return res.data.message
+      if (status === 409) {
+        logger.error(data, 'src/store/modules/session.ts')
+        return data.message
       }
 
-      if (!res.headers.authorization) {
+      if (!headers.authorization) {
         logger.error('authorization is null', 'src/store/modules/session.ts')
         return
       }
 
-      apiHelper.defaults.headers.common["Authorization"] = res.headers.authorization;
-      localStorage.setItem("auth_token", res.headers.authorization);
-      commit(MutationEnums.SET_USER_INFO, res.data.user);
+      apiHelper.defaults.headers.common["Authorization"] = headers.authorization;
+      localStorage.setItem("auth_token", headers.authorization);
+      commit(MutationEnums.SET_USER_INFO, data.user);
     } catch (error) {
       logger.error(error, 'src/store/modules/session.ts')
     }
   },
   async [ActionEnums.LOGIN]({ commit }, payload) {
     try {
-      const res: IAxiosResponse = await apiHelper.post(`/users/sign_in`, payload)
+      const { status, data, headers } = await userAPI.login(payload)
 
-      if (res.status !== 200) {
-        logger.info(res.data.message, 'src/store/modules/session.ts')
+      if (status !== 200) {
+        logger.info(data.message, 'src/store/modules/session.ts')
       }
 
-      if (res.status === 401) {
-        return res.data
+      if (status === 401) {
+        return data
       }
 
-      if (!res.headers.authorization) {
+      if (!headers.authorization) {
         logger.info('authorization is null', 'src/store/modules/session.ts')
         return
       }
 
-      apiHelper.defaults.headers.common["Authorization"] = res.headers.authorization;
-      localStorage.setItem("auth_token", res.headers.authorization);
-      commit(MutationEnums.SET_USER_INFO, res.data.user);
+      apiHelper.defaults.headers.common["Authorization"] = headers.authorization;
+      localStorage.setItem("auth_token", headers.authorization);
+      commit(MutationEnums.SET_USER_INFO, data.user);
     } catch (error) {
       logger.error(error, 'src/store/modules/session.ts')
     }
   },
   async [ActionEnums.LOGOUT]({ commit }) {
     try {
-      const res = await apiHelper.delete(`/users/sign_out`)
-      if (res.status === 200) {
+      const { status } = await userAPI.logout()
+      if (status === 200) {
         commit(MutationEnums.RESET_USER_INFO)
       }
     } catch (error) {
@@ -96,17 +86,15 @@ const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
   },
   async [ActionEnums.LOGIN_WITH_TOKEN]({ commit }) {
     try {
-      const res = await apiHelper.get(`/member-data`)
-
-      if (res.status === 401) {
+      const { data, status } = await userAPI.me('src/store/modules/session.ts')
+      if (status === 401) {
         commit(MutationEnums.RESET_USER_INFO)
       }
-
-      if (res.status === 200) {
-        commit(MutationEnums.SET_USER_INFO, res.data.user);
+      if (status === 200) {
+        commit(MutationEnums.SET_USER_INFO, data.user);
       }
     } catch (error) {
-      // console.log('dauphaihau debug: error', error)
+      logger.error(error, 'src/store/modules/session.ts')
     }
   },
 };

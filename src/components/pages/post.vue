@@ -1,20 +1,8 @@
 <template>
 
   <!--  Header-->
-  <div
-      class="flex gap-4 items-center cursor-pointer h-[56px] px-4 mb-4"
-      @click="router.back()"
-  >
-    <ArrowLeftIcon
-        v-tooltip="'Back'"
-        class="h-9 w-9 cursor-pointer hover:bg-zinc-100 animate rounded-full p-2"
-        aria-hidden="true"
-    />
-    <div class="">
-      <h3 class="text-2xl font-bold">Post</h3>
-    </div>
-  </div>
-
+  <HeaderMini title="Post"/>
+  <div class="h-20"></div>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
     <Loading/>
@@ -153,7 +141,6 @@
 import { onBeforeMount, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
-import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
 import { HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid } from "@heroicons/vue/24/solid"
 import {
@@ -168,18 +155,19 @@ import OptionsPost from "@/components/OptionsPost.vue";
 import { postAPI } from "@/apis/post";
 import Posts from "@/components/Posts.vue";
 import Loading from "@/core/components/Loading.vue";
-import { apiHelper } from "@/lib/axios";
+
 import { mapGetters } from "@/lib/map-state";
 import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
+import HeaderMini from "@components/HeaderMini.vue";
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
 
-type Post = {time: string, date: string} & IPost
+type Post = {time?: string, date?: string} & IPost
 
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
@@ -254,7 +242,6 @@ const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 //   }
 // };
 
-
 onBeforeMount(() => {
   getDetailPost()
 })
@@ -264,7 +251,6 @@ async function getDetailPost(post_id = null) {
   const { data } = await postAPI.detail(post_id ?? postId)
   isLoading.value = false
 
-  // console.log('dauphaihau debug: data', data)
   if (data) {
     post.value = data.post
     isLike.value = data.post.is_current_user_like
@@ -280,11 +266,7 @@ async function likePost() {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
-
-  const {data} = await apiHelper.post('/posts/likes', {
-    user_id: getUser.value.id,
-    post_id: postId,
-  })
+  const { data } = await postAPI.like()
 
   if (data) {
     const isUp = data.likes_count > post.value.likes_count

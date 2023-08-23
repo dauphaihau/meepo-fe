@@ -14,6 +14,7 @@ import { useStore } from "@/store";
 import { mapGetters } from "@/lib/map-state.ts";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
+import { commonAPI } from "@/apis/common";
 
 interface Props {
   showDialogFromProps?: boolean,
@@ -75,9 +76,9 @@ const createPost = async () => {
   }
 
   logger.debug('execute postAPI.create', payload, 'src/components/dialog/AddOrUpdatePost.vue')
-  const { data: newPost, status } = await postAPI.create(payload)
+  const { status } = await postAPI.create(payload)
 
-  if (status === 201 && newPost) {
+  if (status === 201) {
     toast('Your post was sent')
     if (currentRouteName !== 'post') {
       store.commit(MutationEnums.MUTATE_POSTS)
@@ -113,7 +114,7 @@ const updatePost = async () => {
 }
 
 const uploadImage = async () => {
-  const responseUploadImage = await postAPI.uploadImage(fileImage.value);
+  const responseUploadImage = await commonAPI.uploadImage(fileImage.value);
   logger.debug('execute postAPI.uploadImage', responseUploadImage, 'src/components/CreatePostForm.vue')
   if (responseUploadImage?.data?.url) {
     return responseUploadImage.data.url

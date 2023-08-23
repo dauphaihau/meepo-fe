@@ -33,7 +33,7 @@ const { value: name } = useField<string>('name');
 const { value: username } = useField<string>('username');
 const { value: email } = useField<string>('email');
 const { value: password } = useField<string>('password');
-const { value: dob } = useField('dob');
+const { value: dob } = useField<string>('dob');
 
 const validate = (e: Event) => {
   isSubmitted.value = true
@@ -46,7 +46,6 @@ const validate = (e: Event) => {
 const onSubmit = handleSubmit(async (values) => {
   const data = { user: values };
   isLoading.value = true
-  logger.debug('RegisterDialog execute onSubmit', data, 'src/components/dialog/RegisterDialog.vue')
   const message = await store.dispatch(ActionEnums.REGISTER, data)
   isLoading.value = false
   if (message) {
@@ -85,7 +84,6 @@ function openDialog() {
 }
 
 </script>
-
 
 <template>
   <div class="ml-3">
@@ -157,7 +155,15 @@ function openDialog() {
                           classWrapper="mb-8"
                           :helperText="isSubmitted ? errors.dob : '' "
                       />
-                      <Button :disabled="isLoading" v-on:submit.prevent="validate" radius="lg" class="w-full" size="md">
+                      <Button
+
+                          :key="isLoading.toString()"
+                          :isLoading="isLoading"
+                          v-on:submit.prevent="validate"
+                          radius="lg"
+                          class="w-full"
+                          size="md"
+                      >
                         Sign Up
                       </Button>
                     </form>

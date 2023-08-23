@@ -30,9 +30,8 @@
       <!--          'mt-[52px]' : isFocus-->
 
       <div v-for="post in posts" :key="post.id">
-        <!--            @onPinPost="onPinPost"-->
         <Post
-            @onPinPost="onGetPosts"
+            @onPinPost="onGetPosts('pin')"
             @onDeletePost="onGetPosts"
             :dataPost="post"
             :pinStatus="post.pin_status"
@@ -130,7 +129,7 @@ function getNextPosts() {
 }
 
 type Params = {
-  by: number
+  by?: number
   page: number
 } & Partial<Pick<IPost, 'parent_id' | 'pin_status' | 'user_id'>>
 
@@ -138,16 +137,19 @@ const getPosts = async () => {
   loading.value = true
 
   const payload: Params = {
-    by,
-    page: page_count.value
+    page: page_count.value,
   }
 
-  if (by === FILTER_POST_BY.LIKES || by === FILTER_POST_BY.REPLIES || by === FILTER_POST_BY.MEDIA) {
-    payload.user_id = author.id
+  if (FILTER_POST_BY[by]) {
+    payload.by = by
+  }
+
+  if ([FILTER_POST_BY.LIKES, FILTER_POST_BY.REPLIES, FILTER_POST_BY.MEDIA].includes(by)) {
+    payload.user_id = author?.id
   }
 
   if (currentRouteName !== 'home' && by === FILTER_POST_BY.DEFAULT) {
-    payload.user_id = author.id
+    payload.user_id = author?.id
   }
 
   if (currentRouteName === 'post') {
@@ -161,15 +163,15 @@ const getPosts = async () => {
     payload.pin_status = PIN_STATUS.PIN
   }
 
-  let { data: newPosts } = await postAPI.list(payload)
+  let { data } = await postAPI.list(payload, 'src/components/Posts.vue')
 
-  if (newPosts) {
+  if (data.posts) {
 
-    if (newPosts.length < perPage) {
+    if (data.posts.length < perPage) {
       reachEndPage.value = true
     }
 
-    newPosts = newPosts.map((p) => {
+    data.posts = data.posts.map((p) => {
       if (dayjs(p.created_at).isToday()) {
         return { ...p, time: dayjs(p.created_at).fromNow() }
       } else {
@@ -178,20 +180,22 @@ const getPosts = async () => {
     })
 
     if (disableInfinityScroll.value) {
-      posts.value = newPosts
+      posts.value = data.posts
       return
     }
 
-    posts.value = [...posts.value, ...newPosts]
+    posts.value = [...posts.value, ...data.posts]
   }
   loading.value = false
   disableInfinityScroll.value = false
 }
 
-const onGetPosts = () => {
+const onGetPosts = (type?: string) => {
   disableInfinityScroll.value = true
   page_count.value = 1
-  window.scrollTo(0, 0);
+  if (!type) {
+    window.scrollTo(0, 0);
+  }
   getPosts()
 }
 
