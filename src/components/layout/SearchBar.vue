@@ -61,8 +61,8 @@
                   @click="query = searchValue; handleEnter()"
                   class="flex items-center gap-2 px-4 cursor-pointer hover:bg-zinc-100 py-3 animate"
               >
-                <MagnifyingGlassIcon class="h-5 w-5"/>
-                <p class="text-sm grow">{{ searchValue }}</p>
+                <MagnifyingGlassIcon class="h-5 w-5 min-w-[1.25rem]"/>
+                <p class="text-sm grow overflow-hidden text-ellipsis whitespace-nowrap">{{ searchValue }}</p>
                 <div @click.stop="removeSearch(searchValue)">
                   <XCircleIcon v-tooltip="'remove'" class="h-5 w-5"/>
                 </div>

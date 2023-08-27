@@ -95,7 +95,7 @@
         <Button
             :key="isLoading.toString()"
             :isLoading="isLoading"
-            :disabled="!content"
+            :disabled="!content && !fileImage"
             @click.prevent="createPost"
         >Post</Button>
       </div>

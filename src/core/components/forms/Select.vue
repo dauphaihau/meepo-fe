@@ -114,7 +114,6 @@ onBeforeMount(() => {
 
   if (placeholder) {
     data.unshift({ name: placeholder })
-    console.log('dauphaihau debug: data', data)
     selectedOption.value = data[0]
   }
 })

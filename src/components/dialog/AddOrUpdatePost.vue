@@ -33,9 +33,10 @@ const route = useRoute()
 const { getAuthToken, isLoggedIn, getUser } = mapGetters()
 
 const showDialog = ref(false);
+const isLoading = ref(false);
+const textareaRef = ref(null)
 const fileImage = ref(null)
 const urlImage = ref(null)
-const textareaRef = ref(null)
 const content = ref('')
 const whoCanComment = ref(0)
 const currentRouteName = route.name
@@ -58,7 +59,7 @@ onMounted(() => {
 type Payload = Partial<Pick<IPost, 'pin_status' | 'content' | 'image_url' | 'who_can_comment' | 'parent_id'>>
 
 const createPost = async () => {
-
+  isLoading.value = true
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
@@ -78,6 +79,7 @@ const createPost = async () => {
   }
 
   const { status } = await postAPI.create(payload)
+  isLoading.value = false
 
   if (status === 201) {
     toast('Your post was sent')
@@ -90,6 +92,7 @@ const createPost = async () => {
 
 const updatePost = async () => {
 
+  isLoading.value = true
   const payload: Payload = {
     content: content.value,
     image_url: urlImage.value,
@@ -106,11 +109,15 @@ const updatePost = async () => {
 
   logger.debug('execute postAPI.update', payload, 'src/components/dialog/AddOrUpdatePost.vue')
   const { status } = await postAPI.update(dataPost.id, payload)
-  if (status === 200) {
-    toast('Your post was updated')
-    store.commit(MutationEnums.MUTATE_POSTS)
-    closeDialog()
-  }
+
+  setTimeout(() => {
+    isLoading.value = false
+    if (status === 200) {
+      toast('Your post was updated')
+      store.commit(MutationEnums.MUTATE_POSTS)
+      closeDialog()
+    }
+  }, 3000)
 
 }
 
@@ -127,6 +134,9 @@ const uploadImage = async () => {
 }
 
 const deleteImage = () => {
+  if (isLoading.value) {
+    return
+  }
   urlImage.value = null
   fileImage.value = null
 }
@@ -141,6 +151,10 @@ const onChangeImage = (e) => {
 }
 
 function closeDialog() {
+  if (isLoading.value) {
+    return
+  }
+
   showDialog.value = false
   if (!dataPost) {
     fileImage.value = null
@@ -174,6 +188,34 @@ function calcHeighTextarea() {
 watch(content, () => {
   calcHeighTextarea()
 })
+
+const handleDisabledUpdate = () => {
+
+  console.log('dauphaihau debug: data-post', dataPost)
+
+  if (content.value !== dataPost?.content) {
+    return false
+  }
+
+  if (whoCanComment.value !== dataPost.who_can_comment_int) {
+
+    if (content.value || fileImage.value || urlImage.value) {
+      return false
+    }
+  }
+
+  if (urlImage.value !== dataPost.image_url) {
+    if (content.value) {
+      return false
+    }
+  }
+
+  // if (!content.value && !fileImage.value) {
+  //
+  // }
+
+  return true
+}
 
 </script>
 
@@ -290,6 +332,7 @@ watch(content, () => {
                       <!-- @vue-ignore -->
                       <PhotoIcon @click="$refs.file.click()" class="icon-btn"/>
                       <input
+                          :disabled="isLoading"
                           type="file"
                           name="file"
                           id="file"
@@ -307,16 +350,30 @@ watch(content, () => {
 
                     <div>
                       <!--                      <Button v-if="isEditing" class="button" @click="updatePost">Update</Button>-->
-                      <Button v-if="dataPost" class="button" @click="updatePost">Update</Button>
-                      <Button v-else :disabled="!content" @click.prevent="createPost">Post</Button>
+                      <!--                          :disabled="!content && !fileImage"-->
+                      <Button
+                          :disabled="handleDisabledUpdate()"
+                          v-if="dataPost"
+                          :isLoading="isLoading"
+                          :key="isLoading.toString()"
+                          class="button"
+                          @click="updatePost"
+                      >Update
+                      </Button>
+                      <Button
+                          v-else
+                          :disabled="!content && !fileImage"
+                          :key="isLoading.toString()"
+                          :isLoading="isLoading"
+                          @click.prevent="createPost"
+                      >Post
+                      </Button>
                     </div>
 
                   </div>
                 </div>
 
               </div>
-
-
             </DialogPanel>
           </TransitionChild>
         </div>

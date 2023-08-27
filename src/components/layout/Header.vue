@@ -35,8 +35,17 @@
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
           <div>
             <MenuButton>
-              <div class="flex gap-2 hover:bg-zinc-300 py-1 pl-1 pr-3 rounded-full">
-                <div class="h-10 w-10 bg-zinc-200 flex justify-center items-center rounded-full cursor-pointer text-black">
+              <div class="flex gap-2 hover:bg-zinc-300/50 py-1 pl-1 pr-3 rounded-full animate">
+                <img
+                    v-if="getUser.avatar_url"
+                    alt="avatar"
+                    :src="getUser.avatar_url"
+                    class="h-10 w-10 rounded-full "
+                />
+                <div
+                    v-else
+                    class="h-10 w-10 bg-zinc-200 flex justify-center items-center rounded-full cursor-pointer text-black font-normal"
+                >
                   {{ getUser.name ? getUser.name.charAt(0).toUpperCase() : '' }}
                 </div>
                 <div class="text-left max-w-[150px]">

@@ -99,8 +99,6 @@ onBeforeMount(() => {
     name: (i + 1).toString()
   }));
 
-  console.log('dauphaihau debug: days-value', days.value)
-
   years.value = new Array(43).fill("").map((_, i) => ({
     name: (1980 + i + 1).toString()
   })).reverse();
@@ -108,7 +106,6 @@ onBeforeMount(() => {
 })
 
 const onChangeSelect = (option: {name: string, value: string}) => {
-  console.log('dauphaihau debug: option', option)
   switch (option.name) {
     case 'month':
       month.value = option.value
@@ -123,7 +120,6 @@ const onChangeSelect = (option: {name: string, value: string}) => {
 
   if (modelValue) {
     const output = `${year.value ? year.value : dob.value.year}-${month.value ? month.value : dob.value.month}-${day.value ? day.value : dob.value.day} `
-    console.log('dauphaihau debug: output', output)
     emit('update:modelValue', output)
     return
   }

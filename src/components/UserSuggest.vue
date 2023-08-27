@@ -5,7 +5,7 @@
        :class="isHover ? ' z-20' : 'z-10'"
   >
     <div
-        class="block max-w-sm flex justify-between items-center px-4 py-2.5 hover:bg-zinc-200 animate relative"
+        class="block max-w-sm flex justify-between items-center px-4 py-2.5 hover:bg-zinc-200/50 animate relative"
         :class="!isOpenPopover && 'cursor-pointer '"
         @click="!isOpenPopover && redirectProfile"
     >

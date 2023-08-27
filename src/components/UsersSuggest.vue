@@ -34,9 +34,9 @@ const isOpenPopover = ref(false)
 const users = ref<IUser[]>([])
 
 onMounted(async () => {
-  const { data } = isLoggedIn ?
-      await userAPI.getUsers() :
-      await userAPI.unfollowedUsersList();
+  const { data } = isLoggedIn.value ?
+      await userAPI.unfollowedUsersList():
+      await userAPI.getUsers();
   users.value = data.users.map(user => ({ ...user, is_current_user_following: false }))
 })
 

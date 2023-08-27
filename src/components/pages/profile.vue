@@ -1,6 +1,10 @@
 <template>
-  <div v-if="!isLoading">
 
+  <div v-if="isLoading" class="flex-center min-h-[35vh]">
+    <Loading/>
+  </div>
+
+  <div v-else>
     <!--    Header-->
     <HeaderMini
         :title="!isUserNotExist ? user?.name : 'Profile' "
@@ -195,6 +199,7 @@ import { onMounted, ref } from "vue";
 import dayjs from 'dayjs';
 import { EnvelopeIcon, CalendarDaysIcon, MapPinIcon, LinkIcon, CakeIcon } from '@heroicons/vue/24/outline'
 
+import Loading from "@/core/components/Loading.vue";
 import Posts from "@/components/Posts.vue";
 import UpdateUserDialog from "@/components/dialog/UpdateUserDialog.vue";
 import { userAPI } from "@/apis/user";
@@ -245,7 +250,7 @@ async function getProfile() {
   if (data) {
     user.value = data.user
     user.value.created_at = dayjs(data.user.created_at).format('MMMM YYYY')
-    user.value.dob = dayjs(data.user.dob).format('DD MMMM YYYY')
+    user.value.dob = dayjs(data.user.dob).format('MMMM DD, YYYY')
     user.value.hostWebsite = data.user.website && data.user.website.includes('http') ? new URL(data.user.website).host : data.user.website
 
     if (getUser.value.id) {
@@ -267,7 +272,7 @@ async function unOrFollow() {
 
 const onUpdateProfile = (values) => {
   values.created_at = dayjs(values.created_at).format('MMMM YYYY')
-  values.dob = dayjs(values.dob).format('DD MMMM YYYY')
+  values.dob = dayjs(values.dob).format('MMMM DD  YYYY')
   values.hostWebsite = values.website && values.website.includes('http') ? new URL(values.website).host : values.website
   user.value = { ...user.value, ...values }
   keyPostsComp.value++
@@ -280,7 +285,7 @@ function changeTab(index) {
 }
 
 function redirect(name) {
-  localStorage.setItem('state', JSON.stringify(this.user))
+  localStorage.setItem('state', JSON.stringify(user.value))
   router.push({
     name,
     params: { username: currentRouteUsername, },
