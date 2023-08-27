@@ -6,6 +6,13 @@ export enum FILTER_POST_BY {
   FOLLOWING,
 }
 
+export enum FILTER_SEARCH {
+  TOP,
+  LATEST,
+  PEOPLE,
+  MEDIA,
+}
+
 export enum FILTER_USER_BY {
   DEFAULT,
   UNFOLLOW_CURRENT_USER,

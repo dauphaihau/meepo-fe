@@ -98,7 +98,7 @@ function openDialog() {
 
 
   <TransitionRoot appear :show="isOpenDialog" as="template">
-    <Dialog as="div" @close="closeDialog" class="relative z-10">
+    <Dialog as="div" @close="closeDialog" class="relative z-50">
       <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -127,7 +127,7 @@ function openDialog() {
                 <div class="flex flex-col bg-white">
                   <h1 class="text-2xl mb-4 text-black text-center">Create an account</h1>
                   <div class="flex flex-col gap-5 bg-white">
-                    <form @submit.prevent="validate" class="login-form">
+                    <form @submit.prevent="validate">
                       <Input
                           :disabled="isLoading"
                           :helper-text="isSubmitted ? errors.name : '' "
@@ -156,7 +156,6 @@ function openDialog() {
                           :helperText="isSubmitted ? errors.dob : '' "
                       />
                       <Button
-
                           :key="isLoading.toString()"
                           :isLoading="isLoading"
                           v-on:submit.prevent="validate"

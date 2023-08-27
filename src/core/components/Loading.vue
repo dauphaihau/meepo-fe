@@ -1,8 +1,10 @@
 <template>
-  <div role="status">
+  <div>
     <svg
         aria-hidden="true"
-        :class="cn('w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-black', classes)"
+        :class="cn( 'w-8 h-8 mr-2 text-zinc-300 animate-spin dark:text-zinc-600 fill-black',
+         `fill-${fill}`
+         ,classes )"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -24,10 +26,13 @@ import { cn } from '@/core/helper.js'
 
 interface Props {
   classes?: string
+  fill?: 'black' | 'white'
 }
 
 // @ts-ignore
-const { classes } = withDefaults(defineProps<Props>(), {})
+const { classes, fill } = withDefaults(defineProps<Props>(), {
+  fill: 'black'
+})
 </script>
 
 <style scoped>

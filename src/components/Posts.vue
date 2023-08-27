@@ -3,7 +3,7 @@
 
     <CreatePostForm
         v-if="isLoggedIn && !hideInput && !disabledComment"
-        @onCreatePost="onGetPosts"
+        @onCreatePost="onGetPosts('create')"
     />
 
     <div v-if="disabledComment" class="flex gap-4 m-5 px-3 py-3 bg-zinc-100 rounded-lg">
@@ -19,15 +19,18 @@
 
     </div>
 
+    <div v-if="isLoading && page_count === 1" class="flex-center min-h-[35vh]">
+      <Loading/>
+    </div>
+
     <!-- Posts -->
     <div
         :key="keyPosts"
         class="flex flex-col relative z-10"
         :class="{
-          'border-t' : !isFocus && currentRouteName === 'post',
+          'border-t': currentRouteName === 'post',
         }"
     >
-      <!--          'mt-[52px]' : isFocus-->
 
       <div v-for="post in posts" :key="post.id">
         <Post
@@ -38,12 +41,16 @@
         />
       </div>
     </div>
+
+    <div v-if="isLoading && page_count > 1 && !reachEndPage" class="flex-center min-h-[35vh]">
+      <Loading/>
+    </div>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from "vue-router";
 import { UserGroupIcon } from "@heroicons/vue/20/solid"
 import dayjs from "dayjs";
@@ -52,6 +59,7 @@ import isToday from "dayjs/plugin/isToday";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 
+import Loading from "@/core/components/Loading.vue";
 import { postAPI } from '@/apis/post'
 import Post from "@/components/Post.vue";
 import { mapGetters } from "@/lib/map-state";
@@ -97,34 +105,39 @@ interface IProps {
 
 const { hideInput, disabledComment, by, author } = defineProps<IProps>()
 
+const route = useRoute()
+const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
+
 const posts = ref([])
 const content = ref('')
 const isFocus = ref(false)
-const loading = ref(false)
+const isLoading = ref(false)
 const reachEndPage = ref(false)
 const page_count = ref(1)
 const disableInfinityScroll = ref(false)
 const keyPosts = ref(0)
 const perPage = 10
 
-const route = useRoute()
 const currentRouteName = route.name
 const username = route.params.username
 
-const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
-
 onMounted(() => {
   getPosts()
-  getNextPosts()
+  window.addEventListener("scroll", onScroll)
 })
 
-function getNextPosts() {
-  window.onscroll = () => {
-    const bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-    if (bottomOfWindow && !reachEndPage.value) {
-      page_count.value++
-      getPosts()
-    }
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", onScroll)
+})
+
+function onScroll() {
+  if (
+      window.scrollY + window.innerHeight >= (document.body.scrollHeight * 90 / 100) &&
+      !isLoading.value &&
+      !reachEndPage.value
+  ) {
+    page_count.value++
+    // getPosts()
   }
 }
 
@@ -134,7 +147,7 @@ type Params = {
 } & Partial<Pick<IPost, 'parent_id' | 'pin_status' | 'user_id'>>
 
 const getPosts = async () => {
-  loading.value = true
+  isLoading.value = true
 
   const payload: Params = {
     page: page_count.value,
@@ -164,9 +177,9 @@ const getPosts = async () => {
   }
 
   let { data } = await postAPI.list(payload, 'src/components/Posts.vue')
+  isLoading.value = false
 
   if (data.posts) {
-
     if (data.posts.length < perPage) {
       reachEndPage.value = true
     }
@@ -186,7 +199,6 @@ const getPosts = async () => {
 
     posts.value = [...posts.value, ...data.posts]
   }
-  loading.value = false
   disableInfinityScroll.value = false
 }
 

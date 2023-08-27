@@ -66,7 +66,7 @@
     </div>
 
     <!--     Toolbar + submit btn     -->
-    <div v-if="isFocus || currentRouteName === 'home'" class="pl-[70px] pr-6 border-b ">
+    <div v-if="isFocus || currentRouteName === 'home'" class="pl-[70px] pr-6 border-b">
       <div
           class="flex items-center justify-between gap-x-6 mb-2 w-full pt-2"
           :class="{'border-t': isFocus && currentRouteName === 'home'}"
@@ -118,6 +118,7 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
+import { toast } from "vue-sonner";
 
 const store = useStore()
 const route = useRoute()
@@ -188,6 +189,7 @@ const createPost = async () => {
   isLoading.value = false
 
   if (status === 201) {
+    toast('Your post was sent')
     emit('onCreatePost')
     content.value = ''
     fileImage.value = null

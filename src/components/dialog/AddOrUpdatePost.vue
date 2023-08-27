@@ -2,7 +2,8 @@
 import { ref, watch, nextTick, onMounted, onUpdated } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot, } from '@headlessui/vue'
 import { useRoute, useRouter } from "vue-router";
-import { CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon } from "@heroicons/vue/24/outline"
+import { CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon, } from "@heroicons/vue/24/outline"
+import { PencilIcon } from "@heroicons/vue/24/outline"
 import { toast } from "vue-sonner";
 
 import Input from "@/core/components/forms/Input.vue";
@@ -20,9 +21,10 @@ interface Props {
   showDialogFromProps?: boolean,
   hideTrigger?: boolean,
   dataPost?: IPost,
+  responsive?: boolean,
 }
 
-const { showDialogFromProps, hideTrigger, dataPost } = defineProps<Props>()
+const { showDialogFromProps, hideTrigger, dataPost, responsive } = defineProps<Props>()
 
 const store = useStore()
 const router = useRouter()
@@ -75,7 +77,6 @@ const createPost = async () => {
     payload.image_url = await uploadImage()
   }
 
-  logger.debug('execute postAPI.create', payload, 'src/components/dialog/AddOrUpdatePost.vue')
   const { status } = await postAPI.create(payload)
 
   if (status === 201) {
@@ -178,7 +179,15 @@ watch(content, () => {
 
 
 <template>
-  <Button v-if="!hideTrigger" size="md" class="w-2/3" @click="openDialog">Post</Button>
+  <div :class="responsive && 'hidden xl:block'">
+    <Button v-if="!hideTrigger" size="md" class="w-2/3" @click="openDialog">Post</Button>
+  </div>
+  <div v-if="responsive" class="xl:hidden relative cursor-pointer ml-[-3px]" @click="openDialog">
+    <!--    <PencilIcon class="h-20 w-20 rounded-full bg-zinc-300 text-white"/>-->
+    <PencilIcon class="h-[52px] p-4 absolute z-10 top-0 left-0 text-white"/>
+    <div class="bg-black z-[-1] absolute top-0 left-0 h-[52px] w-[52px] rounded-full"></div>
+  </div>
+
 
   <textarea
       ref="textareaRef"

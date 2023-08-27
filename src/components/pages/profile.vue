@@ -6,7 +6,7 @@
         :title="!isUserNotExist ? user?.name : 'Profile' "
         :subTitle="`${user?.posts_count ?? 0 } posts`"
     />
-    <div class="h-16"></div>
+    <div class="h-12"></div>
 
     <!--    Background-->
     <div class="bg-zinc-300 h-[198px]">
@@ -25,10 +25,10 @@
       <!--      Avatar, Edit user-->
       <div class="flex justify-between items-center">
 
-        <div v-if="user?.avatar_url" class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">
+        <div v-if="user.avatar_url" class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">
           <img
-              alt="preview-img"
-              :src="user?.avatar_url"
+              alt="avatar"
+              :src="user.avatar_url"
               class="h-[133.5px] w-[149px] rounded-full "
           />
         </div>
@@ -80,9 +80,10 @@
             </div>
           </div>
 
-          <div v-if="user?.bio">
-            {{ user.bio }}
-          </div>
+          <p
+              v-if="user?.bio"
+              v-html="formatTextWithHashTags(user.bio)"
+          />
 
           <!--          Location, Calendar-->
           <div class="flex flex-wrap gap-4 items-center">
@@ -151,6 +152,7 @@
             </div>
 
           </div>
+
         </div>
       </div>
     </div>
@@ -204,6 +206,7 @@ import { useStore } from "@/store";
 import Link from "@/core/components/Link.vue";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import HeaderMini from "@components/HeaderMini.vue";
+import { formatTextWithHashTags } from "@/core/helper";
 
 const route = useRoute()
 const router = useRouter()
@@ -243,7 +246,7 @@ async function getProfile() {
     user.value = data.user
     user.value.created_at = dayjs(data.user.created_at).format('MMMM YYYY')
     user.value.dob = dayjs(data.user.dob).format('DD MMMM YYYY')
-    user.value.hostWebsite = data.user.website.includes('http') ? new URL(data.user.website).host : data.user.website
+    user.value.hostWebsite = data.user.website && data.user.website.includes('http') ? new URL(data.user.website).host : data.user.website
 
     if (getUser.value.id) {
       isFollowing.value = data.user?.is_current_user_following
@@ -252,25 +255,22 @@ async function getProfile() {
 }
 
 async function unOrFollow() {
-  validateLogin()
+  if (!isLoggedIn.value) {
+    store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
+    return
+  }
   const { status } = isFollowing.value ? await userAPI.unfollow(user.value.id) : await userAPI.follow(user.value.id)
   if (status === 200) {
     isFollowing.value = !isFollowing.value
   }
 }
 
-function validateLogin() {
-  if (!isLoggedIn) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
-    return
-  }
-}
-
 const onUpdateProfile = (values) => {
   values.created_at = dayjs(values.created_at).format('MMMM YYYY')
   values.dob = dayjs(values.dob).format('DD MMMM YYYY')
-  values.hostWebsite = values.website.includes('http') ? new URL(values.website).host : values.website
+  values.hostWebsite = values.website && values.website.includes('http') ? new URL(values.website).host : values.website
   user.value = { ...user.value, ...values }
+  keyPostsComp.value++
 }
 
 function changeTab(index) {

@@ -85,7 +85,7 @@ interface Props {
 const { dataPost, classDotIcon } = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'onDeletePostChildComp', value: number): void,
+  (e: 'onDeletePostChildComp'): void,
   (e: 'onCloseMenu'): void
   (e: 'onPinPost'): void
 }>()
@@ -105,7 +105,7 @@ const onDelete = async () => {
   const { status } = await postAPI.delete(dataPost.id)
   if (status >= 200) {
     toast('Your post was deleted')
-    emit('onDeletePostChildComp', dataPost.id)
+    emit('onDeletePostChildComp')
   }
 }
 

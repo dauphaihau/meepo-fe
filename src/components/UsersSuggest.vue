@@ -3,36 +3,9 @@
     <h2 class="title">You might like</h2>
     <div>
       <!-- List of Users -->
-      <div class="mt-6 flex flex-col gap-4">
-        <div v-for="(user, index) in users" :key="user.id">
-          <div class="relative">
-
-            <router-link
-                :to="'/user/' + user.username"
-                class="block max-w-sm flex justify-between items-center hover:bg-zinc-200 px-3 py-2.5 cursor-pointer"
-            >
-              <div class="flex items-center gap-2">
-
-                <div>
-                  <div class="rounded-full h-10 w-10 bg-black col-span-1"/>
-                </div>
-
-                <div>
-                  <h5 class="text-[15px] font-bold text-zinc-900 dark:text-white">
-                    {{ user.name ?? '-' }}
-                  </h5>
-                  <p class="text-[15px] font-normal text-zinc-700 dark:text-zinc-400">@{{ user.username }}</p>
-                </div>
-              </div>
-            </router-link>
-            <div class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-72 z-30">
-              <ToggleFollowBtn
-                  :show="true"
-                  :isFollowing="user.is_current_user_following"
-                  @click="follow(user, index)"
-              />
-            </div>
-          </div>
+      <div class="mt-4 flex flex-col gap-4">
+        <div v-for="(user) in users" :key="user.id">
+          <UserSuggest :user="user"/>
         </div>
       </div>
     </div>
@@ -49,11 +22,15 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
+import UserPopper from "@components/UserPopper.vue";
+import User from "@components/User.vue";
+import UserSuggest from "@components/UserSuggest.vue";
 
 const store = useStore()
 const router = useRouter()
 
 const { isLoggedIn, getUser } = mapGetters();
+const isOpenPopover = ref(false)
 const users = ref<IUser[]>([])
 
 onMounted(async () => {
@@ -63,7 +40,7 @@ onMounted(async () => {
   users.value = data.users.map(user => ({ ...user, is_current_user_following: false }))
 })
 
-const follow = async (user: IUser, index) => {
+const unOrFollow = async (user: IUser, index) => {
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
@@ -72,6 +49,14 @@ const follow = async (user: IUser, index) => {
   if (status === 200) {
     users.value[index].is_current_user_following = !users.value[index].is_current_user_following
   }
+}
+
+const onOpenPopover = (val) => {
+  isOpenPopover.value = val
+}
+
+const redirectProfile = (user: IUser) => {
+  router.push('/user/' + user.username)
 }
 
 </script>
@@ -85,7 +70,7 @@ const follow = async (user: IUser, index) => {
 }
 
 .title {
-  @apply text-2xl font-black px-3;
+  @apply text-[22px] font-black px-4;
 }
 
 </style>

@@ -49,7 +49,11 @@
 
           <!--         Content post-->
           <div class="pb-4">
-            <div class="whitespace-pre-line">{{ post.content }}</div>
+<!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
+            <p
+                class="whitespace-pre-line"
+                v-html="formatTextWithHashTags(post.content)"
+            ></p>
             <img
                 v-if="post.image_url"
                 v-bind:src="post.image_url"
@@ -162,6 +166,7 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMini from "@components/HeaderMini.vue";
+import { formatTextWithHashTags } from "@/core/helper";
 
 const router = useRouter()
 const route = useRoute()

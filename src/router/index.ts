@@ -3,6 +3,8 @@ import Home from "@/components/pages/home.vue";
 import Post from "@/components/pages/post.vue";
 import Profile from "@/components/pages/profile.vue";
 import Follow from "@/components/pages/follow.vue";
+import Search from "@/components/pages/search.vue";
+import Explore from "@/components/pages/explore.vue";
 import Test from "@/components/pages/test.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -37,6 +39,17 @@ const routes: Array<RouteRecordRaw> = [
     name: 'followers',
     component: Follow,
     props: true
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: Search,
+    props: true
+  },
+  {
+    path: '/explore',
+    name: 'explore',
+    component: Explore,
   },
 ]
 

@@ -132,8 +132,13 @@ const openRegisterDialog = () => {
                           type="password"
                           :helper-text=" isSubmitted ? errors.password : '' "
                       />
-                      <p class="text-sm text-right mb-4 underline underline-offset-2 text-gray-700 cursor-pointer"> Forgot
-                        password? </p>
+                      <div class=" flex justify-end">
+                        <p
+                            v-tooltip="'Not available'"
+                            class="text-sm mb-4 underline underline-offset-2 text-gray-700 cursor-pointer"
+                        > Forgot
+                          password? </p>
+                      </div>
                       <Button
                           :key="isLoading.toString()"
                           :isLoading="isLoading"

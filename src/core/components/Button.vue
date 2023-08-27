@@ -6,7 +6,11 @@
       )"
       v-bind="$attrs"
   >
-    <Loading v-if="isLoading" classes="w-3.5 h-3.5"/>
+    <Loading
+        v-if="isLoading"
+        classes="w-3.5 h-3.5"
+        :fill="variant === 'primary' ? 'white': 'black' "
+    />
     <slot></slot>
   </button>
 </template>

@@ -70,11 +70,10 @@ const days = ref([])
 const years = ref([])
 
 onBeforeMount(() => {
-  console.log('dauphaihau debug: model-value', modelValue)
   if (modelValue) {
-    // console.log('dauphaihau debug: user', user.dob)
     const dobSplited = modelValue.split(' ')
     dob.value = {
+      // remove prefix 0 ( e.g 01, 02, 03, .. )
       day: dobSplited[0].charAt(0) === '0' ? dobSplited[0].charAt(1) : dobSplited[0],
       month: dobSplited[1],
       year: dobSplited[2],
@@ -99,6 +98,8 @@ onBeforeMount(() => {
   days.value = new Array(31).fill("").map((_, i) => ({
     name: (i + 1).toString()
   }));
+
+  console.log('dauphaihau debug: days-value', days.value)
 
   years.value = new Array(43).fill("").map((_, i) => ({
     name: (1980 + i + 1).toString()
@@ -137,15 +138,15 @@ const onChangeSelect = (option: {name: string, value: string}) => {
 
 
 <style scoped>
-/*disabled:bg-gray-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
+/*disabled:bg-zinc-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
 
 .label {
-  @apply block text-sm font-medium leading-6 text-gray-900;
+  @apply block text-sm font-medium leading-6 text-zinc-900;
 }
 
 .input {
   @apply block flex-1 border-0 border-none bg-transparent  pl-1 pr-2
-  text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none sm:text-sm sm:leading-6;
+  text-zinc-900 placeholder:text-zinc-400 focus:ring-0 focus:outline-none sm:text-sm sm:leading-6;
 }
 
 </style>

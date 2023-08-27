@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 // @ts-nocheck
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import {
   Listbox,
   ListboxButton,
@@ -114,6 +114,7 @@ onBeforeMount(() => {
 
   if (placeholder) {
     data.unshift({ name: placeholder })
+    console.log('dauphaihau debug: data', data)
     selectedOption.value = data[0]
   }
 })

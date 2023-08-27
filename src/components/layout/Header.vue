@@ -1,19 +1,17 @@
 <template>
   <header class="header">
     <nav class="nav" aria-label="Global">
-<!--      <div class="col-span-1">-->
-      <div class="">
+      <div class="w-[275px] xl:w-[241px]">
         <router-link to="/" class="flex gap-1 items-center  h-full w-fit 2xl:pl-2">
           <img class="h-10 w-auto" src="../../assets/logo.png" alt=""/>
           <span class="text-xl font-bold text-black">Meepo</span>
         </router-link>
       </div>
 
-<!--      <div class="col-span-1 lg:hidden">-->
       <div class="lg:hidden">
         <button
             type="button"
-            class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-zinc-700"
             @click="mobileMenuOpen = true"
         >
           <span class="sr-only">Open main menu</span>
@@ -22,9 +20,13 @@
       </div>
 
       <!--      Search bar-->
-      <div class="col-span-3"></div>
+      <SearchAll
+          v-if="routerIsReady"
+          :query="query"
+          @changeRoute="changeRoute"
+          :key="keySearchAllComp"
+      />
 
-<!--      <div class="hidden lg:block col-span-1 lg:flex lg:flex-1 lg:justify-end items-center">-->
       <div class="hidden lg:block lg:flex lg:flex-1 lg:justify-end items-center">
 
         <LoginDialog v-if="!isLoggedIn"/>
@@ -33,8 +35,15 @@
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
           <div>
             <MenuButton>
-              <div class="h-8 w-8 bg-zinc-300 flex justify-center items-center rounded-full cursor-pointer text-black">
-                {{ getUser.name ? getUser.name.charAt(0).toUpperCase() : '' }}
+              <div class="flex gap-2 hover:bg-zinc-300 py-1 pl-1 pr-3 rounded-full">
+                <div class="h-10 w-10 bg-zinc-200 flex justify-center items-center rounded-full cursor-pointer text-black">
+                  {{ getUser.name ? getUser.name.charAt(0).toUpperCase() : '' }}
+                </div>
+                <div class="text-left max-w-[150px]">
+                  <h3 class="text-[13px] font-bold text-zinc-900 overflow-hidden text-ellipsis whitespace-nowrap">
+                    {{ getUser?.name }}</h3>
+                  <p class="max-w-2xl text-sm text-zinc-500 overflow-hidden text-ellipsis">@{{ getUser?.username }}</p>
+                </div>
               </div>
             </MenuButton>
           </div>
@@ -56,26 +65,27 @@
                 <MenuItem v-slot="{ active }">
                   <a
                       href="#"
-                      :class="[active ? 'bg-gray-100 text-gray-900 rounded-tl-md rounded-tr-md' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                      :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-tl-md rounded-tr-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
                   >Account settings</a>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <a
                       href="#"
-                      :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                      :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
                   >Support</a>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <a
                       href="#"
-                      :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                      :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
                   >License</a>
                 </MenuItem>
 
                 <MenuItem v-slot="{ active }">
                   <span
+                      class="cursor-pointer"
                       @click="logout"
-                      :class="[active ? 'bg-gray-100 text-gray-900 rounded-bl-md rounded-br-md' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                      :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-bl-md rounded-br-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
                   >Logout</span>
                 </MenuItem>
               </div>
@@ -88,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 
 import { Bars3Icon, } from '@heroicons/vue/24/outline'
@@ -97,11 +107,35 @@ import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
 import { ActionEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { mapGetters } from "@/lib/map-state";
+import SearchAll from "@components/layout/SearchBar.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const store = useStore()
+const route = useRoute()
+const router = useRouter()
+
 const { isLoggedIn, getUser } = mapGetters()
 
 const mobileMenuOpen = ref(false)
+const routerIsReady = ref(false)
+const keySearchAllComp = ref(0)
+const query = ref('')
+
+onMounted(async () => {
+  await router.isReady()
+  routerIsReady.value = true
+
+  if (route.query?.q) {
+    query.value = route.query.q as string
+  }
+})
+
+const changeRoute = (value) => {
+  if (value) {
+    query.value = value
+  }
+  keySearchAllComp.value++
+}
 
 const logout = () => store.dispatch(ActionEnums.LOGOUT)
 

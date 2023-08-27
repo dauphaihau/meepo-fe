@@ -1,6 +1,6 @@
 <template>
   <div
-      class="flex justify-end gap-2 h-[180vh] pt-5 pb-20 max-w-[350px] relative"
+      class="flex justify-end gap-2 h-[180vh] pt-8 pb-20 max-w-[350px] relative"
       ref="refSb"
   >
 
@@ -13,7 +13,7 @@
 
       <PhotosProfile v-if="showPhotoComp"/>
       <Users/>
-      <Trends/>
+      <Trends v-if="route.name !== 'explore'"/>
     </div>
 
   </div>
@@ -24,7 +24,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import PhotosProfile from "@/components/PhotosProfile.vue";
-import Users from "@components/Users.vue";
+import Users from "@components/UsersSuggest.vue";
 import Trends from "@components/Trends.vue";
 
 const router = useRouter()

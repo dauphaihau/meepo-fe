@@ -1,12 +1,21 @@
 import { apiHelper } from "@/lib/axios";
 import axios from "axios";
+import { IUser } from "@/types/user";
+import { IPost } from "@/types/post";
+
+type ResponseSearchAll = {
+  users: IUser[]
+  posts: IPost[]
+  posts_trending: IPost[]
+}
 
 export const commonAPI = {
-  searchAll(value) {
-    if (value) {
-      return apiHelper.get(`/search?q=${value}`);
+  searchAll(queries) {
+    if (queries) {
+      const queriesString = new URLSearchParams(queries);
+      return apiHelper.get<ResponseSearchAll>(`/search?${queriesString}`);
     }
-    return apiHelper.get(`/search`);
+    return apiHelper.get<ResponseSearchAll>(`/search`);
   },
   async uploadImage(fileImage) {
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME

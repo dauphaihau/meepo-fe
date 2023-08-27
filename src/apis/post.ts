@@ -3,12 +3,8 @@ import { IHashtag, IPost } from "@/types/post";
 
 export const postAPI = {
   list(payload, whereSrcRequest?: string) {
-    const url = new URL("https://example.com/posts");
-    let params = new URLSearchParams(url.search);
-    Object.keys(payload).forEach((key) => {
-      params.set(key, payload[key])
-    })
-    const path = `/posts?${params}`;
+    const queriesString = new URLSearchParams(payload);
+    const path = `/posts?${queriesString}`;
     return apiHelper.get<{posts: IPost[]}>(path)
     // return apiHelper.get<{posts: IPost[]}>(path, {whereSrcRequest})
   },
@@ -16,10 +12,11 @@ export const postAPI = {
     return apiHelper.get<{post: IPost}>(`/posts/${id}`)
   },
   create(values) {
-    const hashtags = values.content.split(' ').filter(v => v.startsWith('#'))
-    if (hashtags.length) {
-      values.hashtags = hashtags
+    const hashtags = values.content && values.content.match(/#\w+/g)
+    if (hashtags && hashtags.length) {
+      values.hashtags = hashtags.map(v => v.replace('#', ''))
     }
+
     return apiHelper.post('/posts', values)
   },
   update(id, payload) {

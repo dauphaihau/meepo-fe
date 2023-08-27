@@ -46,3 +46,14 @@ export class logger {
     console.table(`[${getTime()}]-[TABLE]-[${filePath}:${line ?? ''}]: \n`, content);
   }
 }
+
+export function formatTextWithHashTags(text) {
+  return text.replace(/#\w+/g, '<router-link class="text-[#4a99e9] hover:underline hover:underline-offset-2 cursor-pointer" to="/">$&</router-link>');
+}
+
+export const mapKeyEnum = (enumObj) => {
+  return Object.keys(enumObj)
+  .filter((v) => isNaN(Number(v)))
+}
+
+export const toUpperCaseFirstL = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()

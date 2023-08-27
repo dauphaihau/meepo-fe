@@ -1,127 +1,153 @@
 <template>
-  <div>
-    <div class="flex flex-col gap-4 relative">
-      <!--      <div class="relative block p-6 bg-white border border-gray-200 rounded-lg shadow flex flex-col gap-4">-->
+  <div
+      class="flex flex-col gap-4 relative"
+      @mouseover="isHover = true"
+      @mouseleave="isHover = false"
+      :class="isHover ? ' z-20' : 'z-10'"
+  >
+    <div
+        class="block px-4 py-3 bg-white border-b flex flex-col animate hover:bg-zinc-100"
+        :class="!isOpenPopover && 'cursor-pointer'"
+        @click="!isOpenPopover && clickDetailPost('post')"
+    >
 
+      <!--         Pin Post-->
       <div
-          @click="handleClickDetailPost('post')"
-          class="block px-4 py-3 bg-white border-b flex flex-col cursor-pointer hover:bg-zinc-100"
+          v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
+          class="flex gap-3 items-center  text-gray-500 mb-1 ml-[30px]"
       >
+        <StarIcon class="h-4 w-4"/>
+        <p class="font-semibold text-[13px]">Pinned Post</p>
+      </div>
 
-        <!--         Pin Post-->
-        <div
-            v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
-            class="flex gap-3 items-center  text-gray-500 mb-1 ml-[30px]"
-        >
-          <StarIcon class="h-4 w-4"/>
-          <p class="font-semibold text-[13px]">Pinned Post</p>
+      <div class="flex flex-row">
+
+        <!--          Avatar-->
+        <div class="mr-4 basis-11" v-if="dataPost.author_avatar_url">
+          <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+            <div class="before:absolute">
+              <img
+                  alt="avatar"
+                  v-bind:src="dataPost.author_avatar_url"
+                  @click="redirectProfile"
+                  class="rounded-full h-10 w-10 bg-black "
+              />
+            </div>
+          </UserPopper>
+        </div>
+        <div class="mr-4 basis-11" v-else>
+          <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+            <div class=" before:absolute">
+              <div @click="redirectProfile" class="rounded-full h-10 w-10 bg-black"/>
+            </div>
+          </UserPopper>
         </div>
 
-        <div class="flex flex-row">
-          <!--          Avatar-->
-          <div class="mr-4 basis-11">
-            <img
-                alt="avatar"
-                v-if="dataPost.author_avatar"
-                v-bind:src="dataPost.author_avatar"
-                @click="handleClickDetailPost('user')"
-                class="rounded-full h-10 w-10 bg-black"
-            />
-            <!--          <div v-else @click="handleClickDetailPost('user')" class="rounded-full h-10 w-10 bg-black col-span-1"/>-->
-            <div v-else @click="handleClickDetailPost('user')" class="rounded-full h-10 w-10 bg-black"/>
+
+        <div class="w-full">
+          <div class="flex justify-between">
+            <!--              info author-->
+            <div class="flex gap-2 text-[15px]">
+
+              <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+                <div
+                    @click="redirectProfile"
+                    class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
+                >
+                  {{ dataPost.author_name }}
+                </div>
+              </UserPopper>
+
+              <div class="text-zinc-500 inline-flex gap-1">
+                <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+                  <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>
+                </UserPopper>
+                · {{ dataPost.time }}
+              </div>
+            </div>
+
           </div>
 
-          <div class="w-full">
-            <div class="flex justify-between">
-              <!--              info author-->
-              <div @click="handleClickDetailPost('user')" class="flex gap-2 text-[15px]">
-                <div class="font-bold text-black hover:underline hover:underline-offset-2">{{
-                    dataPost.author_name
-                  }}
-                </div>
-                <div class="text-zinc-500">@{{ dataPost.author_username }} · {{ dataPost.time }}</div>
-              </div>
 
+          <!--         Content post   -->
+          <!--            <p class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
+          <!--              {{ dataPost.content }}-->
+          <!--            </p>-->
+          <p
+              class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5"
+              v-html="formatTextWithHashTags(dataPost.content)"
+          />
+
+          <img
+              v-if="dataPost.image_url"
+              v-bind:src="dataPost.image_url"
+              alt=""
+              class="rounded-xl my-4 w-full h-auto"
+          >
+
+          <!--              Statistic post ( likes, comment, .. ) -->
+          <div class="flex gap-8 -ml-[9px]">
+
+            <!--              Comments-->
+            <div class="flex items-center gap-1 group">
+              <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                <ChatBubbleOvalLeftEllipsisIcon
+                    v-if="dataPost.sub_posts_count > 0"
+                    @click="router.push('/posts/' + dataPost.id)"
+                    class="text-gray-500 h-5 w-5 cursor-pointer"
+                />
+                <ChatBubbleOvalLeftIcon
+                    v-else
+                    @click="router.push('/posts/' + dataPost.id)"
+                    class="text-gray-500 h-5 w-5 cursor-pointer"
+                />
+
+              </div>
+              <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
             </div>
 
+            <!--              Likes -->
+            <div class="flex items-center gap-2 group">
+              <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
+                <!--                <div class='cursor-pointer flex items-center gap-1 relative z-[9999]' @click="likePost">-->
 
-            <!--         Content post   -->
-            <p class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5">
-              {{ dataPost.content }}
-            </p>
-
-            <img
-                v-if="dataPost.image_url"
-                v-bind:src="dataPost.image_url"
-                alt=""
-                class="rounded-xl my-4 w-full h-auto"
-            >
-
-            <!--              Statistic post ( likes, comment, .. ) -->
-            <div class="flex gap-8 -ml-[9px]">
-
-              <!--              Comments-->
-              <div class="flex items-center gap-1 group">
-                <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                  <ChatBubbleOvalLeftEllipsisIcon
-                      v-if="dataPost.sub_posts_count > 0"
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-gray-500 h-5 w-5 cursor-pointer"
-                  />
-                  <ChatBubbleOvalLeftIcon
-                      v-else
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-gray-500 h-5 w-5 cursor-pointer"
-                  />
-
+                <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                  <HeartIconSolid class="text-gray-500 h-5 w-5 cursor-pointer"/>
                 </div>
-                <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
-              </div>
-
-              <!--              Likes -->
-              <div class="flex items-center gap-2 group">
-                <div class='cursor-pointer flex items-center gap-1' @click="handleClickDetailPost('likePost')">
-
-                  <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIconSolid class="text-gray-500 h-5 w-5 cursor-pointer"/>
-                  </div>
-                  <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIcon class="text-gray-500 h-5 w-5 cursor-pointer"/>
-                  </div>
-
-                  <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
+                <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                  <HeartIcon class="text-gray-500 h-5 w-5 cursor-pointer"/>
                 </div>
+
+                <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
               </div>
             </div>
+
           </div>
         </div>
       </div>
-
-
-      <div
-          class="absolute top-3.5 right-5 h-5"
-          :class="openMenu ? 'z-20' : 'z-10' "
-          @click="openMenu = true"
-      >
-        <OptionsPost
-            v-if="getUser.id === dataPost.user_id"
-            @onDeletePostChildComp="onDeletePostChildComp"
-            @onPinPost="onPinPost"
-            @onCloseMenu="onCloseMenu"
-            :key="keyOptionsPost"
-            :dataPost="dataPost"
-        />
-      </div>
-
     </div>
-  </div>
 
+    <div
+        class="absolute top-3.5 right-5 h-5"
+        :class="openMenu ? 'z-20' : 'z-10' "
+        @click="openMenu = true"
+    >
+      <OptionsPost
+          v-if="getUser.id === dataPost.user_id"
+          @onDeletePostChildComp="onDeletePostChildComp"
+          @onPinPost="onPinPost"
+          @onCloseMenu="onCloseMenu"
+          :key="keyOptionsPost"
+          :dataPost="dataPost"
+      />
+    </div>
+
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
-import dayjs from "dayjs";
 
 import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
@@ -131,26 +157,8 @@ import { IPost, PIN_STATUS } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { postAPI } from "@/apis/post";
-
-// Unresolved function or method updateLocale()
-// @ts-ignore
-dayjs.updateLocale('en', {
-  relativeTime: {
-    future: "in %s",
-    past: "%s",
-    s: '1s',
-    m: "1m",
-    mm: "%dm",
-    h: "h",
-    hh: "%dh",
-    d: "a day",
-    dd: "%d days",
-    M: "a month",
-    MM: "%d months",
-    y: "a year",
-    yy: "%d years"
-  }
-})
+import UserPopper from "@components/UserPopper.vue";
+import { formatTextWithHashTags } from "@/core/helper";
 
 interface Props {
   dataPost: IPost & {time: string},
@@ -163,10 +171,16 @@ const router = useRouter()
 const store = useStore()
 
 const { isLoggedIn, getUser } = mapGetters()
-const emit = defineEmits(['onDeletePost', 'onPinPost'])
+
+const emit = defineEmits<{
+  (e: 'onDeletePost'): void,
+  (e: 'onPinPost'): void
+}>()
 
 const guid = ref('')
 const isLike = ref(false)
+const isHover = ref(false)
+const isOpenPopover = ref(false)
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
 const keyOptionsPost = ref(0)
@@ -174,6 +188,10 @@ const redirecting = ref('')
 const openMenu = ref(false)
 
 const currentRouteName = route.name
+
+const onOpenPopover = (val) => {
+  isOpenPopover.value = val
+}
 
 onBeforeMount(() => {
   if (isLoggedIn.value) {
@@ -241,12 +259,12 @@ onBeforeMount(() => {
 //
 // };
 
-const onDeletePostChildComp = (value) => {
-  emit('onDeletePost', value)
+const onDeletePostChildComp = () => {
+  emit('onDeletePost')
 }
 
-const onPinPost = (value) => {
-  emit('onPinPost', value)
+const onPinPost = () => {
+  emit('onPinPost')
 }
 
 const likePost = async () => {
@@ -278,15 +296,11 @@ const likePost = async () => {
 
 }
 
-const handleClickDetailPost = (type = '') => {
+const clickDetailPost = (type = '') => {
 
   switch (type) {
     case 'options':
       redirecting.value = type
-      break
-    case 'user':
-      redirecting.value = type
-      router.push('/user/' + dataPost.author_username)
       break
     case 'likePost':
       redirecting.value = type
@@ -297,6 +311,10 @@ const handleClickDetailPost = (type = '') => {
   if (!redirecting.value && type === 'post') {
     router.push('/posts/' + dataPost.id)
   }
+}
+
+const redirectProfile = () => {
+  router.push('/user/' + dataPost.author_username)
 }
 
 const onCloseMenu = () => {

@@ -17,7 +17,7 @@ let localAuthToken = localStorage.auth_token;
 let tokenExists = localAuthToken !== "undefined" && localAuthToken !== null;
 if (tokenExists) {
   const auth_token = localStorage.getItem("auth_token");
-  const authTokenExists = auth_token !== "undefined";
+  const authTokenExists = auth_token !== "undefined" && auth_token !== null;
   if (authTokenExists) {
     store.dispatch(ActionEnums.LOGIN_WITH_TOKEN);
   }

@@ -30,7 +30,7 @@ export interface IPost {
   created_at: Date
   updated_at: Date
   is_current_user_like?: boolean
-  author_avatar?: string
+  author_avatar_url?: string
   author_name?: string
   author_username?: string
   is_current_user_can_comment?: boolean

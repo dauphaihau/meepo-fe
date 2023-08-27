@@ -15,4 +15,7 @@ export interface IUser {
   followers_count?: number
   followed_count?: number
   is_current_user_following?: boolean
+  author_followers_count?: number
+  author_followed_count?: number
+  author_avatar_url?: string
 }

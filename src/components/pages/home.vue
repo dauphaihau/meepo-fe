@@ -2,26 +2,6 @@
   <div class="">
 
     <!--    Header-->
-    <!--    <div class="header-mini">-->
-    <!--      <div v-if="isLoggedIn" class="grid grid-cols-2">-->
-    <!--        <div v-for="tab of tabs">-->
-    <!--          <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">-->
-    <!--            <div-->
-    <!--                class="font-semibold"-->
-    <!--                :class="tab.id === currentTab ? 'text-black' : 'text-gray-500' "-->
-    <!--            >{{ tab.name }}-->
-    <!--            </div>-->
-    <!--            <div v-if="tab.id === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      -->
-    <!--      <div v-else class="p-4 h-14">-->
-    <!--        <h3 class="text-xl font-bold">Home</h3>-->
-    <!--      </div>-->
-    <!--      -->
-    <!--    </div>-->
-
     <HeaderMini v-if="isLoggedIn">
       <template v-slot:tabs>
         <div class="grid grid-cols-2">
@@ -42,9 +22,8 @@
     <Posts
         :by="currentTab"
         :key="keyPostsComp"
-        class="pt-16"
+        :class="isLoggedIn ? 'pt-16': 'pt-[15px]'"
     />
-<!--        class="pt-[10px]"-->
   </div>
 </template>
 
