@@ -158,11 +158,17 @@ function openModal() {
 
                     <!--                    Avatar-->
                     <div class="mb-2 relative  h-fit w-fit">
-                      <div v-if="!urlImage" class="bg-black h-[112px] w-[112px] rounded-full "/>
+<!--                      <div v-if="!urlImage" class="bg-black h-[112px] w-[112px] rounded-full "/>-->
+                      <img
+                          v-if="urlImage"
+                          alt="preview-img"
+                          :src="urlImage"
+                          class='h-[112px] w-[112px] rounded-full ring-[5px] ring-white'
+                      />
                       <img
                           v-else
                           alt="preview-img"
-                          :src="urlImage"
+                          src="@/assets/default-avatar.png"
                           class='h-[112px] w-[112px] rounded-full ring-[5px] ring-white'
                       />
                       <input

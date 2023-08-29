@@ -1,104 +1,168 @@
-<!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
+
 <template>
-  <div id="app">
-    <div class="group relative flex rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 mt-12 mx-12">
-      <div class="pointer-events-none">
-
-        <div class="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
-          <svg
-              aria-hidden="true"
-              class="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-black/[0.02] stroke-black/5 dark:fill-white/1 dark:stroke-white/2.5"
-          >
-            <defs>
-              <pattern id=":R5ahdcqla:" width="72" height="56" patternUnits="userSpaceOnUse" x="50%" y="-6">
-                <path d="M.5 56V.5H72" fill="none"></path>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" stroke-width="0" fill="url(#:R5ahdcqla:)"></rect>
-            <svg x="50%" y="-6" class="overflow-visible">
-              <rect stroke-width="0" width="73" height="57" x="-72" y="112"></rect>
-              <rect stroke-width="0" width="73" height="57" x="72" y="168"></rect>
-            </svg>
-          </svg>
-        </div>
-
-<!--            class="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#D7EDEA] to-[#F4FBDF] opacity-0 transition duration-300 group-hover:opacity-100 dark:from-[#202D2E] dark:to-[#303428]"-->
-        <div
-            class="absolute inset-0 rounded-2xl bg-gradient-to-r from-zinc-100 to-zinc-200 opacity-0 transition duration-300 group-hover:opacity-100 dark:from-[#202D2E] dark:to-[#303428]"
-            style="mask-image: radial-gradient(180px at 200.5px 69px, white, transparent);"
+  <div class="">
+    <Popover v-slot="{ open }" class="relative">
+      <PopoverButton
+          :class="open ? '' : 'text-opacity-90'"
+          class="group inline-flex items-center rounded-md bg-orange-700 px-3 py-2 text-base font-medium text-white hover:text-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+      >
+        <span>Solutions</span>
+        <ChevronDownIcon
+            :class="open ? '' : 'text-opacity-70'"
+            class="ml-2 h-5 w-5 text-orange-300 transition duration-150 ease-in-out group-hover:text-opacity-80"
+            aria-hidden="true"
         />
-
-        <div
-            class="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay transition duration-300 group-hover:opacity-100"
-            style="mask-image: radial-gradient(180px at 200.5px 69px, white, transparent);"
+      </PopoverButton>
+      <PopoverOverlay class="fixed inset-0" />
+<!--      <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
+      <transition
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="translate-y-1 opacity-0"
+          enter-to-class="translate-y-0 opacity-100"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="translate-y-0 opacity-100"
+          leave-to-class="translate-y-1 opacity-0"
+      >
+        <PopoverPanel
+            class="absolute left-1/2 z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"
         >
-          <svg
-              aria-hidden="true"
-              class="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-black/50 stroke-black/70 dark:fill-white/2.5 dark:stroke-white/10"
+          <div
+              class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
           >
-            <defs>
-              <pattern id=":R1dahdcqla:" width="72" height="56" patternUnits="userSpaceOnUse" x="50%" y="-6">
-                <path d="M.5 56V.5H72" fill="none"></path>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" stroke-width="0" fill="url(#:R1dahdcqla:)"></rect>
-            <svg x="50%" y="-6" class="overflow-visible">
-              <rect stroke-width="0" width="73" height="57" x="-72" y="112"></rect>
-              <rect stroke-width="0" width="73" height="57" x="72" y="168"></rect>
-            </svg>
-          </svg>
-        </div>
-      </div>
-
-      <div class="absolute inset-0 rounded-2xl ring-zinc-900/5 ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20"/>
-
-
-      <div class="relative rounded-2xl px-4 pb-4 pt-16">
-        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-emerald-300/10 dark:group-hover:ring-emerald-400">
-          <svg
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-              class="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400"
-          >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M10 16.5c4.142 0 7.5-3.134 7.5-7s-3.358-7-7.5-7c-4.142 0-7.5 3.134-7.5 7 0 1.941.846 3.698 2.214 4.966L3.5 17.5c2.231 0 3.633-.553 4.513-1.248A8.014 8.014 0 0 0 10 16.5Z"
-            ></path>
-            <path fill="none" stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.5h5M8.5 11.5h3"></path>
-          </svg>
-        </div>
-        <h3 class="mt-4 text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
-          <a href="/conversations"><span class="absolute inset-0 rounded-2xl">
-           </span>Conversations
-          </a>
-        </h3>
-        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Learn about the conversation model and how to create,
-          retrieve, update, delete, and list conversations.</p></div>
-
-    </div>
-
+            <div class="relative grid gap-8 bg-white p-7 lg:grid-cols-2">
+              <a
+                  v-for="item in solutions"
+                  :key="item.name"
+                  :href="item.href"
+                  class="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+              >
+                <div
+                    class="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12"
+                >
+                  <div v-html="item.icon"></div>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ item.name }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ item.description }}
+                  </p>
+                </div>
+              </a>
+            </div>
+            <div class="bg-gray-50 p-4">
+              <a
+                  href="##"
+                  class="flow-root rounded-md px-2 py-2 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+              >
+                <span class="flex items-center">
+                  <span class="text-sm font-medium text-gray-900">
+                    Documentation
+                  </span>
+                </span>
+                <span class="block text-sm text-gray-500">
+                  Start integrating products and tools
+                </span>
+              </a>
+            </div>
+          </div>
+        </PopoverPanel>
+      </transition>
+    </Popover>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      countries: ['Argentina', 'Brazil', 'Mexico', 'chile', 'United States', 'Canada', 'Germany', 'Spain']
-    };
-  },
-  methods: {
-    onScroll(e) {
-      const { scrollTop, offsetHeight, scrollHeight } = e.target
-      if ((scrollTop + offsetHeight) >= scrollHeight) {
-        console.log('bottom!')
-      }
-    }
-  }
-};
-</script>
+<script setup>
+import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
+import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 
-<!-- Use preprocessors via the lang attribute! e.g. <style lang="scss"> -->
-<style>
-</style>
+const solutions = [
+  {
+    name: 'Insights',
+    description: 'Measure actions your users take',
+    href: '##',
+    icon: `
+      <svg
+        width="48"
+        height="48"
+        viewBox="0 0 48 48"
+        fill="none"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="48" height="48" rx="8" fill="#FFEDD5" />
+        <path
+          d="M24 11L35.2583 17.5V30.5L24 37L12.7417 30.5V17.5L24 11Z"
+          stroke="#FB923C"
+          stroke-width="2"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M16.7417 19.8094V28.1906L24 32.3812L31.2584 28.1906V19.8094L24 15.6188L16.7417 19.8094Z"
+          stroke="#FDBA74"
+          stroke-width="2"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M20.7417 22.1196V25.882L24 27.7632L27.2584 25.882V22.1196L24 20.2384L20.7417 22.1196Z"
+          stroke="#FDBA74"
+          stroke-width="2"
+        />
+      </svg>
+    `,
+  },
+  {
+    name: 'Automations',
+    description: 'Create your own targeted content',
+    href: '##',
+    icon: `
+      <svg
+        width="48"
+        height="48"
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="48" height="48" rx="8" fill="#FFEDD5" />
+        <path
+          d="M28.0413 20L23.9998 13L19.9585 20M32.0828 27.0001L36.1242 34H28.0415M19.9585 34H11.8755L15.9171 27"
+          stroke="#FB923C"
+          stroke-width="2"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M18.804 30H29.1963L24.0001 21L18.804 30Z"
+          stroke="#FDBA74"
+          stroke-width="2"
+        />
+      </svg>
+    `,
+  },
+  {
+    name: 'Reports',
+    description: 'Keep track of your growth',
+    href: '##',
+    icon: `
+      <svg
+        width="48"
+        height="48"
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="48" height="48" rx="8" fill="#FFEDD5" />
+        <rect x="13" y="32" width="2" height="4" fill="#FDBA74" />
+        <rect x="17" y="28" width="2" height="8" fill="#FDBA74" />
+        <rect x="21" y="24" width="2" height="12" fill="#FDBA74" />
+        <rect x="25" y="20" width="2" height="16" fill="#FDBA74" />
+        <rect x="29" y="16" width="2" height="20" fill="#FB923C" />
+        <rect x="33" y="12" width="2" height="24" fill="#FB923C" />
+      </svg>
+    `,
+  },
+]
+</script>

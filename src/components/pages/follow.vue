@@ -27,7 +27,7 @@
       </div>
     </template>
   </HeaderMini>
-  <div class="h-[121px]"></div>
+  <div class="h-[126px]"></div>
 
   <!--  Users-->
   <div v-for="(user) of users">

@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { FILTER_POST_BY } from "@/config/const";
 import { postAPI } from "@/apis/post";
 
@@ -103,7 +103,6 @@ let currentRouteName
 let currentRouteUsername
 
 onMounted(async () => {
-
   await router.isReady();
   await getPosts()
 })
@@ -125,6 +124,12 @@ const getPosts = async () => {
   posts.value = data.posts
   isLoading.value = false
 }
+
+watch(router.currentRoute, () => {
+  if (route.name === 'profile') {
+    getPosts()
+  }
+})
 
 </script>
 

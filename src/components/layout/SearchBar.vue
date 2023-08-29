@@ -1,12 +1,13 @@
 <template>
   <div class="top-16 w-[656px]">
-    <Combobox v-model="selected">
+    <Combobox v-model="selected" v-slot="{open}">
       <div class="relative mt-1">
         <div
             class="wrapper-input group"
             :class="{
               '!bg-white': isFocus,
               'rounded-full': !isFocus || storedSearches.length === 0 && people.length === 0 && !query,
+              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0),
               'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),
           }"
         >
@@ -16,21 +17,24 @@
               @focus="handleFocus"
               @focusout="isFocus = false"
               class="input group-hover:bg-white animate w-[570px]"
+              :class="{'!bg-white': isFocus, 'pr-8': query }"
               @input="(e) => {query = e.target.value; handleSearch(e)} "
               v-on:keyup.enter="handleEnter"
               :displayValue="() => query"
           />
-
           <!--              v-if="!query"-->
+
           <ComboboxButton
-              class="absolute inset-y-0 right-0 flex items-center pr-2 z-10"
+              class="absolute inset-y-0 right-0 flex items-center pr-2 z-[1]"
               :class="{'w-full': !isFocus}"
           />
-          <!--          <XCircleIcon-->
-          <!--              v-if="query"-->
-          <!--              @click="query = ''"-->
-          <!--              class="absolute text-zinc-500 h-6 w-6 cursor-pointer absolute top-2 right-3"-->
-          <!--          />-->
+          <XCircleIcon
+              v-if="query"
+              @click.stop="query = ''"
+              class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute top-2 right-3 z-[2]"
+          />
+<!--              @click.stop="query = ''; isFocus = true"-->
+
         </div>
 
 
@@ -41,14 +45,15 @@
         >
           <!--            @after-leave="query = ''"-->
 
-
+          <!--              :hold="true"-->
+<!--              :hold="!isFocus"-->
           <ComboboxOptions
               class="options"
-
               :class="{'ring-1': isFocus && (people.length > 0 || storedSearches.length > 0 || query)}"
           >
 
             <!--            History search-->
+            <!--                v-if="storedSearches.length > 0 && !query"-->
             <ComboboxOption
                 v-if="storedSearches.length > 0 && !query"
                 v-for="searchValue in storedSearches"
@@ -70,7 +75,6 @@
             </ComboboxOption>
 
             <ComboboxOption>
-
               <div
                   v-if="query"
                   class="flex items-center gap-2 px-4 cursor-pointer hover:bg-zinc-100 py-3 animate"
@@ -154,7 +158,7 @@
 
 
             <!--             People-->
-            <div v-if="people && people.length > 0">
+            <div v-if="people && people.length > 0" class="border-t">
               <p class="pl-10 font-bold pt-3 pb-2">People</p>
               <!--                  as="template"-->
               <ComboboxOption
@@ -174,15 +178,26 @@
                 }"
                 >
                   <div class="flex gap-2">
-                    <div class="rounded-full h-10 w-10 bg-black"/>
+                    <img
+                        v-if="person.avatar_url"
+                        alt="avatar"
+                        v-bind:src="person.avatar_url"
+                        class="rounded-full h-10 w-10 bg-black"
+                    />
+                    <img
+                        v-else
+                        alt="avatar"
+                        src="@/assets/default-avatar.png"
+                        class="rounded-full h-10 w-10 bg-black"
+                    />
                     <div>
-                      <span
-                          class="block truncate"
-                          :class="{ 'font-medium': selected, 'font-normal': !selected }"
+                      <div
+                          class=" truncate text-[15px] max-h-[18px]"
+                          :class="{ 'font-medium': selected, 'font-semibold': !selected }"
                       >
                         {{ person.name }}
-                      </span>
-                      <span class="block truncate text-zinc-500">@{{ person.username }}</span>
+                      </div>
+                      <div class=" truncate text-zinc-500">@{{ person.username }}</div>
                     </div>
                   </div>
                 </li>
@@ -207,11 +222,12 @@ import {
   ComboboxOption,
   TransitionRoot,
 } from '@headlessui/vue'
-import { MagnifyingGlassIcon, XMarkIcon, XCircleIcon } from '@heroicons/vue/24/outline'
+import { MagnifyingGlassIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 
 import { commonAPI } from "@/apis/common";
 import { IUser } from "@/types/user";
 import { IPost } from "@/types/post";
+import { debounce } from "@/core/helper";
 
 const { query: queryVal } = defineProps<{query: string}>()
 const emit = defineEmits<{
@@ -224,8 +240,10 @@ const route = useRoute()
 const username = route.params.username
 
 const selected = ref(null)
+const comboboxButtonRef = ref(null)
 const query = ref(queryVal)
 const isFocus = ref(false)
+const isEntered = ref(false)
 const people = ref([]);
 const posts = ref([]);
 const postsTrending = ref([]);
@@ -245,31 +263,18 @@ watch(router.currentRoute, () => {
   }
 })
 
-const debounce = (fn, delay = 300) => {
-  let timeout
-
-  return (...args) => {
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-
-    timeout = setTimeout(() => {
-      fn(...args)
-    }, delay)
-  }
-}
-
 const handleSearch = debounce((e) => {
   query.value = e.target.value
-  search(e.target.value)
+  if (isEntered.value) return
+  getSearch(e.target.value)
 }, 500)
 
 const handleFocus = () => {
   isFocus.value = true
-  search(query.value)
+  // getSearch(query.value)
 }
 
-const search = async (value = '') => {
+const getSearch = async (value?: string) => {
   if (!value) {
     people.value = []
     return
@@ -282,6 +287,22 @@ const search = async (value = '') => {
 
 const handleOutFocus = () => {
   isFocus.value = false
+}
+
+const handleEnter = () => {
+  console.log('dauphaihau debug: enter')
+  isEntered.value = true
+  // query.value = e.target.value
+  // getSearch(e.target.value)
+
+  if (!storedSearches.value.includes(query.value)) {
+    storedSearches.value.unshift(query.value)
+    // storedSearches.value.push(query.value)
+    localStorage.storedSearches = JSON.stringify(storedSearches.value)
+  }
+
+  handleRedirect('search')
+  // handleRedirect(selected.value)
 }
 
 const handleRedirect = (type, data?: IUser & IPost) => {
@@ -310,23 +331,11 @@ const handleRedirect = (type, data?: IUser & IPost) => {
 
 }
 
-const handleEnter = () => {
-  // query.value = e.target.value
-  // search(e.target.value)
-
-  if (!storedSearches.value.includes(query.value)) {
-    storedSearches.value.push(query.value)
-    localStorage.storedSearches = JSON.stringify(storedSearches.value)
-  }
-
-  handleRedirect('search')
-  // handleRedirect(selected.value)
-}
-
 const removeSearch = (search) => {
   const storedSearchesArr = JSON.parse(localStorage.storedSearches)
   storedSearches.value = storedSearchesArr.filter((s) => s !== search)
   localStorage.storedSearches = JSON.stringify(storedSearches.value)
+  isFocus.value = true
 }
 
 </script>
@@ -339,7 +348,7 @@ const removeSearch = (search) => {
 }
 
 .input {
-  @apply w-full border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white;
+  @apply w-full border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white focus:pr-8;
   width: 550px;
 }
 

@@ -12,7 +12,7 @@
       <!--               'fixed bottom-20 right-[17px]' : 'fixed bottom-20 right-[17px]': 'sticky top-70'"-->
 
       <PhotosProfile v-if="showPhotoComp"/>
-      <Users/>
+      <UsersSuggest/>
       <Trends v-if="route.name !== 'explore'"/>
     </div>
 
@@ -24,7 +24,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import PhotosProfile from "@/components/PhotosProfile.vue";
-import Users from "@components/UsersSuggest.vue";
+import UsersSuggest from "@components/UsersSuggest.vue";
 import Trends from "@components/Trends.vue";
 
 const router = useRouter()

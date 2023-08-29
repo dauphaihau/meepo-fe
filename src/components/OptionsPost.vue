@@ -10,9 +10,11 @@
     <MenuButton>
       <EllipsisHorizontalIcon
           :class="classDotIcon"
-          class="h-5 w-5 flex justify-center items-center rounded-full cursor-pointer text-gray-500 hover:bg-zinc-200"
+          class="h-5 w-5 flex justify-center items-center rounded-full cursor-pointer text-zinc-500 hover:bg-zinc-200"
       />
     </MenuButton>
+    <div v-if="open" class="fixed inset-0"/>
+    <!--    <div v-if="open" class="fixed inset-0 bg-black opacity-30" />-->
 
     <transition
         enter-active-class="transition ease-out duration-100"
@@ -22,31 +24,29 @@
         leave-from-class="transform opacity-100 scale-100"
         leave-to-class="transform opacity-0 scale-95"
     >
-      <!--        ref="popperRef"-->
       <MenuItems
           ref="popperRef"
-          :class="open ? 'z-40': 'z-10'"
-          class="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="">
           <MenuItem v-slot="{ active }">
             <span
                 @click="onDelete"
-                :class="[active ? 'bg-gray-100 text-gray-900 rounded-tl-md rounded-tr-md' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-tl-md rounded-tr-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
             >Delete</span>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <span
                 @click="showAddOrUpdatePost = true; keyAddPostDialog += 1"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
             >Edit</span>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <span
                 @click="onPin"
-                :class="[active ? 'bg-gray-100 text-gray-900 rounded-bl-md rounded-br-md' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-bl-md rounded-br-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
             >
-              <!--                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"-->
+              <!--                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"-->
               {{
                 dataPost.pin_status_int === PIN_STATUS.PIN ? 'Unpin from profile' : 'Pin to your profile'
               }}
@@ -54,7 +54,7 @@
           </MenuItem>
           <!--          <MenuItem v-slot="{ active }">-->
           <!--            <span-->
-          <!--                :class="[active ? 'bg-gray-100 text-gray-900 rounded-bl-md rounded-br-md' : 'text-gray-700', 'block px-4 py-2 text-sm']"-->
+          <!--                :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-bl-md rounded-br-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"-->
           <!--            >Change who can reply</span>-->
           <!--          </MenuItem>-->
         </div>
@@ -95,7 +95,7 @@ const keyAddPostDialog = ref(0);
 const popperRef = ref(null)
 const currentRouteName = route.name
 
-watch(popperRef, (value, oldValue: HTMLElement | any ) => {
+watch(popperRef, (value, oldValue: HTMLElement | any) => {
   if (oldValue?.textContent) {
     emit('onCloseMenu')
   }

@@ -2,6 +2,7 @@
   <Listbox
       @update:modelValue="onChangeSelect"
       v-model="selectedOption"
+      v-slot="{open}"
   >
     <div class="relative mt-1">
       <ListboxButton class="list-button" :class="classWrapper">
@@ -13,6 +14,9 @@
           />
         </span>
       </ListboxButton>
+
+      <div v-if="open" class="fixed inset-0"/>
+      <!--      <div v-if="open" class="fixed inset-0 bg-black opacity-30" />-->
 
       <transition
           leave-active-class="transition duration-100 ease-in"

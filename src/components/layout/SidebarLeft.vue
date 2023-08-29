@@ -1,8 +1,6 @@
 <template>
-<!--  <div class="w-[275px] xl:w-[259px]"></div>-->
   <div class="w-[90px] xl:w-[259px]"></div>
 
-<!--  <div class="fixed top-[11%] w-[275px] xl:w-[259px] pl-4 xl:pl-0">-->
   <div class="fixed top-[11%] w-[90px] xl:w-[259px] pl-[23px] xl:pl-0">
     <div class=" flex flex-col gap-6 mb-6">
 
@@ -19,7 +17,7 @@
           class="link" to="/explore"
           v-slot="{ href, navigate, isActive, isExactActive }"
       >
-        <MagnifyingGlassIcon/>
+        <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'"/>
         <p :class="( route.name === 'search' || isActive ) && 'active'">Explore</p>
       </router-link>
 
@@ -56,13 +54,15 @@
 <script setup lang="ts">
 import { mapGetters } from "@/lib/map-state";
 import AddOrUpdatePost from "@components/dialog/AddOrUpdatePost.vue";
-import { HomeIcon, UserIcon, BellIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid"
+import { HomeIcon, UserIcon, BellIcon } from "@heroicons/vue/20/solid"
+// import { MagnifyingGlassIcon } from "@heroicons/vue/24/solid"
 import {
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
   BookmarkIcon as BookmarkIconOutline,
   Cog8ToothIcon as SettingIconOutline,
   BellIcon as BellIconOutline,
+    MagnifyingGlassIcon
 } from "@heroicons/vue/24/outline"
 import { useRoute, useRouter } from "vue-router";
 

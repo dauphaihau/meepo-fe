@@ -42,12 +42,12 @@
                     :src="getUser.avatar_url"
                     class="h-10 w-10 rounded-full "
                 />
-                <div
+                <img
                     v-else
-                    class="h-10 w-10 bg-zinc-200 flex justify-center items-center rounded-full cursor-pointer text-black font-normal"
-                >
-                  {{ getUser.name ? getUser.name.charAt(0).toUpperCase() : '' }}
-                </div>
+                    alt="avatar"
+                    src="@/assets/default-avatar.png"
+                    class="h-10 w-10 rounded-full "
+                />
                 <div class="text-left max-w-[150px]">
                   <h3 class="text-[13px] font-bold text-zinc-900 overflow-hidden text-ellipsis whitespace-nowrap">
                     {{ getUser?.name }}</h3>
@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 
 import { Bars3Icon, } from '@heroicons/vue/24/outline'
@@ -140,11 +140,18 @@ onMounted(async () => {
 })
 
 const changeRoute = (value) => {
-  if (value) {
-    query.value = value
-  }
-  keySearchAllComp.value++
+  // if (value) {
+  //   query.value = value
+  // }
+  // keySearchAllComp.value++
 }
+
+watch(router.currentRoute, () => {
+  if (route.query?.q) {
+    query.value = route.query.q as string
+    keySearchAllComp.value++
+  }
+})
 
 const logout = () => store.dispatch(ActionEnums.LOGOUT)
 
@@ -154,6 +161,7 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 .header {
   @apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;
 }
+  /*@apply bg-white fixed top-0 w-full z-10 h-fit  border-b border-zinc-200 px-6;*/
 
 .nav {
   @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex

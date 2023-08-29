@@ -12,13 +12,13 @@
           name="month"
           v-model="dob.month"
       />
-      <Select
+      <Select1
           @update:modelValue="onChangeSelect"
           placeholder="Day"
           :data="days" classWrapper="w-[124px]" name="day"
           v-model="dob.day"
       />
-      <Select
+      <Select2
           @update:modelValue="onChangeSelect"
           placeholder="Year"
           :data="years" classWrapper="w-[115px]" name="year"
@@ -33,6 +33,8 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import Select from "@/core/components/forms/Select.vue";
+import Select1 from "@/core/components/forms/Select.vue";
+import Select2 from "@/core/components/forms/Select.vue";
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void

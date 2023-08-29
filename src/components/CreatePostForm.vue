@@ -1,25 +1,30 @@
 <template>
-  <div class="relative z-20">
+<!--  <div class="relative z-20">-->
+  <div class="">
     <div
-        class="flex flex-row px-4"
+        class="flex flex-row px-4 border-t"
         :class="{'pt-3': currentRouteName==='home', 'py-3': currentRouteName==='post'}"
     >
       <!--         Avatar-->
       <div class="mr-4 mt-2 basis-11 h-full">
         <div
-            v-if="getUser.avatar_url"
             class="h-full "
         >
-          <!--              :class="!isFocus ? 'flex  justify-center items-center': 'mt-[11px]' "-->
           <img
+              v-if="getUser.avatar_url"
               @click="router.push('/user/' + getUser.username)"
               v-bind:src="getUser.avatar_url"
               class="rounded-full h-10 w-10 bg-black cursor-pointer"
               alt="avatar"
           />
+          <img
+              v-else
+              @click="router.push('/user/' + getUser.username)"
+              src="@/assets/default-avatar.png"
+              class="rounded-full h-10 w-10 bg-black cursor-pointer"
+              alt="avatar"
+          />
         </div>
-        <!--            class="rounded-full h-10 w-10 bg-black cursor-pointer"-->
-        <div v-else class="rounded-full h-10 w-10 bg-black col-span-1"/>
       </div>
 
       <!--        Input -->
@@ -97,7 +102,8 @@
             :isLoading="isLoading"
             :disabled="!content && !fileImage"
             @click.prevent="createPost"
-        >Post</Button>
+        >Post
+        </Button>
       </div>
     </div>
   </div>

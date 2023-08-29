@@ -57,3 +57,19 @@ export const mapKeyEnum = (enumObj) => {
 }
 
 export const toUpperCaseFirstL = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+
+
+export const debounce = (fn, delay = 300) => {
+  let timeout
+
+  return (...args) => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+
+    timeout = setTimeout(() => {
+      fn(...args)
+    }, delay)
+  }
+}
+

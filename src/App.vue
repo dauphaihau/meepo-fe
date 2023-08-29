@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header.vue";
 import SidebarLeft from "@/components/layout/SidebarLeft.vue";
 import SidebarRight from "@/components/layout/SidebarRight.vue";
 import { mapGetters } from "@/lib/map-state";
+import Help from "@components/Help.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -31,24 +32,26 @@ watch(isLoggedIn, () => {
 </script>
 
 <template>
-  <div id="app" class="w-full" >
+  <div id="app" class="w-full">
     <Toaster
         position="bottom-center" offset="20px"
         :toastOptions="{
-            style: {
-              background: 'black',
-              color: 'white',
-              border: 'black',
-              padding: '10px 20px',
-              width: 'fit-content',
-              marginLeft: '100px'
-         },
-  }"
-
+                style: {
+                  background: 'black',
+                  color: 'white',
+                  border: 'black',
+                  padding: '10px 20px',
+                  width: 'fit-content',
+                  marginLeft: '100px'
+             },
+      }"
     />
     <Header/>
 
+<!--     <div class="fixed inset-0 z-50 bg-black opacity-30" />-->
+<!--     <div class="fixed inset-0 z-[2] bg-black opacity-30" />-->
     <div :key="keyApp" class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex">
+<!--    <div :key="keyApp" class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex relative z-50">-->
       <SidebarLeft/>
       <div class="flex gap-6">
         <div class="flex flex-col border-l border-r min-w-[600px] max-w-[600px]">
@@ -57,6 +60,7 @@ watch(isLoggedIn, () => {
         <SidebarRight/>
       </div>
     </div>
+    <Help/>
 
   </div>
 </template>

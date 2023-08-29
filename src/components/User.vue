@@ -3,26 +3,29 @@
       class="relative"
       @mouseover="isHover = true"
       @mouseleave="isHover = false"
-      :class="isHover ? ' z-20' : 'z-10'"
+      :class="{
+        'z-[1]' : isHover,
+      }"
   >
-    <div class="block px-6 py-3 bg-white border-b flex flex-col animate  hover:bg-zinc-100">
+    <div class="block px-4 py-3 bg-white flex flex-col animate  hover:bg-zinc-100">
       <div
-          class="grid grid-cols-11"
+          class="flex flex-grow"
           :class="!isOpenPopover && 'cursor-pointer'"
           @click="!isOpenPopover && redirectProfile"
       >
-        <UserPopper v-if="user.avatar_url" :user="user" @onOpenPopover="onOpenPopover">
+        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="mr-3 min-w-[40px]">
           <img
+              v-if="user.avatar_url"
               @click="redirectProfile"
               alt="avatar"
               v-bind:src="user.avatar_url"
               class="rounded-full h-10 w-10 bg-black col-span-1"
           />
-        </UserPopper>
-
-        <UserPopper :user="user" v-else @onOpenPopover="onOpenPopover">
-          <div
+          <img
+              v-else
               @click="redirectProfile"
+              alt="avatar"
+              src="@/assets/default-avatar.png"
               class="rounded-full h-10 w-10 bg-black col-span-1"
           />
         </UserPopper>
@@ -44,9 +47,9 @@
                 <UserPopper :user="user">
                   <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>
                 </UserPopper>
-<!--                <UserPopper :user="user" @onOpenPopover="onOpenPopover">-->
-<!--                  <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>-->
-<!--                </UserPopper>-->
+                <!--                <UserPopper :user="user" @onOpenPopover="onOpenPopover">-->
+                <!--                  <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>-->
+                <!--                </UserPopper>-->
               </div>
             </div>
 

@@ -1,36 +1,37 @@
 <template>
-  <div class="relative"
-       @mouseover="isHover = true"
-       @mouseleave="isHover = false"
-       :class="isHover ? ' z-20' : 'z-10'"
+  <div
+      class="relative"
+      @mouseover="isHover = true"
+      @mouseleave="isHover = false"
+      :class="{'z-[1]': isHover}"
+      @click="redirectProfile"
   >
     <div
-        class="block max-w-sm flex justify-between items-center px-4 py-2.5 hover:bg-zinc-200/50 animate relative"
+        class="block max-w-sm flex justify-between items-center px-4 py-2.5 hover:bg-zinc-200/50 animate"
         :class="!isOpenPopover && 'cursor-pointer '"
         @click="!isOpenPopover && redirectProfile"
     >
       <div class="flex items-center gap-2">
-        <UserPopper v-if="user.avatar_url" :user="user" @onOpenPopover="onOpenPopover">
+        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class=" max-h-10">
           <div class="before:absolute">
             <img
+                v-if="user.avatar_url"
                 @click="redirectProfile"
                 alt="avatar"
                 v-bind:src="user.avatar_url"
-                class="rounded-full h-10 w-10 bg-black col-span-1"
+                class="rounded-full h-10 w-10 bg-black "
             />
-          </div>
-        </UserPopper>
-        <UserPopper :user="user" v-else @onOpenPopover="onOpenPopover">
-          <div class="before:absolute">
-            <div
+            <img
+                v-else
                 @click="redirectProfile"
-                class="rounded-full h-10 w-10 bg-black col-span-1"
+                alt="avatar"
+                src="@/assets/default-avatar.png"
+                class="rounded-full h-10 w-10 bg-black "
             />
           </div>
         </UserPopper>
-
-        <div class="mb-1">
-          <UserPopper :user="user" @onOpenPopover="onOpenPopover" class=" max-h-[18px]">
+        <div class="">
+          <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="max-h-[18px]">
             <p
                 @click="redirectProfile"
                 class="before:absolute text-[15px] font-bold text-zinc-900 hover:underline hover:underline-offset-2"
@@ -44,11 +45,14 @@
             </p>
           </UserPopper>
         </div>
-
       </div>
     </div>
 
-    <div class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-72 z-30">
+    <div
+        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-72"
+        :class="isHover && 'z-[2]'"
+        @click.stop
+    >
       <ToggleFollowBtn
           :show="true"
           :isFollowing="user.is_current_user_following"
@@ -59,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { userAPI } from "@/apis/user";
@@ -82,8 +86,6 @@ const { user } = defineProps<{user: IUser}>()
 const currentRouteUsername = route.params.username
 const currentRouteName = route.name
 
-onMounted(() => {})
-
 const unOrFollow = async (user: IUser) => {
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
@@ -98,9 +100,6 @@ const unOrFollow = async (user: IUser) => {
 }
 
 const redirectProfile = () => {
-  if (!isOpenPopover.value) {
-    return
-  }
   router.push('/user/' + user.username)
 }
 

@@ -9,6 +9,10 @@
   </div>
 
   <div v-else>
+
+    <!--    Parent post-->
+    <Post v-if="parentPost" :dataPost="parentPost" class="mb-2"/>
+
     <!-- Detail Post-->
     <div class="px-4">
       <div class="flex justify-between items-center">
@@ -18,25 +22,37 @@
           <!--       Post's Author   -->
           <div class="flex justify-between">
 
-            <div class="flex gap-2  mb-4">
-              <div>
+            <div class="flex gap-2.5 mb-4">
+              <UserPopper :user="author">
                 <img
+                    alt="avatar"
                     v-if="author.avatar_url"
-                    @click="router.push('/user/' + author.username)"
+                    @click="redirectProfile"
                     v-bind:src="author.avatar_url"
                     class="rounded-full h-10 w-10 bg-black cursor-pointer"
                 />
-                <div v-else class="rounded-full h-10 w-10 bg-black"/>
-
-              </div>
-              <div class="cursor-pointer">
-                <h3 class="text-base font-semibold  text-gray-900 hover:underline hover:underline-offset-2">{{
-                    author?.name
-                  }}</h3>
-                <p class="max-w-2xl text-sm leading-3 text-gray-500">@{{ author?.username }}</p>
+                <img
+                    v-else
+                    alt="avatar"
+                    @click="redirectProfile"
+                    src="@/assets/default-avatar.png"
+                    class="rounded-full h-10 w-10 bg-black cursor-pointer"
+                />
+              </UserPopper>
+              <div>
+                <UserPopper :user="author" class="max-h-[18px]">
+                  <h3
+                      @click="redirectProfile"
+                      class="text-base font-semibold  text-gray-900 hover:underline hover:underline-offset-2">
+                    {{ author?.name }}</h3>
+                </UserPopper>
+                <UserPopper :user="author">
+                  <p
+                      @click="redirectProfile"
+                      class="max-w-2xl text-sm leading-3 text-gray-500">@{{ author?.username }}</p>
+                </UserPopper>
               </div>
             </div>
-
 
             <OptionsPost
                 classDotIcon="h-7 w-7"
@@ -46,10 +62,9 @@
             />
           </div>
 
-
           <!--         Content post-->
           <div class="pb-4">
-<!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
+            <!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
             <p
                 class="whitespace-pre-line"
                 v-html="formatTextWithHashTags(post.content)"
@@ -82,10 +97,8 @@
               </div>
             </div>
 
-            <div class="border-b w-full"></div>
-
             <!--            Icons Action -->
-            <div class="grid grid-cols-5 py-1.5">
+            <div class="grid grid-cols-5 py-1.5 border-t">
               <div
                   class="icon-btn"
                   v-tooltip="'Comment'"
@@ -124,7 +137,7 @@
             </div>
           </div>
 
-          <div class="border-b w-full"></div>
+<!--          <div class="border-b w-full"></div>-->
         </div>
 
       </div>
@@ -158,6 +171,7 @@ import OptionsPost from "@/components/OptionsPost.vue";
 
 import { postAPI } from "@/apis/post";
 import Posts from "@/components/Posts.vue";
+import Post from "@/components/Post.vue";
 import Loading from "@/core/components/Loading.vue";
 
 import { mapGetters } from "@/lib/map-state";
@@ -167,16 +181,19 @@ import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMini from "@components/HeaderMini.vue";
 import { formatTextWithHashTags } from "@/core/helper";
+import { parseTimePost } from "@/lib/dayjs-parse";
+import UserPopper from "@components/UserPopper.vue";
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
 
-type Post = {time?: string, date?: string} & IPost
+type PostTypes = {time?: string, date?: string} & IPost
 
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
-const post = ref<Post | null>(null)
+const post = ref<PostTypes | null>(null)
+const parentPost = ref<PostTypes | null>(null)
 const author = ref<IUser | null>(null)
 const keyPostsComp = ref(0)
 const isLoading = ref(false)
@@ -262,6 +279,10 @@ async function getDetailPost(post_id = null) {
     post.value.time = dayjs(post.value.created_at).format('h:mm A  ')
     post.value.date = dayjs(post.value.created_at).format('MMM D, YYYY')
     author.value = data.post.author
+
+    if (data.post?.parent_post) {
+      parentPost.value = parseTimePost(data.post.parent_post)
+    }
   }
 }
 
@@ -299,6 +320,9 @@ watch(getKeyMutatePosts, () => {
   getDetailPost()
 })
 
+const redirectProfile = () => {
+  router.push('/user/' + author.value.username)
+}
 
 </script>
 

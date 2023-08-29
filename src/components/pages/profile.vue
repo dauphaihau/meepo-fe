@@ -29,14 +29,20 @@
       <!--      Avatar, Edit user-->
       <div class="flex justify-between items-center">
 
-        <div v-if="user.avatar_url" class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">
+        <div  class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">
           <img
+              v-if="user.avatar_url"
               alt="avatar"
               :src="user.avatar_url"
               class="h-[133.5px] w-[149px] rounded-full "
           />
+          <img
+              v-else
+              alt="avatar"
+              src="@/assets/default-avatar.png"
+              class="h-[133.5px] w-[149px] rounded-full "
+          />
         </div>
-        <div v-else class="rounded-full border-white border-4 bg-black h-[135px] w-[135px] mb-6"/>
 
         <div class="pt-8">
           <UpdateUserDialog

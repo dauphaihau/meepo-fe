@@ -1,154 +1,169 @@
 <template>
-  <div
-      class="flex flex-col gap-4 relative"
-      @mouseover="isHover = true"
-      @mouseleave="isHover = false"
-      :class="isHover ? ' z-20' : 'z-10'"
-  >
+  <div>
     <div
-        class="block px-4 py-3 bg-white border-b flex flex-col animate hover:bg-zinc-100"
-        :class="!isOpenPopover && 'cursor-pointer'"
-        @click="!isOpenPopover && clickDetailPost('post')"
+        class="flex flex-col relative"
+        @mouseover="isHover = true"
+        @mouseleave="isHover = false"
+        :class="{'z-[3]': isHover}"
     >
-
-      <!--         Pin Post-->
       <div
-          v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
-          class="flex gap-3 items-center  text-gray-500 mb-1 ml-[30px]"
+          class="px-4 bg-white flex flex-col animate hover:bg-zinc-100"
+          :class="{'cursor-pointer': !isOpenPopover, }"
+          @click="!isOpenPopover && clickDetailPost('post')"
       >
-        <StarIcon class="h-4 w-4"/>
-        <p class="font-semibold text-[13px]">Pinned Post</p>
-      </div>
 
-      <div class="flex flex-row">
-
-        <!--          Avatar-->
-        <div class="mr-4 basis-11" v-if="dataPost.author_avatar_url">
-          <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-            <div class="before:absolute">
-              <img
-                  alt="avatar"
-                  v-bind:src="dataPost.author_avatar_url"
-                  @click="redirectProfile"
-                  class="rounded-full h-10 w-10 bg-black "
-              />
-            </div>
-          </UserPopper>
-        </div>
-        <div class="mr-4 basis-11" v-else>
-          <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-            <div class=" before:absolute">
-              <div @click="redirectProfile" class="rounded-full h-10 w-10 bg-black"/>
-            </div>
-          </UserPopper>
+        <!--         Pin Post-->
+        <div
+            v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
+            class="flex gap-3 items-center text-gray-500 ml-[30px] mb-[-10px] mt-2"
+        >
+          <!--            class="flex gap-3 items-center text-gray-500 ml-[30px] "-->
+          <StarIcon class="h-4 w-4"/>
+          <p class="font-semibold text-[13px]">Pinned Post</p>
         </div>
 
+        <div class="flex flex-row">
 
-        <div class="w-full">
-          <div class="flex justify-between">
-            <!--              info author-->
-            <div class="flex gap-2 text-[15px]">
-
-              <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-                <div
-                    @click="redirectProfile"
-                    class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
-                >
-                  {{ dataPost.author_name }}
-                </div>
-              </UserPopper>
-
-              <div class="text-zinc-500 inline-flex gap-1">
-                <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-                  <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>
-                </UserPopper>
-                · {{ dataPost.time }}
-              </div>
-            </div>
-
-          </div>
-
-
-          <!--         Content post   -->
-          <!--            <p class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
-          <!--              {{ dataPost.content }}-->
-          <!--            </p>-->
-          <p
-              class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5"
-              v-html="formatTextWithHashTags(dataPost.content)"
-          />
-
-          <img
-              v-if="dataPost.image_url"
-              v-bind:src="dataPost.image_url"
-              alt=""
-              class="rounded-xl my-4 w-full h-auto"
+          <!--          Avatar-->
+          <div
+              class="mr-3 basis-11 relative flex flex-col"
+              :class="!isSubPost && 'pt-3'"
           >
+            <!--            <div v-if="isSubPost" class="border-r-2 h-2 w-5 absolute top-[-12px] "></div>-->
 
-          <!--              Statistic post ( likes, comment, .. ) -->
-          <div class="flex gap-8 -ml-[9px]">
-
-            <!--              Comments-->
-            <div class="flex items-center gap-1 group">
-              <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                <ChatBubbleOvalLeftEllipsisIcon
-                    v-if="dataPost.sub_posts_count > 0"
-                    @click="router.push('/posts/' + dataPost.id)"
-                    class="text-gray-500 h-5 w-5 cursor-pointer"
+            <div
+                v-if="isSubPost && currentRouteName !== 'search'"
+                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
+            />
+            <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+              <div class="before:absolute">
+                <img
+                    v-if="dataPost.author_avatar_url"
+                    v-bind:src="dataPost.author_avatar_url"
+                    alt="avatar"
+                    @click="redirectProfile"
+                    class="rounded-full h-10 w-10 bg-black "
                 />
-                <ChatBubbleOvalLeftIcon
+                <img
                     v-else
-                    @click="router.push('/posts/' + dataPost.id)"
-                    class="text-gray-500 h-5 w-5 cursor-pointer"
+                    src="@/assets/default-avatar.png"
+                    alt="avatar"
+                    @click="redirectProfile"
+                    class="rounded-full h-10 w-10 bg-black "
                 />
-
               </div>
-              <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
+            </UserPopper>
+            <div
+                v-if="dataPost.sub_posts_count > 0 && !isSubPost && currentRouteName !== 'search'"
+                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto w-[2px]"
+            />
+          </div>
+
+          <div class="w-full py-3">
+            <div class="flex justify-between">
+              <!--              info author-->
+              <div class="flex gap-2 text-[15px]">
+                <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+                  <div
+                      @click="redirectProfile"
+                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
+                  >
+                    {{ dataPost.author_name }}
+                  </div>
+                </UserPopper>
+                <div class="text-zinc-500 inline-flex gap-1">
+                  <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>
+                  </UserPopper>
+                  · {{ dataPost.time }}
+                </div>
+              </div>
             </div>
 
-            <!--              Likes -->
-            <div class="flex items-center gap-2 group">
-              <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
-                <!--                <div class='cursor-pointer flex items-center gap-1 relative z-[9999]' @click="likePost">-->
+            <!--         Content post   -->
+            <!--            <p class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
+            <!--              {{ dataPost.content }}-->
+            <!--            </p>-->
+            <p
+                class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5"
+                v-html="formatTextWithHashTags(dataPost.content)"
+            />
 
-                <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                  <HeartIconSolid class="text-gray-500 h-5 w-5 cursor-pointer"/>
-                </div>
-                <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                  <HeartIcon class="text-gray-500 h-5 w-5 cursor-pointer"/>
-                </div>
+            <img
+                v-if="dataPost.image_url"
+                v-bind:src="dataPost.image_url"
+                alt=""
+                class="rounded-xl my-4 w-full h-auto"
+            >
 
-                <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
+            <!--              Statistic post ( likes, comment, .. ) -->
+            <div class="flex gap-8 -ml-[9px]">
+
+              <!--              Comments-->
+              <div class="flex items-center gap-1 group">
+                <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                  <ChatBubbleOvalLeftEllipsisIcon
+                      v-if="dataPost.sub_posts_count > 0"
+                      @click="router.push('/posts/' + dataPost.id)"
+                      class="text-gray-500 h-5 w-5 cursor-pointer"
+                  />
+                  <ChatBubbleOvalLeftIcon
+                      v-else
+                      @click="router.push('/posts/' + dataPost.id)"
+                      class="text-gray-500 h-5 w-5 cursor-pointer"
+                  />
+
+                </div>
+                <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
               </div>
-            </div>
 
+              <!--              Likes -->
+              <div class="flex items-center gap-2 group">
+                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
+
+                  <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                    <HeartIconSolid class="text-gray-500 h-5 w-5 cursor-pointer"/>
+                  </div>
+                  <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                    <HeartIcon class="text-gray-500 h-5 w-5 cursor-pointer"/>
+                  </div>
+
+                  <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
+
+      <div
+          class="absolute right-5 h-5"
+          :class="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN ? 'top-8' : 'top-3.5'"
+      >
+        <OptionsPost
+            v-if="getUser.id === dataPost.user_id"
+            @onDeletePostChildComp="onDeletePostChildComp"
+            @onPinPost="onPinPost"
+            @onCloseMenu="onCloseMenu"
+            :key="keyOptionsPost"
+            :dataPost="dataPost"
+        />
+      </div>
     </div>
 
-    <div
-        class="absolute top-3.5 right-5 h-5"
-        :class="openMenu ? 'z-20' : 'z-10' "
-        @click="openMenu = true"
-    >
-      <OptionsPost
-          v-if="getUser.id === dataPost.user_id"
-          @onDeletePostChildComp="onDeletePostChildComp"
-          @onPinPost="onPinPost"
-          @onCloseMenu="onCloseMenu"
-          :key="keyOptionsPost"
-          :dataPost="dataPost"
-      />
+    <!--    <div v-if="dataPost.sub_post" class="relative z-20">-->
+    <div v-if="dataPost.sub_post">
+      <Post isSubPost :dataPost="dataPost.sub_post"/>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
+import { cn } from '@/core/helper.js'
 import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
 import OptionsPost from "@/components/OptionsPost.vue";
@@ -161,10 +176,11 @@ import UserPopper from "@components/UserPopper.vue";
 import { formatTextWithHashTags } from "@/core/helper";
 
 interface Props {
-  dataPost: IPost & {time: string},
+  dataPost: IPost & {time?: string, sub_post?: IPost},
+  isSubPost?: boolean
 }
 
-let { dataPost } = defineProps<Props>()
+let { dataPost, isSubPost } = defineProps<Props>()
 
 const route = useRoute()
 const router = useRouter()
@@ -180,6 +196,7 @@ const emit = defineEmits<{
 const guid = ref('')
 const isLike = ref(false)
 const isHover = ref(false)
+const isLoading = ref(false)
 const isOpenPopover = ref(false)
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
@@ -197,7 +214,8 @@ onBeforeMount(() => {
   if (isLoggedIn.value) {
     isLike.value = dataPost.likes_count && dataPost.is_current_user_like
   } else {
-    isLike.value = !!dataPost.likes_count
+    isLike.value = false
+    // isLike.value = !!dataPost.likes_count
   }
 })
 

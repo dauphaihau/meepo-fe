@@ -9,6 +9,12 @@
     >
       <slot/>
     </PopoverButton>
+<!--    <p>{{open}}</p>-->
+<!--    <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
+<!--    <PopoverOverlay class="" />-->
+<!--    <PopoverOverlay :class="open && 'fixed inset-0'" />-->
+<!--    <PopoverOverlay class="fixed inset-0" />-->
+<!--    <PopoverOverlay v-if="open" class="fixed inset-0" />-->
 
     <transition
         enter-active-class="transition duration-500 ease-out"
@@ -22,18 +28,28 @@
           @mouseover.prevent="popoverHover = true"
           @mouseleave.prevent="closePopover(close)"
           class="absolute left-[-90px] bg-white rounded-xl mt-3 w-10 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"
-          :class="open ? ' z-[99999]' : 'z-[-10]'"
+          :class="open ? ' z-20' : 'z-[-10]'"
       >
 
-        <div class="overflow-hidden bg-white w-[300px] p-4 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
+<!--          class="absolute z-10 left-[-90px] bg-white rounded-xl mt-3 w-10 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"-->
+<!--      >-->
+
+        <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="flex justify-between mb-2">
             <img
+                @click="redirectProfilePage(close)"
                 v-if="user.avatar_url"
                 alt="avatar"
                 v-bind:src="user.avatar_url"
-                class="rounded-full h-16 w-16 bg-black col-span-1"
+                class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
             />
-            <div v-else class="rounded-full h-16 w-16 bg-black col-span-1"/>
+            <img
+                v-else
+                @click="redirectProfilePage(close)"
+                alt="avatar"
+                src="@/assets/default-avatar.png"
+                class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
+            />
 
             <ToggleFollowBtn
                 v-if="getUser.id !== user.id"
@@ -43,19 +59,15 @@
             />
           </div>
 
-          <div class="font-bold text-black hover:underline hover:underline-offset-2 animate">
+          <div @click="redirectProfilePage(close)" class="font-bold text-black hover:underline hover:underline-offset-2 animate cursor-pointer">
             {{ user?.name }}
           </div>
-          <div class="text-zinc-500 mb-2">@{{ user?.username }}</div>
-          <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">
-            {{ user?.bio }}</p>
-
+          <div @click="redirectProfilePage(close)" class="text-zinc-500 mb-2 cursor-pointer">@{{ user?.username }}</div>
+          <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">{{ user?.bio }}</p>
           <div>
-
             <div class="flex gap-4">
-
               <div
-                  @click="redirect('followers')"
+                  @click="redirectFollowPage('followers')"
                   class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
               >
                 <span class="font-bold text-[14px] text-black">{{ user?.followers_count ?? 0 }}</span>
@@ -63,7 +75,7 @@
               </div>
 
               <div
-                  @click="redirect('following')"
+                  @click="redirectFollowPage('following')"
                   class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
               >
                 <span class="font-bold text-[14px] text-black">{{ user?.followed_count ?? 0 }}</span>
@@ -82,7 +94,7 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from "vue";
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
 
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import { IUser } from "@/types/user";
@@ -149,12 +161,17 @@ async function unOrFollow() {
   }
 }
 
-function redirect(name) {
+function redirectFollowPage(name) {
   localStorage.setItem('state', JSON.stringify(this.user))
   router.push({
     name,
     params: { username: user.username, },
   });
+}
+
+function redirectProfilePage(close) {
+  router.push('/user/' + user.username)
+  close()
 }
 
 watch(popoverHover, (value: any) => {

@@ -1,63 +1,59 @@
 <template>
   <div class="wrapper">
     <h2 class="title">You might like</h2>
-    <div>
-      <!-- List of Users -->
-      <div class="mt-4 flex flex-col gap-4">
-        <div v-for="(user) in users" :key="user.id">
-          <UserSuggest :user="user"/>
-        </div>
+
+    <div v-if="isLoading" class="flex-center min-h-[35vh]">
+      <Loading/>
+    </div>
+    <!-- List of Users -->
+    <div v-else class="mt-4 flex flex-col">
+      <div v-for="(user) in users" :key="user.id">
+        <UserSuggest :user="user"/>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRouter } from "vue-router";
+import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from "vue-router";
 
 import { userAPI } from "@/apis/user";
 import { mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
-import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
-import UserPopper from "@components/UserPopper.vue";
-import User from "@components/User.vue";
 import UserSuggest from "@components/UserSuggest.vue";
+import Loading from "@/core/components/Loading.vue";
 
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 
 const { isLoggedIn, getUser } = mapGetters();
 const isOpenPopover = ref(false)
+const isLoading = ref(false)
 const users = ref<IUser[]>([])
 
-onMounted(async () => {
-  const { data } = isLoggedIn.value ?
-      await userAPI.unfollowedUsersList():
-      await userAPI.getUsers();
-  users.value = data.users.map(user => ({ ...user, is_current_user_following: false }))
+onMounted(() => {
+  getUsers()
 })
 
-const unOrFollow = async (user: IUser, index) => {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
-    return
-  }
-  const { status } = user.is_current_user_following ? await userAPI.unfollow(user.id) : await userAPI.follow(user.id)
-  if (status === 200) {
-    users.value[index].is_current_user_following = !users.value[index].is_current_user_following
-  }
+async function getUsers() {
+  isLoading.value = true
+  const { data } = isLoggedIn.value ?
+      await userAPI.unfollowedUsersList() :
+      await userAPI.getUsers();
+
+  isLoading.value = false
+  users.value = data.users.map(user => ({ ...user, is_current_user_following: false }))
+
 }
 
-const onOpenPopover = (val) => {
-  isOpenPopover.value = val
-}
-
-const redirectProfile = (user: IUser) => {
-  router.push('/user/' + user.username)
-}
+watch(router.currentRoute, () => {
+  if (route.name === 'profile') {
+    getUsers()
+  }
+})
 
 </script>
 
@@ -70,7 +66,7 @@ const redirectProfile = (user: IUser) => {
 }
 
 .title {
-  @apply text-[22px] font-black px-4;
+  @apply text-[20px] font-bold px-4;
 }
 
 </style>

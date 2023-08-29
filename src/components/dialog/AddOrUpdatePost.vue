@@ -191,8 +191,6 @@ watch(content, () => {
 
 const handleDisabledUpdate = () => {
 
-  console.log('dauphaihau debug: data-post', dataPost)
-
   if (content.value !== dataPost?.content) {
     return false
   }
@@ -209,10 +207,6 @@ const handleDisabledUpdate = () => {
       return false
     }
   }
-
-  // if (!content.value && !fileImage.value) {
-  //
-  // }
 
   return true
 }
@@ -283,15 +277,22 @@ const handleDisabledUpdate = () => {
                 <div class="flex flex-row h-full">
                   <!--         Avatar-->
                   <div class="mr-4 mt-2 basis-11 h-full">
-                    <div v-if="getUser.avatar_url" class="h-full mt-[11px]">
+                    <div class="h-full mt-[11px]">
                       <img
+                          v-if="getUser.avatar_url"
                           @click="router.push('/user/' + getUser.username)"
                           v-bind:src="getUser.avatar_url"
                           class="rounded-full h-10 w-10 bg-black cursor-pointer"
                           alt="avatar"
                       />
+                      <img
+                          v-else
+                          @click="router.push('/user/' + getUser.username)"
+                          src="@/assets/default-avatar.png"
+                          class="rounded-full h-10 w-10 bg-black cursor-pointer"
+                          alt="avatar"
+                      />
                     </div>
-                    <div v-else class="rounded-full h-10 w-10 bg-black"/>
                   </div>
 
                   <!--        Input -->

@@ -9,7 +9,7 @@ export const postAPI = {
     // return apiHelper.get<{posts: IPost[]}>(path, {whereSrcRequest})
   },
   detail(id) {
-    return apiHelper.get<{post: IPost}>(`/posts/${id}`)
+    return apiHelper.get<{post: IPost & {parent_post?: IPost}}>(`/posts/${id}`)
   },
   create(values) {
     const hashtags = values.content && values.content.match(/#\w+/g)

@@ -9,7 +9,7 @@
           aria-hidden="true"
           @click="backTo ? router.push(backTo) : router.back()"
       />
-      <div>
+      <div :class="title && subTitle && 'mt-1.5'">
         <h3 class="text-[20px] font-bold leading-6">{{ title }}</h3>
         <p v-if="subTitle" class="text-zinc-500 text-sm">{{ subTitle }}</p>
       </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
 import { onBeforeUnmount, onMounted, ref, useSlots } from "vue";
@@ -33,6 +33,7 @@ interface Props {
 let { title, subTitle, backTo } = defineProps<Props>()
 
 const router = useRouter()
+const route = useRoute()
 const slots = useSlots()
 const scrollHeight = ref(0)
 
@@ -52,7 +53,7 @@ const onScroll = (e) => {
 
 <style scoped>
 .wrapper {
-  @apply fixed top-0 pt-[60px] w-[600px] border z-30 backdrop-blur-xl bg-white/70;
+  @apply fixed top-0 pt-[60px] w-[600px] border z-[4] backdrop-blur-xl bg-white/70;
   margin-left: -1px;
 }
 

@@ -24,9 +24,10 @@
     </div>
 
     <!-- Posts -->
+<!--        class="flex flex-col relative z-10"-->
     <div
         :key="keyPosts"
-        class="flex flex-col relative z-10"
+        class="flex flex-col relative z-[1]"
         :class="{
           'border-t': currentRouteName === 'post',
         }"
@@ -34,6 +35,7 @@
 
       <div v-for="post in posts" :key="post.id">
         <Post
+            class="border-b"
             @onPinPost="onGetPosts('pin')"
             @onDeletePost="onGetPosts"
             :dataPost="post"
@@ -53,11 +55,6 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from "vue-router";
 import { UserGroupIcon } from "@heroicons/vue/20/solid"
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import isToday from "dayjs/plugin/isToday";
-import relativeTime from "dayjs/plugin/relativeTime";
-import updateLocale from "dayjs/plugin/updateLocale";
 
 import Loading from "@/core/components/Loading.vue";
 import { postAPI } from '@/apis/post'
@@ -68,31 +65,7 @@ import { IPost, PIN_STATUS } from "@/types/post";
 import CreatePostForm from "@/components/CreatePostForm.vue";
 import { useStore } from "@/store";
 import { IUser } from "@/types/user";
-
-dayjs.extend(utc)
-dayjs.extend(isToday)
-dayjs.extend(relativeTime)
-dayjs.extend(updateLocale)
-
-// Unresolved function or method updateLocale()
-// @ts-ignore
-dayjs.updateLocale('en', {
-  relativeTime: {
-    future: "in %s",
-    past: "%s",
-    s: '1s',
-    m: "1m",
-    mm: "%dm",
-    h: "h",
-    hh: "%dh",
-    d: "a day",
-    dd: "%d days",
-    M: "a month",
-    MM: "%d months",
-    y: "a year",
-    yy: "%d years"
-  }
-})
+import { parseTimePosts } from "@/lib/dayjs-parse";
 
 const store = useStore()
 
@@ -137,7 +110,7 @@ function onScroll() {
       !reachEndPage.value
   ) {
     page_count.value++
-    // getPosts()
+    getPosts()
   }
 }
 
@@ -184,13 +157,7 @@ const getPosts = async () => {
       reachEndPage.value = true
     }
 
-    data.posts = data.posts.map((p) => {
-      if (dayjs(p.created_at).isToday()) {
-        return { ...p, time: dayjs(p.created_at).fromNow() }
-      } else {
-        return { ...p, time: dayjs(p.created_at).format('MMM D') }
-      }
-    })
+    data.posts = parseTimePosts(data.posts)
 
     if (disableInfinityScroll.value) {
       posts.value = data.posts
