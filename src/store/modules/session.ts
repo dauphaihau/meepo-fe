@@ -16,6 +16,7 @@ const state: ISessionState = {
     username: null,
     email: null,
     name: null,
+    avatar_url: null,
   },
 };
 

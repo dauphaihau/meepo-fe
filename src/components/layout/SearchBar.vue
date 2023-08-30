@@ -4,13 +4,16 @@
       <div class="relative mt-1">
         <div
             class="wrapper-input group"
-            :class="{
-              '!bg-white': isFocus,
-              'rounded-full': !isFocus || storedSearches.length === 0 && people.length === 0 && !query,
-              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0),
-              'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),
-          }"
+            :class="isFocus ? 'rounded-t-3xl !bg-white' : 'rounded-full'"
         >
+<!--            :class="{-->
+<!--              '!bg-white': isFocus,-->
+<!--              // 'rounded-full': !isFocus || storedSearches.length === 0 && people.length === 0 && !query,-->
+<!--              'rounded-full': !isFocus,-->
+<!--              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0),-->
+<!--              'rounded-t-3xl': isFocus-->
+<!--              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),-->
+<!--          }"-->
           <MagnifyingGlassIcon class="h-5 w-5 text-zinc-500"/>
           <ComboboxInput
               placeholder="Search Meepo"
@@ -33,7 +36,7 @@
               @click.stop="query = ''"
               class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute top-2 right-3 z-[2]"
           />
-<!--              @click.stop="query = ''; isFocus = true"-->
+          <!--              @click.stop="query = ''; isFocus = true"-->
 
         </div>
 
@@ -46,7 +49,7 @@
           <!--            @after-leave="query = ''"-->
 
           <!--              :hold="true"-->
-<!--              :hold="!isFocus"-->
+          <!--              :hold="!isFocus"-->
           <ComboboxOptions
               class="options"
               :class="{'ring-1': isFocus && (people.length > 0 || storedSearches.length > 0 || query)}"
@@ -291,13 +294,17 @@ const handleOutFocus = () => {
 
 const handleEnter = () => {
   console.log('dauphaihau debug: enter')
+  if (!query.value) {
+    isFocus.value = false
+    return
+  }
   isEntered.value = true
+
   // query.value = e.target.value
   // getSearch(e.target.value)
 
   if (!storedSearches.value.includes(query.value)) {
     storedSearches.value.unshift(query.value)
-    // storedSearches.value.push(query.value)
     localStorage.storedSearches = JSON.stringify(storedSearches.value)
   }
 
@@ -312,19 +319,19 @@ const handleRedirect = (type, data?: IUser & IPost) => {
         route.query.f = 'top'
       }
       router.push({
-        path: 'search',
+        name: 'search',
         query: {
           q: query.value,
           f: route.query.f
         }
       })
-      emit('changeRoute', query.value)
+      // emit('changeRoute', query.value)
       break
     case 'post':
       router.push('/posts/' + data.id)
       emit('changeRoute')
       break
-    default:
+    case 'user':
       router.push('/user/' + data.username)
       emit('changeRoute')
   }

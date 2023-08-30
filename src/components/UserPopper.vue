@@ -1,15 +1,14 @@
 <template>
-  <Popover v-slot="{ open, close }" class="relative">
+  <Popover v-slot="{ open, close }" class="relative ">
 
     <PopoverButton
         :class="open ? '' : 'text-opacity-90'"
-        class="focus:outline-none"
+        class="focus:outline-none inline-flex items-center"
         @mouseover="(e) => hoverPopover(e, open)"
         @mouseleave="closePopover(close)"
     >
       <slot/>
     </PopoverButton>
-<!--    <p>{{open}}</p>-->
 <!--    <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
 <!--    <PopoverOverlay class="" />-->
 <!--    <PopoverOverlay :class="open && 'fixed inset-0'" />-->
@@ -27,12 +26,9 @@
       <PopoverPanel
           @mouseover.prevent="popoverHover = true"
           @mouseleave.prevent="closePopover(close)"
-          class="absolute left-[-90px] bg-white rounded-xl mt-3 w-10 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"
-          :class="open ? ' z-20' : 'z-[-10]'"
+          class="absolute z-[1] left-[-90px] bg-white rounded-xl mt-3 w-10 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"
       >
-
-<!--          class="absolute z-10 left-[-90px] bg-white rounded-xl mt-3 w-10 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"-->
-<!--      >-->
+<!--          :class="open ? ' z-20' : 'z-[-10]'"-->
 
         <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="flex justify-between mb-2">

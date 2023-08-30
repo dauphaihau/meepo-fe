@@ -40,8 +40,7 @@
                   <div
                       @click="redirectProfile"
                       class="font-bold text-black hover:underline hover:underline-offset-2 animate"
-                  >{{ user.name }}
-                  </div>
+                  >{{ user.name }}</div>
                 </UserPopper>
 
                 <UserPopper :user="user">

@@ -1,6 +1,6 @@
 export enum FILTER_POST_BY {
   DEFAULT,
-  REPLIES,
+  COMMENTS,
   LIKES,
   MEDIA,
   FOLLOWING,

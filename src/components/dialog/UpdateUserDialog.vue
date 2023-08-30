@@ -20,10 +20,13 @@ import DateBirthInput from "@/components/DateBirthInput.vue";
 import { IUser } from "@/types/user";
 import { logger } from "@/core/helper";
 import { toast } from "vue-sonner";
+import { MutationEnums } from "@/types/store/root";
+import { useStore } from "@/store";
 
 const emits = defineEmits<{(e: 'onUpdateProfile', value: Partial<IUser>)}>()
 const { user } = defineProps<{user: IUser}>()
 const { getUser } = mapGetters()
+const store = useStore()
 
 const showDialog = ref(false);
 const isLoading = ref(false);
@@ -78,6 +81,7 @@ const onSubmit = async () => {
     toast('Your profile was updated')
     dob.value = dayjs(data.user.dob).format('DD MMMM YYYY')
     emits('onUpdateProfile', data.user)
+    store.commit(MutationEnums.SET_USER_INFO, data.user);
     closeModal()
   }
 }

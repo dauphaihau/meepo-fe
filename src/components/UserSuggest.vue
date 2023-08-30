@@ -12,7 +12,8 @@
         @click="!isOpenPopover && redirectProfile"
     >
       <div class="flex items-center gap-2">
-        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class=" max-h-10">
+        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="min-h-10 max-h-10 min-w-[40px]">
+<!--        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="max-h-10">-->
           <div class="before:absolute">
             <img
                 v-if="user.avatar_url"
@@ -30,17 +31,17 @@
             />
           </div>
         </UserPopper>
-        <div class="">
+        <div>
           <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="max-h-[18px]">
             <p
                 @click="redirectProfile"
-                class="before:absolute text-[15px] font-bold text-zinc-900 hover:underline hover:underline-offset-2"
+                class="before:absolute text-[15px] font-bold text-zinc-900 hover:underline hover:underline-offset-2 max-w-[11rem] truncate h-5"
             >
               {{ user.name ?? '-' }}
             </p>
           </UserPopper>
-          <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="mb-1">
-            <p @click="redirectProfile" class="text-[15px] font-normal text-zinc-500">
+          <UserPopper :user="user" @onOpenPopover="onOpenPopover">
+            <p @click="redirectProfile" class="text-[15px] font-normal text-zinc-500 max-w-[11rem] truncate">
               @{{ user.username ?? '-' }}
             </p>
           </UserPopper>

@@ -12,16 +12,20 @@
           name="month"
           v-model="dob.month"
       />
-      <Select1
+      <Select
+          :data="days"
           @update:modelValue="onChangeSelect"
           placeholder="Day"
-          :data="days" classWrapper="w-[124px]" name="day"
+          classWrapper="w-[124px]"
+          name="day"
           v-model="dob.day"
       />
-      <Select2
+      <Select
+          :data="years"
           @update:modelValue="onChangeSelect"
           placeholder="Year"
-          :data="years" classWrapper="w-[115px]" name="year"
+          classWrapper="w-[115px]"
+          name="year"
           v-model="dob.year"
       />
     </div>
@@ -33,8 +37,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import Select from "@/core/components/forms/Select.vue";
-import Select1 from "@/core/components/forms/Select.vue";
-import Select2 from "@/core/components/forms/Select.vue";
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -74,10 +76,15 @@ const years = ref([])
 onBeforeMount(() => {
   if (modelValue) {
     const dobSplited = modelValue.split(' ')
+
+    // regex get only string number
+    // Number() to remove prefix 0 ( e.g 01, 02, 03, .. )
+    const numberDay = Number(dobSplited[1].replace(/[^0-9]/g, ""))
+    const stringDay = numberDay.toString()
+
     dob.value = {
-      // remove prefix 0 ( e.g 01, 02, 03, .. )
-      day: dobSplited[0].charAt(0) === '0' ? dobSplited[0].charAt(1) : dobSplited[0],
-      month: dobSplited[1],
+      month: dobSplited[0],
+      day: stringDay,
       year: dobSplited[2],
     }
   }

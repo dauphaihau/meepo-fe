@@ -1,6 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { ActionEnums, IRootState, MutationEnums } from "@/types/store/root";
 import { ActionContext } from "vuex";
+import { IUser } from "@/types/user";
 
 export interface IAxiosResponse<T = any> {
   data: T;
@@ -15,12 +16,7 @@ export interface IAxiosResponse<T = any> {
 
 export interface ISessionState {
   auth_token: string,
-  user: {
-    id: number | null,
-    username: string | null,
-    email: string | null,
-    name: string | null,
-  },
+  user?: Partial<IUser>
 }
 
 export type SessionGetterTypes = {

@@ -143,7 +143,7 @@ const changeRoute = (value) => {
   // if (value) {
   //   query.value = value
   // }
-  // keySearchAllComp.value++
+  keySearchAllComp.value++
 }
 
 watch(router.currentRoute, () => {

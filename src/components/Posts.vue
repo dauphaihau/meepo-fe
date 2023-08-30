@@ -39,6 +39,7 @@
             @onPinPost="onGetPosts('pin')"
             @onDeletePost="onGetPosts"
             :dataPost="post"
+            :by="by"
             :pinStatus="post.pin_status"
         />
       </div>
@@ -130,7 +131,7 @@ const getPosts = async () => {
     payload.by = by
   }
 
-  if ([FILTER_POST_BY.LIKES, FILTER_POST_BY.REPLIES, FILTER_POST_BY.MEDIA].includes(by)) {
+  if ([FILTER_POST_BY.LIKES, FILTER_POST_BY.COMMENTS, FILTER_POST_BY.MEDIA].includes(by)) {
     payload.user_id = author?.id
   }
 

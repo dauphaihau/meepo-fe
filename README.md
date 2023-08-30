@@ -15,7 +15,7 @@ Meepo is a free social networking site where people converse with each other in 
 The app is being under maintenance, as more work needs to be done.
 
 Current functionality includes:
-- Log in, Sign up, Sign out, Update profile
+- Log in, sign up, sign out, update profile
 - CURD, like, comment, pin, filters post
 - Follow/unfollow user
 - Search posts/users based on followers, likes, image, where user comment 

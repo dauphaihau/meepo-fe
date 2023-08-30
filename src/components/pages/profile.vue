@@ -10,7 +10,7 @@
         :title="!isUserNotExist ? user?.name : 'Profile' "
         :subTitle="`${user?.posts_count ?? 0 } posts`"
     />
-    <div class="h-12"></div>
+    <div class="h-[4.5rem]"></div>
 
     <!--    Background-->
     <div class="bg-zinc-300 h-[198px]">
@@ -29,7 +29,8 @@
       <!--      Avatar, Edit user-->
       <div class="flex justify-between items-center">
 
-        <div  class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">
+        <!--        <div  class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">-->
+        <div class="rounded-full ring-white ring-4 bg-white h-[133.5px] w-[133.5px] mb-6">
           <img
               v-if="user.avatar_url"
               alt="avatar"
@@ -49,6 +50,7 @@
               v-if="currentRouteUsername === getUser.username"
               :user="user"
               @onUpdateProfile="onUpdateProfile"
+              :key="keyUpdateUserDialog"
           />
         </div>
       </div>
@@ -100,7 +102,7 @@
 
             <div v-if="user?.location" class="flex gap-1 items-center">
               <MapPinIcon
-                  class="h-5 w-5 cursor-pointer text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-gray-500 text-[15px]"
                   aria-hidden="true"
               />
               <div class="text-gray-500 text-[15px]">
@@ -110,7 +112,7 @@
 
             <div v-if="user?.dob" class="flex gap-1 items-center">
               <CakeIcon
-                  class="h-5 w-5 cursor-pointer text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-gray-500 text-[15px]"
                   aria-hidden="true"
               />
               <div class="text-gray-500 text-[15px]">
@@ -120,7 +122,7 @@
 
             <div v-if="user?.website" class="flex gap-1 items-center">
               <LinkIcon
-                  class="h-5 w-5 cursor-pointer text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-gray-500 text-[15px]"
                   aria-hidden="true"
               />
               <Link
@@ -133,7 +135,7 @@
 
             <div v-if="user?.created_at" class="flex gap-1 items-center">
               <CalendarDaysIcon
-                  class="h-5 w-5 cursor-pointer text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-gray-500 text-[15px]"
                   aria-hidden="true"
               />
               <div class="text-gray-500 text-[15px]">
@@ -229,6 +231,7 @@ const isLoading = ref(true)
 const isUserNotExist = ref(false)
 const isFollowing = ref(false)
 const keyPostsComp = ref(0)
+const keyUpdateUserDialog = ref(0)
 
 const tabs = ['Posts', 'Comments', 'Likes', 'Media'].map((name) => ({ name }))
 const currentTab = ref(0)
@@ -278,10 +281,13 @@ async function unOrFollow() {
 
 const onUpdateProfile = (values) => {
   values.created_at = dayjs(values.created_at).format('MMMM YYYY')
-  values.dob = dayjs(values.dob).format('MMMM DD  YYYY')
+  values.dob = dayjs(values.dob).format('MMMM DD, YYYY')
   values.hostWebsite = values.website && values.website.includes('http') ? new URL(values.website).host : values.website
   user.value = { ...user.value, ...values }
   keyPostsComp.value++
+  setTimeout(() => {
+    keyUpdateUserDialog.value++
+  }, 500)
 }
 
 function changeTab(index) {

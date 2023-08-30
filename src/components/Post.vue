@@ -54,7 +54,7 @@
               </div>
             </UserPopper>
             <div
-                v-if="dataPost.sub_posts_count > 0 && !isSubPost && currentRouteName !== 'search'"
+                v-if="(dataPost.sub_posts_count > 0 && !isSubPost && currentRouteName === 'post') || by === FILTER_POST_BY.COMMENTS"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto w-[2px]"
             />
           </div>
@@ -66,14 +66,16 @@
                 <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
                   <div
                       @click="redirectProfile"
-                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
+                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
                   >
                     {{ dataPost.author_name }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>
+<!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
+                    <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">@{{ dataPost.author_username }}</div>
+
                   </UserPopper>
                   · {{ dataPost.time }}
                 </div>
@@ -153,7 +155,7 @@
     </div>
 
     <!--    <div v-if="dataPost.sub_post" class="relative z-20">-->
-    <div v-if="dataPost.sub_post">
+    <div v-if="(currentRouteName === 'post' && dataPost.sub_post ) || by === FILTER_POST_BY.COMMENTS">
       <Post isSubPost :dataPost="dataPost.sub_post"/>
     </div>
   </div>
@@ -164,6 +166,7 @@ import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
 import { cn } from '@/core/helper.js'
+import { FILTER_POST_BY } from "@/config/const";
 import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
 import OptionsPost from "@/components/OptionsPost.vue";
@@ -178,9 +181,10 @@ import { formatTextWithHashTags } from "@/core/helper";
 interface Props {
   dataPost: IPost & {time?: string, sub_post?: IPost},
   isSubPost?: boolean
+  by?: number
 }
 
-let { dataPost, isSubPost } = defineProps<Props>()
+let { dataPost, isSubPost, by } = defineProps<Props>()
 
 const route = useRoute()
 const router = useRouter()
