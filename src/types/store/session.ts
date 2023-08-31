@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { ActionEnums, IRootState, MutationEnums } from "@/types/store/root";
+import { ActionEnums, IRootState, MutationEnums, MutationTypes } from "@/types/store/root";
 import { ActionContext } from "vuex";
 import { IUser } from "@/types/user";
 
@@ -29,7 +29,7 @@ export type SessionGetterTypes = {
 export type SessionMutationTypes<S = IRootState> = {
   [MutationEnums.SET_USER_INFO]?(state: S, payload: ISessionState['user']): void;
   [MutationEnums.RESET_USER_INFO]?(state: S): void;
-};
+} & Partial<MutationTypes>;
 
 type AugmentedActionContext = {
   commit<K extends keyof SessionMutationTypes>(
