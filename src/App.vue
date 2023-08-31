@@ -48,10 +48,7 @@ watch(isLoggedIn, () => {
     />
     <Header/>
 
-<!--     <div class="fixed inset-0 z-50 bg-black opacity-30" />-->
-<!--     <div class="fixed inset-0 z-[2] bg-black opacity-30" />-->
     <div :key="keyApp" class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex">
-<!--    <div :key="keyApp" class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex relative z-50">-->
       <SidebarLeft/>
       <div class="flex gap-6">
         <div class="flex flex-col border-l border-r min-w-[600px] max-w-[600px]">

@@ -18,7 +18,7 @@ import { validationLoginSchema } from "@/lib/validations/auth";
 import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
-const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
+const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
 
 const isSubmitted = ref(false);
 const isLoading = ref(false);
@@ -44,7 +44,6 @@ const onSubmit = handleSubmit(async (vals) => {
   isLoading.value = true
   logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue')
   const message = await store.dispatch(ActionEnums.LOGIN, data)
-  // const message = await loginUser(data)
   isLoading.value = false
   if (message) {
     setFieldError('email', message)
@@ -59,6 +58,7 @@ function closeDialog() {
 }
 
 function openDialog() {
+  console.log('dauphaihau debug: open dialog')
   store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
 }
 
@@ -71,13 +71,13 @@ const openRegisterDialog = () => {
 
 
 <template>
-  <button
-      type="button"
+  <Button
+      v-if="!isLoggedIn"
       @click="openDialog"
-      class="rounded-full bg-black px-8 py-1.5  text-sm font-semibold text-white hover:bg-opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+      class="px-8 h-[32px]"
   >
     Log In
-  </button>
+  </Button>
 
   <TransitionRoot appear :show="isOpenDialog" as="template">
     <Dialog as="div" @close="closeDialog" class="relative z-50">

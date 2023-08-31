@@ -28,10 +28,8 @@
       />
 
       <div class="hidden lg:block lg:flex lg:flex-1 lg:justify-end items-center">
-
-        <LoginDialog v-if="!isLoggedIn"/>
-        <RegisterDialog v-if="!isLoggedIn"/>
-
+        <LoginDialog/>
+        <RegisterDialog/>
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
           <div>
             <MenuButton>
@@ -123,7 +121,8 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const { isLoggedIn, getUser } = mapGetters()
+const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
+console.log('dauphaihau debug: is-open-dialog', isOpenDialog.value)
 
 const mobileMenuOpen = ref(false)
 const routerIsReady = ref(false)
@@ -139,10 +138,7 @@ onMounted(async () => {
   }
 })
 
-const changeRoute = (value) => {
-  // if (value) {
-  //   query.value = value
-  // }
+const changeRoute = () => {
   keySearchAllComp.value++
 }
 
@@ -161,11 +157,8 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 .header {
   @apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;
 }
-  /*@apply bg-white fixed top-0 w-full z-10 h-fit  border-b border-zinc-200 px-6;*/
 
 .nav {
   @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex
-  /*@apply mx-auto grid grid-cols-5 max-w-7xl py-2 lg:px-0*/
 }
-
 </style>

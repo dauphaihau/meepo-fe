@@ -10,7 +10,6 @@
       <h2 class="title">What’s happening</h2>
       <!--      <h2 class="text-2xl font-black px-3">Trend for you</h2>-->
 
-
       <div v-if="isLoading" class="flex-center min-h-[35vh]">
         <Loading/>
       </div>

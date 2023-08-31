@@ -51,7 +51,6 @@
     <!-- Posts -->
     <div v-if="currentTab !== 2 && posts.length > 0">
       <!--      <h3 class="text-[20px] font-bold leading-6 px-4 pt-6 pb-3">Posts</h3>-->
-      <!--      <div class="flex flex-col relative z-10">-->
       <div class="flex flex-col">
         <div v-for="post in posts" :key="post.id">
           <Post
@@ -147,7 +146,6 @@ watch(router.currentRoute, (value, oldValue) => {
   }
 
   if (value && oldValue.query.q !== value.query.q) {
-    console.log('dauphaihau debug: change q')
     resetState()
     getSearch()
   }

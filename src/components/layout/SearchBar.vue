@@ -4,16 +4,12 @@
       <div class="relative mt-1">
         <div
             class="wrapper-input group"
-            :class="isFocus ? 'rounded-t-3xl !bg-white' : 'rounded-full'"
+            :class="{
+              '!bg-white': isFocus,
+              'rounded-full': !isFocus || storedSearches.length === 0 && people.length === 0 && !query,
+              'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),
+          }"
         >
-<!--            :class="{-->
-<!--              '!bg-white': isFocus,-->
-<!--              // 'rounded-full': !isFocus || storedSearches.length === 0 && people.length === 0 && !query,-->
-<!--              'rounded-full': !isFocus,-->
-<!--              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0),-->
-<!--              'rounded-t-3xl': isFocus-->
-<!--              // 'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),-->
-<!--          }"-->
           <MagnifyingGlassIcon class="h-5 w-5 text-zinc-500"/>
           <ComboboxInput
               placeholder="Search Meepo"
@@ -293,7 +289,6 @@ const handleOutFocus = () => {
 }
 
 const handleEnter = () => {
-  console.log('dauphaihau debug: enter')
   if (!query.value) {
     isFocus.value = false
     return

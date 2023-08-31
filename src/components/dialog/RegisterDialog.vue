@@ -18,7 +18,7 @@ import { validationRegisterSchema } from "@/lib/validations/auth";
 import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
-const { getOpenRegisterDialog: isOpenDialog } = mapGetters()
+const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters()
 
 const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
   validationSchema: validationRegisterSchema,
@@ -86,16 +86,13 @@ function openDialog() {
 </script>
 
 <template>
-  <div class="ml-3">
-    <button
-        type="button"
-        @click="openDialog"
-        class="rounded-full bg-black px-8 py-1.5  text-sm font-semibold text-white hover:bg-opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-    >
-      Sign Up
-    </button>
-  </div>
-
+  <Button
+      v-if="!isLoggedIn"
+      @click="openDialog"
+      class="px-8 h-[32px] ml-3"
+  >
+    Sign Up
+  </Button>
 
   <TransitionRoot appear :show="isOpenDialog" as="template">
     <Dialog as="div" @close="closeDialog" class="relative z-50">

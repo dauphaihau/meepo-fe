@@ -35,13 +35,13 @@
               v-if="user.avatar_url"
               alt="avatar"
               :src="user.avatar_url"
-              class="h-[133.5px] w-[149px] rounded-full "
+              class="rounded-full"
           />
           <img
               v-else
               alt="avatar"
               src="@/assets/default-avatar.png"
-              class="h-[133.5px] w-[149px] rounded-full "
+              class="rounded-full "
           />
         </div>
 

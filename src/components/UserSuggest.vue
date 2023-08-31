@@ -13,7 +13,6 @@
     >
       <div class="flex items-center gap-2">
         <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="min-h-10 max-h-10 min-w-[40px]">
-<!--        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="max-h-10">-->
           <div class="before:absolute">
             <img
                 v-if="user.avatar_url"

@@ -47,6 +47,7 @@ const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
       apiHelper.defaults.headers.common["Authorization"] = headers.authorization;
       localStorage.setItem("auth_token", headers.authorization);
       commit(MutationEnums.SET_USER_INFO, data.user);
+      commit(MutationEnums.SET_REGISTER_DIALOG, false);
     } catch (error) {
       logger.error(error, 'src/store/modules/session.ts')
     }
@@ -71,6 +72,7 @@ const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
       apiHelper.defaults.headers.common["Authorization"] = headers.authorization;
       localStorage.setItem("auth_token", headers.authorization);
       commit(MutationEnums.SET_USER_INFO, data.user);
+      commit(MutationEnums.SET_LOGIN_DIALOG, false);
     } catch (error) {
       logger.error(error, 'src/store/modules/session.ts')
     }
@@ -111,6 +113,7 @@ const mutations: MutationTree<Partial<ISessionState>> & SessionMutationTypes = {
       username: null,
       email: null,
       name: null,
+      avatar_url: null,
     };
     state.auth_token = '';
     state.openLoginDialog = false
