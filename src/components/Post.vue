@@ -165,7 +165,7 @@
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
-import { cn } from '@/core/helper.js'
+import { cn, logger } from '@/core/helper.js'
 import { FILTER_POST_BY } from "@/config/const";
 import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
@@ -219,67 +219,66 @@ onBeforeMount(() => {
     isLike.value = dataPost.likes_count && dataPost.is_current_user_like
   } else {
     isLike.value = false
-    // isLike.value = !!dataPost.likes_count
   }
 })
 
-// const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
-//
-// ws.onopen = () => {
-//   logger.info('Connected to websocket server', 'src/components/Post.vue')
-//   guid.value = Math.random().toString(36).substring(2, 15)
-//
-//   ws.send(
-//       JSON.stringify({
-//         command: "subscribe",
-//         identifier: JSON.stringify({
-//           id: guid,
-//           channel: "PostsChannel",
-//         }),
-//       })
-//   );
-// };
-//
-// ws.onmessage = (e) => {
-//   const data = JSON.parse(e.data);
-//   if (data.type === "ping") return;
-//   if (data.type === "welcome") return;
-//   if (data.type === "confirm_subscription") return;
-//
-//   logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
-//
-//   if (!data.message) {
-//     return;
-//   }
-//
-//   if (dataPost.id === data.message.post.id) {
-//
-//     if (data.message?.post.likes_count !== dataPost.likes_count) {
-//       handleAnimationCount('likes_count')
-//     }
-//
-//     if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
-//       handleAnimationCount('sub_posts_count')
-//     }
-//   }
-//
-//   function handleAnimationCount(key) {
-//     const isUp = data.message.post[key] > dataPost[key]
-//     let animation = key === 'likes_count' ? animationLikes : animationComments
-//     // 1. Old number goes up
-//     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
-//
-//     // 2. Incrementing the counter
-//     setTimeout(() => dataPost[key] = data.message.post[key], 100);
-//
-//     // 3. New number waits down
-//     setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
-//
-//     // 4. New number stays in the middle
-//     setTimeout(() => animation.value = 'initial', 200);
-//   }
-//
-// };
+const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+
+ws.onopen = () => {
+  logger.info('Connected to websocket server', 'src/components/Post.vue')
+  guid.value = Math.random().toString(36).substring(2, 15)
+
+  ws.send(
+      JSON.stringify({
+        command: "subscribe",
+        identifier: JSON.stringify({
+          id: guid,
+          channel: "PostsChannel",
+        }),
+      })
+  );
+};
+
+ws.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+  if (data.type === "ping") return;
+  if (data.type === "welcome") return;
+  if (data.type === "confirm_subscription") return;
+
+  logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
+
+  if (!data.message) {
+    return;
+  }
+
+  if (dataPost.id === data.message.post.id) {
+
+    if (data.message?.post.likes_count !== dataPost.likes_count) {
+      handleAnimationCount('likes_count')
+    }
+
+    if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
+      handleAnimationCount('sub_posts_count')
+    }
+  }
+
+  function handleAnimationCount(key) {
+    const isUp = data.message.post[key] > dataPost[key]
+    let animation = key === 'likes_count' ? animationLikes : animationComments
+    // 1. Old number goes up
+    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+
+    // 2. Incrementing the counter
+    setTimeout(() => dataPost[key] = data.message.post[key], 100);
+
+    // 3. New number waits down
+    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+
+    // 4. New number stays in the middle
+    setTimeout(() => animation.value = 'initial', 200);
+  }
+
+};
 
 const onDeletePostChildComp = () => {
   emit('onDeletePost')
