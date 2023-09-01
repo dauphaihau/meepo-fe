@@ -31,29 +31,27 @@
         <LoginDialog/>
         <RegisterDialog/>
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
-          <div>
-            <MenuButton>
-              <div class="flex gap-2 hover:bg-zinc-300/50 py-1 pl-1 pr-3 rounded-full animate">
-                <img
-                    v-if="getUser.avatar_url"
-                    alt="avatar"
-                    :src="getUser.avatar_url"
-                    class="h-10 w-10 rounded-full "
-                />
-                <img
-                    v-else
-                    alt="avatar"
-                    src="@/assets/default-avatar.png"
-                    class="h-10 w-10 rounded-full "
-                />
-                <div class="text-left max-w-[150px]">
-                  <h3 class="text-[13px] font-bold text-zinc-900 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {{ getUser?.name }}</h3>
-                  <p class="max-w-2xl text-sm text-zinc-500 overflow-hidden text-ellipsis">@{{ getUser?.username }}</p>
-                </div>
+          <MenuButton>
+            <div class="flex gap-2 hover:bg-zinc-300/50 py-1 pl-1 pr-3.5 rounded-full animate">
+              <img
+                  v-if="getUser.avatar_url"
+                  alt="avatar"
+                  :src="getUser.avatar_url"
+                  class="h-10 w-10 rounded-full "
+              />
+              <img
+                  v-else
+                  alt="avatar"
+                  src="@/assets/default-avatar.png"
+                  class="h-10 w-10 rounded-full "
+              />
+              <div class="text-left max-w-[150px]">
+                <h3 class="text-[13px] font-bold text-zinc-900 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {{ getUser?.name }}</h3>
+                <p class="max-w-2xl text-sm text-zinc-500 overflow-hidden text-ellipsis">@{{ getUser?.username }}</p>
               </div>
-            </MenuButton>
-          </div>
+            </div>
+          </MenuButton>
 
           <transition
               enter-active-class="transition ease-out duration-100"
@@ -122,7 +120,6 @@ const route = useRoute()
 const router = useRouter()
 
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
-console.log('dauphaihau debug: is-open-dialog', isOpenDialog.value)
 
 const mobileMenuOpen = ref(false)
 const routerIsReady = ref(false)

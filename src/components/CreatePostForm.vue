@@ -33,7 +33,7 @@
           <div class="">
             <div class="mt-2 flex ">
 
-              <!--                <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm"></span>-->
+              <!--                <span class="flex select-none items-center pl-3 text-zinc-500 sm:text-sm"></span>-->
 
               <!--                    @focusout="onFocusOut"-->
               <textarea
@@ -57,7 +57,7 @@
             <div class="relative" v-if="urlImage">
               <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
               <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
-                <XMarkIcon @click="deleteImage" class="text-gray-500 h-5 w-5 cursor-pointer text-white"/>
+                <XMarkIcon @click="deleteImage" class="text-zinc-500 h-5 w-5 cursor-pointer text-white"/>
               </div>
             </div>
           </div>
@@ -245,13 +245,13 @@ watch(content, () => {
 
 <style scoped>
 .textarea-input {
-  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-500
+  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-zinc-900 placeholder:text-zinc-500
   focus:ring-0 focus:outline-none sm:text-sm lg:text-xl sm:leading-6;
   max-height: 100%;
 }
 
 
 .icon-btn {
-  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-gray-500 cursor-pointer transition transform duration-200 ease-in-out;
+  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500 cursor-pointer transition transform duration-200 ease-in-out;
 }
 </style>

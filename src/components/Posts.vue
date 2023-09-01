@@ -24,7 +24,6 @@
     </div>
 
     <!-- Posts -->
-<!--        class="flex flex-col relative z-10"-->
     <div
         :key="keyPosts"
         class="flex flex-col relative z-[1]"
@@ -32,7 +31,6 @@
           'border-t': currentRouteName === 'post',
         }"
     >
-
       <div v-for="post in posts" :key="post.id">
         <Post
             class="border-b"
@@ -106,7 +104,7 @@ onBeforeUnmount(() => {
 
 function onScroll() {
   if (
-      window.scrollY + window.innerHeight >= (document.body.scrollHeight * 90 / 100) &&
+      window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
       !isLoading.value &&
       !reachEndPage.value
   ) {
@@ -187,7 +185,7 @@ watch(getKeyMutatePosts, () => {
 
 <style scoped>
 .textarea-input {
-  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-500
+  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-zinc-900 placeholder:text-zinc-500
   focus:ring-0 focus:outline-none sm:text-sm lg:text-xl sm:leading-6;
   max-height: 100%;
   /*height: 52px;*/
@@ -195,8 +193,8 @@ watch(getKeyMutatePosts, () => {
 
 
 .icon-btn {
-  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-gray-500 cursor-pointer
+  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500 cursor-pointer
 }
 
-/*text-gray-500 h-5 w-5 cursor-pointer*/
+/*text-zinc-500 h-5 w-5 cursor-pointer*/
 </style>

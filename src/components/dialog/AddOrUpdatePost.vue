@@ -268,7 +268,7 @@ const handleDisabledUpdate = () => {
               <div class="px-4 absolute top-0 left-0 z-20 bg-white rounded-2xl grid grid-cols-8 items-center h-[53px] w-full">
                 <XMarkIcon
                     @click="closeDialog"
-                    class="text-black h-9 w-9 cursor-pointer col-span-1 hover:bg-gray-100 rounded-full p-2 animate"
+                    class="text-black h-9 w-9 cursor-pointer col-span-1 hover:bg-zinc-100 rounded-full p-2 animate"
                 />
               </div>
 
@@ -313,7 +313,7 @@ const handleDisabledUpdate = () => {
                         <div class="relative" v-if="urlImage">
                           <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
                           <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
-                            <XMarkIcon @click="deleteImage" class="text-gray-500 h-5 w-5 cursor-pointer text-white"/>
+                            <XMarkIcon @click="deleteImage" class="text-zinc-500 h-5 w-5 cursor-pointer text-white"/>
                           </div>
                         </div>
                       </div>
@@ -388,13 +388,13 @@ const handleDisabledUpdate = () => {
 <style scoped>
 
 .textarea-input {
-  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-500
+  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-zinc-900 placeholder:text-zinc-500
   focus:ring-0 focus:outline-none sm:text-sm lg:text-xl sm:leading-6;
   max-height: 100%;
 }
 
 .icon-btn {
-  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-gray-500 cursor-pointer
+  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500 cursor-pointer
 }
 
 </style>

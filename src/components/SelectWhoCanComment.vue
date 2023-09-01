@@ -7,7 +7,7 @@
       <div class="relative mt-1">
         <ListboxButton
             @input="onChangeSelect"
-            class="flex items-center gap-2 text-gray-500 font-semibold my-2 hover:bg-zinc-200 w-fit rounded-full px-2 py-1 cursor-pointer border-none animate"
+            class="flex items-center gap-2 text-zinc-500 font-semibold my-2 hover:bg-zinc-200 w-fit rounded-full px-2 py-1 cursor-pointer border-none animate"
         >
           <GlobeAsiaAustraliaIcon class=" h-4 w-4"/>
           <div class="text-sm">{{ selectedOption.title }} can comment</div>
@@ -32,7 +32,7 @@
             >
               <li
                   :class="[
-                  active ? 'bg-gray-100 text-gray-900' : 'text-gray-900',
+                  active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-900',
                   'relative cursor-pointer select-none py-2 pl-4 pr-10',
                 ]"
               >

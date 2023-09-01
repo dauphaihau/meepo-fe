@@ -4,20 +4,19 @@
         class="flex flex-col relative"
         @mouseover="isHover = true"
         @mouseleave="isHover = false"
-        :class="{'z-[3]': isHover}"
+        :class="{'z-[1]': isHover}"
     >
       <div
           class="px-4 bg-white flex flex-col animate hover:bg-zinc-100"
           :class="{'cursor-pointer': !isOpenPopover, }"
           @click="!isOpenPopover && clickDetailPost('post')"
       >
-
         <!--         Pin Post-->
         <div
             v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
-            class="flex gap-3 items-center text-gray-500 ml-[30px] mb-[-10px] mt-2"
+            class="flex gap-3 items-center text-zinc-500 ml-[30px] mb-[-10px] mt-2"
         >
-          <!--            class="flex gap-3 items-center text-gray-500 ml-[30px] "-->
+          <!--            class="flex gap-3 items-center text-zinc-500 ml-[30px] "-->
           <StarIcon class="h-4 w-4"/>
           <p class="font-semibold text-[13px]">Pinned Post</p>
         </div>
@@ -35,7 +34,7 @@
                 v-if="isSubPost && currentRouteName !== 'search'"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
             />
-            <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+            <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
               <div class="before:absolute">
                 <img
                     v-if="dataPost.author_avatar_url"
@@ -63,7 +62,7 @@
             <div class="flex justify-between">
               <!--              info author-->
               <div class="flex gap-2 text-[15px]">
-                <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
+                <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                   <div
                       @click="redirectProfile"
                       class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
@@ -72,9 +71,11 @@
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
-                  <UserPopper :user="dataPost" prefixAuthor @onOpenPopover="onOpenPopover">
-<!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
-                    <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">@{{ dataPost.author_username }}</div>
+                  <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
+                    <!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
+                    <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">
+                      @{{ dataPost.author_username }}
+                    </div>
 
                   </UserPopper>
                   · {{ dataPost.time }}
@@ -83,11 +84,11 @@
             </div>
 
             <!--         Content post   -->
-            <!--            <p class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
+            <!--            <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
             <!--              {{ dataPost.content }}-->
             <!--            </p>-->
             <p
-                class="font-normal text-gray-700 dark:text-gray-400 text-[15px] whitespace-pre-line mt-1.5"
+                class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line mt-1.5"
                 v-html="formatTextWithHashTags(dataPost.content)"
             />
 
@@ -107,12 +108,12 @@
                   <ChatBubbleOvalLeftEllipsisIcon
                       v-if="dataPost.sub_posts_count > 0"
                       @click="router.push('/posts/' + dataPost.id)"
-                      class="text-gray-500 h-5 w-5 cursor-pointer"
+                      class="text-zinc-500 h-5 w-5 cursor-pointer"
                   />
                   <ChatBubbleOvalLeftIcon
                       v-else
                       @click="router.push('/posts/' + dataPost.id)"
-                      class="text-gray-500 h-5 w-5 cursor-pointer"
+                      class="text-zinc-500 h-5 w-5 cursor-pointer"
                   />
 
                 </div>
@@ -124,10 +125,10 @@
                 <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
 
                   <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIconSolid class="text-gray-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIcon class="text-gray-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
 
                   <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
@@ -154,7 +155,6 @@
       </div>
     </div>
 
-    <!--    <div v-if="dataPost.sub_post" class="relative z-20">-->
     <div v-if="(currentRouteName === 'post' && dataPost.sub_post ) || by === FILTER_POST_BY.COMMENTS">
       <Post isSubPost :dataPost="dataPost.sub_post"/>
     </div>

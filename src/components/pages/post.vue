@@ -23,7 +23,7 @@
           <div class="flex justify-between">
 
             <div class="flex gap-2.5 mb-4">
-              <UserPopper :user="author">
+              <UserPopper :username="author.username">
                 <img
                     alt="avatar"
                     v-if="author.avatar_url"
@@ -40,16 +40,16 @@
                 />
               </UserPopper>
               <div>
-                <UserPopper :user="author" class="max-h-[18px]">
+                <UserPopper :username="author.username" class="max-h-[18px]">
                   <h3
                       @click="redirectProfile"
-                      class="text-base font-semibold  text-gray-900 hover:underline hover:underline-offset-2">
+                      class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2">
                     {{ author?.name }}</h3>
                 </UserPopper>
-                <UserPopper :user="author">
+                <UserPopper :username="author.username">
                   <p
                       @click="redirectProfile"
-                      class="max-w-2xl text-sm leading-3 text-gray-500">@{{ author?.username }}</p>
+                      class="max-w-2xl text-sm leading-3 text-zinc-500">@{{ author?.username }}</p>
                 </UserPopper>
               </div>
             </div>
@@ -76,7 +76,7 @@
                 class="rounded-xl mt-4 w-full h-auto"
             >
 
-            <div class="text-gray-500 font-normal text-sm mt-4">{{ post.time }} · {{ post.date }}</div>
+            <div class="text-zinc-500 font-normal text-sm mt-4">{{ post.time }} · {{ post.date }}</div>
           </div>
 
           <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
@@ -86,13 +86,13 @@
             <div class="flex gap-8 py-4" v-if="post.sub_posts_count > 0 || post.likes_count > 0">
               <div class="flex items-center gap-1">
                 <span :class="animationComments" class="text-[14px] font-bold">{{ post.sub_posts_count ?? 0 }}</span>
-                <span class="text-[14px] text-gray-500">Comments</span>
+                <span class="text-[14px] text-zinc-500">Comments</span>
               </div>
 
               <div class="flex items-center gap-2">
                 <div class='flex items-center gap-1'>
                   <span :class="animationLikes" class="text-[14px] font-bold">{{ post.likes_count ?? 0 }}</span>
-                  <span class="text-[14px] text-gray-500">Likes</span>
+                  <span class="text-[14px] text-zinc-500">Likes</span>
                 </div>
               </div>
             </div>
@@ -102,7 +102,7 @@
               <div
                   class="icon-btn"
                   v-tooltip="'Comment'"
-                  :class="!post.is_current_user_can_comment ? 'text-gray-400': 'text-gray-500'"
+                  :class="!post.is_current_user_can_comment ? 'text-zinc-400': 'text-zinc-500'"
               >
                 <ChatBubbleOvalLeftEllipsisIcon
                     v-if="post.sub_posts_count > 0"
@@ -114,7 +114,7 @@
               <!--              <ReceiptRefundIcon v-tooltip="'Repost'" class="icon-btn"/>-->
               <ReceiptRefundIcon
                   v-tooltip="'Not available'" class="icon-btn"
-                  :class="'text-gray-500'"
+                  :class="'text-zinc-500'"
               />
 
               <div class='icon-btn' @click="likePost" v-tooltip="'Like'">
@@ -124,13 +124,13 @@
 
               <BookmarkIcon
                   v-tooltip="'Not available'" class="icon-btn"
-                  :class="'text-gray-500'"
+                  :class="'text-zinc-500'"
               />
 
               <!--              <div class="icon-btn" v-tooltip="'Share'">-->
               <div
                   class="icon-btn" v-tooltip="'Not available'"
-                  :class="'text-gray-500'"
+                  :class="'text-zinc-500'"
               >
                 <ShareIcon/>
               </div>

@@ -23,14 +23,14 @@
         <div v-for="(hashtag, index) in hashtags" :key="index">
           <div
               @click="search(hashtag.name)"
-              class="block text-gray-500 cursor-pointer"
+              class="block text-zinc-500 cursor-pointer"
               :class="isExplorePage ? 'hover:bg-zinc-100/50 p-3' : 'hover:bg-zinc-200/50 px-3 py-2'"
           >
             <p class="text-[13px]">Trending in Vietnam</p>
-            <h5 class="text-[15px] font-bold tracking-tight text-gray-900 dark:text-white">
+            <h5 class="text-[15px] font-bold tracking-tight text-zinc-900 dark:text-white">
               #{{ hashtag.name }}
             </h5>
-            <p class="text-[13px] font-normal text-gray-600">{{ hashtag.count }} posts</p>
+            <p class="text-[13px] font-normal text-zinc-600">{{ hashtag.count }} posts</p>
           </div>
         </div>
       </div>

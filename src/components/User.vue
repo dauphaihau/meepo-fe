@@ -3,57 +3,42 @@
       class="relative"
       @mouseover="isHover = true"
       @mouseleave="isHover = false"
-      :class="{
-        'z-[1]' : isHover,
-      }"
+      :class="{'z-[1]': isHover}"
   >
-    <div class="block px-4 py-3 bg-white flex flex-col animate  hover:bg-zinc-100">
-      <div
-          class="flex flex-grow"
-          :class="!isOpenPopover && 'cursor-pointer'"
-          @click="!isOpenPopover && redirectProfile"
-      >
-        <UserPopper :user="user" @onOpenPopover="onOpenPopover" class="mr-3 min-w-[40px]">
+    <div
+        class="block px-4 py-3 bg-white flex flex-col animate  hover:bg-zinc-100"
+        :class="{'cursor-pointer': !isOpenPopover }"
+        @click="!isOpenPopover && redirectProfile()"
+    >
+      <div class="flex flex-grow">
+        <UserPopper :key="keyUserPopper" :userData="user" @onOpenPopover="onOpenPopover" class="mr-3 min-w-[40px] h-10">
           <img
               v-if="user.avatar_url"
               @click="redirectProfile"
               alt="avatar"
               v-bind:src="user.avatar_url"
-              class="rounded-full h-10 w-10 bg-black col-span-1"
+              class="rounded-full h-10 w-10 bg-black "
           />
           <img
               v-else
               @click="redirectProfile"
               alt="avatar"
               src="@/assets/default-avatar.png"
-              class="rounded-full h-10 w-10 bg-black col-span-1"
+              class="rounded-full h-10 w-10 bg-black "
           />
         </UserPopper>
 
-        <div class="col-span-10">
-          <div class=" text-[15px]">
-
-            <div class="flex justify-between items-center">
-              <div>
-
-                <UserPopper :user="user" @onOpenPopover="onOpenPopover">
-                  <div
-                      @click="redirectProfile"
-                      class="font-bold text-black hover:underline hover:underline-offset-2 animate"
-                  >{{ user.name }}</div>
-                </UserPopper>
-
-                <UserPopper :user="user">
-                  <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>
-                </UserPopper>
-                <!--                <UserPopper :user="user" @onOpenPopover="onOpenPopover">-->
-                <!--                  <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>-->
-                <!--                </UserPopper>-->
-              </div>
+        <div class="text-[15px]">
+          <UserPopper :key=keyUserPopper :userData="user" @onOpenPopover="onOpenPopover" class="h-5">
+            <div
+                @click="redirectProfile"
+                class="font-bold text-black hover:underline hover:underline-offset-2 animate"
+            >{{ user.name }}
             </div>
-
-            <p v-if="user.bio" class="font-normal text-gray-700 dark:text-gray-400 text-[15px]">{{ user.bio }}</p>
-          </div>
+          </UserPopper>
+          <UserPopper :userData="user" class="h-5">
+            <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>
+          </UserPopper>
         </div>
       </div>
     </div>
@@ -62,11 +47,10 @@
       <ToggleFollowBtn
           :show="isLoggedIn"
           :isFollowing="user.is_current_user_following"
-          @click="unOrFollow(user)"
+          @click="unOrFollow"
       />
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -80,12 +64,14 @@ import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import UserPopper from "@components/UserPopper.vue";
+import { logger } from "@/core/helper";
 
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const isHover = ref(false)
 const isOpenPopover = ref(false)
+const keyUserPopper = ref(0)
 
 const { getUser, isLoggedIn, getStateRouter } = mapGetters()
 const { user } = defineProps<{user: IUser}>()
@@ -95,9 +81,14 @@ const currentRouteName = route.name
 
 onMounted(() => {})
 
-const unOrFollow = async (user: IUser) => {
+const unOrFollow = async () => {
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
+    return
+  }
+
+  if (!user || !user?.id) {
+    logger.error('execute unOrFollow: user is undefined', 'src/components/User.vue')
     return
   }
 
@@ -105,6 +96,7 @@ const unOrFollow = async (user: IUser) => {
 
   if (status === 200) {
     user.is_current_user_following = !user.is_current_user_following
+    keyUserPopper.value++
   }
 }
 

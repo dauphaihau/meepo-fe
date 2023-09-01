@@ -30,18 +30,18 @@
       <div class="flex justify-between items-center">
 
         <!--        <div  class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">-->
-        <div class="rounded-full ring-white ring-4 bg-white h-[133.5px] w-[133.5px] mb-6">
+        <div class="rounded-full ring-white ring-4 bg-white mb-6">
           <img
               v-if="user.avatar_url"
               alt="avatar"
               :src="user.avatar_url"
-              class="rounded-full"
+              class="rounded-full h-[133.5px] w-[133.5px]"
           />
           <img
               v-else
               alt="avatar"
               src="@/assets/default-avatar.png"
-              class="rounded-full "
+              class="rounded-full h-[133.5px] w-[133.5px]]"
           />
         </div>
 
@@ -62,8 +62,8 @@
           <!--        Name, Username, Follow - Message btn   -->
           <div class="flex justify-between">
             <div>
-              <h3 class="text-[20px] font-bold  text-gray-900">{{ user?.name }}</h3>
-              <p v-if="!isUserNotExist" class="max-w-2xl text-sm text-gray-500">@{{ user?.username }}</p>
+              <h3 class="text-[20px] font-bold  text-zinc-900">{{ user?.name }}</h3>
+              <p v-if="!isUserNotExist" class="max-w-2xl text-sm text-zinc-500">@{{ user?.username }}</p>
             </div>
 
             <div v-if="!isUserNotExist">
@@ -102,27 +102,27 @@
 
             <div v-if="user?.location" class="flex gap-1 items-center">
               <MapPinIcon
-                  class="h-5 w-5 text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-zinc-500 text-[15px]"
                   aria-hidden="true"
               />
-              <div class="text-gray-500 text-[15px]">
+              <div class="text-zinc-500 text-[15px]">
                 {{ user.location }}
               </div>
             </div>
 
             <div v-if="user?.dob" class="flex gap-1 items-center">
               <CakeIcon
-                  class="h-5 w-5 text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-zinc-500 text-[15px]"
                   aria-hidden="true"
               />
-              <div class="text-gray-500 text-[15px]">
+              <div class="text-zinc-500 text-[15px]">
                 Born {{ user.dob }}
               </div>
             </div>
 
             <div v-if="user?.website" class="flex gap-1 items-center">
               <LinkIcon
-                  class="h-5 w-5 text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-zinc-500 text-[15px]"
                   aria-hidden="true"
               />
               <Link
@@ -135,10 +135,10 @@
 
             <div v-if="user?.created_at" class="flex gap-1 items-center">
               <CalendarDaysIcon
-                  class="h-5 w-5 text-gray-500 text-[15px]"
+                  class="h-5 w-5 text-zinc-500 text-[15px]"
                   aria-hidden="true"
               />
-              <div class="text-gray-500 text-[15px]">
+              <div class="text-zinc-500 text-[15px]">
                 Joined {{ user.created_at }}
               </div>
             </div>
@@ -152,7 +152,7 @@
                 class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
             >
               <span class="font-bold text-[14px]">{{ user?.followers_count ?? 0 }}</span>
-              <span class="text-gray-500 text-[14px]">Follower</span>
+              <span class="text-zinc-500 text-[14px]">Follower</span>
             </div>
 
             <div
@@ -160,7 +160,7 @@
                 class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
             >
               <span class="font-bold text-[14px]">{{ user?.followed_count ?? 0 }}</span>
-              <span class="text-gray-500 text-[14px]">Following</span>
+              <span class="text-zinc-500 text-[14px]">Following</span>
             </div>
 
           </div>
@@ -175,7 +175,7 @@
         <div @click="changeTab(index)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
           <div
               class="font-semibold"
-              :class="index === currentTab ? 'text-black' : 'text-gray-500' "
+              :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
           >{{ tab.name }}
           </div>
           <div v-if="index === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>
@@ -187,7 +187,7 @@
     <div v-if="isUserNotExist" class="max-w-[20rem] mx-auto mt-20">
       <div class="space-y-2">
         <div class="text-3xl font-bold">This account doesn’t exist</div>
-        <div class="text-gray-500 font-semibold">Try searching for another.</div>
+        <div class="text-zinc-500 font-semibold">Try searching for another.</div>
       </div>
     </div>
 

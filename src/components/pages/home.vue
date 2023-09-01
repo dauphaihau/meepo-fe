@@ -9,7 +9,7 @@
             <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
               <div
                   class="font-semibold"
-                  :class="tab.id === currentTab ? 'text-black' : 'text-gray-500' "
+                  :class="tab.id === currentTab ? 'text-black' : 'text-zinc-500' "
               >{{ tab.name }}
               </div>
               <div v-if="tab.id === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>

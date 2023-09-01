@@ -3,13 +3,13 @@
   <div :class="classWrapper">
     <label v-if="label" for="username" class="label">{{ label }}</label>
     <div class="my-1">
-      <!--      <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black sm:max-w-md">-->
-      <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
+      <!--      <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black sm:max-w-md">-->
+      <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
 
         <span
-            class="flex select-none items-center pl-3 text-gray-500 sm:text-sm"
+            class="flex select-none items-center pl-3 text-zinc-500 sm:text-sm"
         ></span>
-        <!--        :class="disabled && 'bg-gray-200'"-->
+        <!--        :class="disabled && 'bg-zinc-200'"-->
 
         <textarea
             v-if="shape === 'textarea'"
@@ -30,7 +30,7 @@
         />
       </div>
     </div>
-    <p v-if="helperText" class='text-red-500 text-[0.75rem]'>{{ helperText }}</p>
+    <p v-if="helperText" :class="classHelperText" class='text-red-500 text-[0.75rem]'>{{ helperText }}</p>
   </div>
 
 </template>
@@ -38,13 +38,14 @@
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
 
-const { size, classWrapper, label, helperText, modelValue, shape } = defineProps({
+const { size, classWrapper, classHelperText, label, helperText, modelValue, shape } = defineProps({
   modelValue: { type: String, default: '' },
   classWrapper: { type: String },
   size: { type: String, default: 'sm' },
   label: { type: [String, Boolean], },
   shape: { type: String, default: 'input' },
   helperText: { type: String, default: '' },
+  classHelperText: { type: String, default: '' },
 })
 
 const emit = defineEmits<{
@@ -63,18 +64,18 @@ const SIZE_MAPS = {
 
 
 <style scoped>
-/*disabled:bg-gray-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
+/*disabled:bg-zinc-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
 
 .label {
-  @apply block text-sm font-medium leading-6 text-gray-900;
+  @apply block text-sm font-medium leading-6 text-zinc-900;
 }
 
 
-/*disabled:bg-gray-200*/
+/*disabled:bg-zinc-200*/
 .input {
   @apply block flex-1 border-0 border-none bg-transparent
   pl-1 pr-2
-  text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none sm:text-sm sm:leading-6;
+  text-zinc-900 placeholder:text-zinc-400 focus:ring-0 focus:outline-none sm:text-sm sm:leading-6;
 }
 
 </style>

@@ -111,7 +111,7 @@ const openRegisterDialog = () => {
                 <div class="flex flex-col gap-5 block bg-white">
                   <div class="text-center">
                     <h1 class="text-2xl mb-1 text-black">Welcome Back</h1>
-                    <p class="text-sm text-gray-700 font-light">We're so excited to see you again!</p>
+                    <p class="text-sm text-zinc-700 font-light">We're so excited to see you again!</p>
                   </div>
                   <div class="flex flex-col gap-5  block bg-white">
                     <form @submit.prevent="validate" class="login-form">
@@ -135,7 +135,7 @@ const openRegisterDialog = () => {
                       <div class=" flex justify-end">
                         <p
                             v-tooltip="'Not available'"
-                            class="text-sm mb-4 underline underline-offset-2 text-gray-700 cursor-pointer"
+                            class="text-sm mb-4 underline underline-offset-2 text-zinc-700 cursor-pointer"
                         > Forgot
                           password? </p>
                       </div>

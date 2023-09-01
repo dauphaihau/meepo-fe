@@ -161,18 +161,18 @@ function openModal() {
                   <div class="flex flex-col gap-5">
 
                     <!--                    Avatar-->
-                    <div class="mb-2 relative h-[112px] w-[112px] rounded-full ring-[5px] ring-white">
+                    <div class="mb-2 relative max-h-[112px] max-w-[112px] rounded-full ring-[5px] ring-white">
                       <img
                           v-if="urlImage"
                           alt="preview-img"
                           :src="urlImage"
-                          class='rounded-full'
+                          class='rounded-full h-[112px] w-[112px]'
                       />
                       <img
                           v-else
                           alt="preview-img"
                           src="@/assets/default-avatar.png"
-                          class='rounded-full'
+                          class='rounded-full h-[112px] w-[112px]'
                       />
                       <input
                           type="file"
@@ -196,7 +196,12 @@ function openModal() {
                     <!--                    Info profile-->
                     <form v-on:keyup.enter.prevent="onSubmit" class="space-y-5">
                       <Input size="md" label="Name" v-model="name"/>
-                      <Input label="Bio" v-model="bio" shape="textarea" class="w-full"/>
+                      <Input
+                          label="Bio" v-model="bio" shape="textarea" class="w-full"
+                          classHelperText="text-zinc-500 text-[0.75rem]"
+                          :helperText="bio ? `${bio.length}/160` : '0/160'"
+                          maxlength="160"
+                      />
                       <DateBirthInput
                           :helperText="errorDate"
                           classWrapper="mb-8"

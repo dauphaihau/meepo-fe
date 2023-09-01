@@ -9,7 +9,7 @@
         <span class="block truncate">{{ selectedOption.name }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <ChevronDownIcon
-              class="h-5 w-5 text-gray-400"
+              class="h-5 w-5 text-zinc-400"
               aria-hidden="true"
           />
         </span>
@@ -37,7 +37,7 @@
             <li
                 v-if="placeholder && index > 0 "
                 :class="[
-                  active ? 'bg-gray-100 text-gray-900' : 'text-gray-900',
+                  active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-900',
                   'relative cursor-default select-none py-2 pl-3 pr-4',
                 ]"
             >
@@ -132,7 +132,7 @@ const onChangeSelect = (val) => {
 <style scoped>
 
 .list-button {
-  @apply relative cursor-default rounded-md bg-white h-[42px] pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300
+  @apply relative cursor-default rounded-md bg-white h-[42px] pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-zinc-300
   focus-within:ring-2 focus-within:ring-inset focus-within:ring-black focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2
   focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-sm
   ;
@@ -144,7 +144,7 @@ const onChangeSelect = (val) => {
 }
 
 .label {
-  @apply block text-sm font-medium leading-6 text-gray-900;
+  @apply block text-sm font-medium leading-6 text-zinc-900;
 }
 
 </style>

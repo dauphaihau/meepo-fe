@@ -43,7 +43,7 @@ const RADIUS_MAPS = {
 
 const VARIANT_MAPS = {
   primary: 'bg-black hover:opacity-80 font-semibold text-white',
-  secondary: 'bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 font-semibold'
+  secondary: 'bg-white text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-100 font-semibold'
 }
 
 const SIZE_MAPS = {
@@ -57,7 +57,7 @@ const SIZE_MAPS = {
 
 
 <style scoped>
-/*disabled:bg-gray-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
+/*disabled:bg-zinc-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
 
 .button {
   @apply shadow-sm disabled:opacity-50 disabled:cursor-default

@@ -8,7 +8,7 @@
             <div @click="changeTab(tab, index)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
               <div
                   class="font-semibold"
-                  :class="index === currentTab ? 'text-black' : 'text-gray-500' "
+                  :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
               >{{ tab.name }}
               </div>
               <div v-if="index === currentTab" class="bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full"/>
@@ -23,8 +23,7 @@
     <div v-if="!isLoading && isNotFound" class="max-w-[20rem] mx-auto mt-20">
       <div class="space-y-2">
         <p class="text-3xl font-bold break-words">No results for "{{ route.query.q }}"</p>
-        <!--        <div class="text-3xl font-bold flex">No results for "{{ route.query.q }}"</div>-->
-        <div class="text-gray-500 font-normal">Try searching for something else</div>
+        <div class="text-zinc-500 font-normal">Try searching for something else</div>
       </div>
     </div>
 
