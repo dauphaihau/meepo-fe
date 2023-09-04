@@ -33,7 +33,8 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
     state.stateRouter = payload;
   },
   [MutationEnums.MESSAGE_TO_USER](state: IRootState, newState) {
-    state.showChatbox = !state.showChatbox
+    state.showChatbox = true
+    // state.showChatbox = !state.showChatbox
     state.currentUserToMessage = newState
   }
 };

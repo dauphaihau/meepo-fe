@@ -2,8 +2,8 @@
   <header class="header">
     <nav class="nav" aria-label="Global">
       <div class="w-[275px] xl:w-[241px]">
-        <router-link to="/" class="flex gap-1 items-center  h-full w-fit 2xl:pl-2">
-          <img class="h-10 w-auto" src="../../assets/logo.png" alt=""/>
+        <router-link to="/" class="flex gap-1 items-center  h-full w-fit 2xl:pl-2 pl-2.5">
+          <img class="h-10 w-auto" src="@assets/logo.png" alt=""/>
           <span class="text-xl font-bold text-black">Meepo</span>
         </router-link>
       </div>

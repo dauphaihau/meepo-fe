@@ -7,8 +7,6 @@ export const chatAPI = {
   },
   getPrivateRoomByUser(participant_username) {
     return apiHelper.get(`/rooms/${participant_username}`);
-    // return apiHelper.get(`/rooms/username=${participant_username}`);
-    // return apiHelper.get(`/rooms/private?username=${participant_username}`);
   },
   sendMessage(values) {
     return apiHelper.post<{message: IMessage}>('/messages', values)

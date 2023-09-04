@@ -1,11 +1,12 @@
 <template>
-  <div class="fixed bottom-5 right-5 z-[9999] ">
+  <!--  <div class="fixed bottom-5 left-5 z-[5] ">-->
     <Popover v-slot="{ open }" class="relative">
       <PopoverButton
           :class="open ? '' : 'text-opacity-90'"
           class="focus:outline-none"
       >
-        <div class=" rounded-full bottom-1 drop-shadow-2xl cursor-pointer h-9 w-9 hover:bg-zinc-200/20 animate shadow-2xl border flex items-center justify-center">
+        <!--        <div class=" rounded-full bottom-1 drop-shadow-2xl cursor-pointer h-9 w-9 bg-white hover:bg-zinc-200/20 animate shadow-2xl border flex items-center justify-center">-->
+        <div class=" rounded-full bottom-1 drop-shadow-2xl cursor-pointer h-9 w-9 bg-white hover:bg-opacity-10 animate shadow-2xl border flex items-center justify-center">
           ?
         </div>
       </PopoverButton>
@@ -18,7 +19,7 @@
           leave-from-class="translate-y-0 opacity-100"
           leave-to-class="translate-y-1 opacity-0"
       >
-        <PopoverPanel class="absolute right-14 bottom-14 translate-x-14 transform ">
+        <PopoverPanel class="absolute left-0 bottom-14 translate-x-0 transform ">
           <div class="group relative flex rounded-2xl bg-zinc-50 transition-shadow shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 w-[350px]">
             <div class="pointer-events-none">
               <div class="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
@@ -110,7 +111,6 @@
         </PopoverPanel>
       </transition>
     </Popover>
-  </div>
 </template>
 
 <script setup lang="ts">

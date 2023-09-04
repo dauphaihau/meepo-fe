@@ -194,7 +194,7 @@ watch(getCurrentUserToMessage, () => {
   showViewChatPrivate.value = true
   showFull.value = true
   keyChat.value++
-})
+}, { deep: true, immediate: true })
 
 const resetScroll = () => {
   if (!messagesContainer) return;

@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
 import { PaperAirplaneIcon } from '@heroicons/vue/20/solid'
 import { PlusCircleIcon } from '@heroicons/vue/20/solid'
@@ -137,13 +137,18 @@ ws.onmessage = (e) => {
   setMessagesThenScrollDown([...messages.value, { ...data.message }]);
 };
 
-watch(getCurrentUserToMessage, () => {
+onMounted(() => {
   fetchPrivateRoomByUser()
-}, { deep: true, immediate: true })
+})
+
+// watch(getCurrentUserToMessage, () => {
+//   fetchPrivateRoomByUser()
+// }, { deep: true, immediate: true })
 
 async function fetchPrivateRoomByUser() {
   if (!getCurrentUserToMessage.value) {
-    logger.error('execute fetchPrivateRoomByUser - getCurrentUserToMessage is null')
+    logger.warn('execute fetchPrivateRoomByUser - getCurrentUserToMessage is null')
+    emit('onUpdateView', { showViewChatPrivate: false })
     return
   }
   isLoading.value = true
