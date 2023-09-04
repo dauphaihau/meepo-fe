@@ -18,4 +18,5 @@ export interface IUser {
   author_followers_count?: number
   author_followed_count?: number
   author_avatar_url?: string
+  rooms_private_count?: number
 }

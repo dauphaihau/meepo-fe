@@ -29,6 +29,6 @@ export const postAPI = {
     return apiHelper.get<{hashtags: IHashtag[]}>(`hashtags`)
   },
   like(postId) {
-    return apiHelper.post<{likes_count: number, message: string}>(`/posts/likes`, { post_id: postId })
+    return apiHelper.post<{likes_count: number, message: string}>(`/likes`, { post_id: postId })
   },
 }

@@ -86,7 +86,7 @@ import { FILTER_SEARCH } from "@/config/const";
 import { mapKeyEnum, toUpperCaseFirstL } from "@/core/helper";
 import User from "@components/User.vue";
 
-import { parseTimePosts } from "@/lib/dayjs-parse";
+import { parseCreatedAts } from "@/lib/dayjs-parse";
 
 const route = useRoute()
 const router = useRouter()
@@ -172,7 +172,7 @@ async function getSearch() {
     if (data.posts.length < perPage || route.query.f === 'top') {
       reachEndPage.value = true
     }
-    posts.value = [...posts.value, ...parseTimePosts(data.posts)]
+    posts.value = [...posts.value, ...parseCreatedAts(data.posts)]
   }
 
   if (data.users) {

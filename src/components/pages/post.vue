@@ -43,13 +43,15 @@
                 <UserPopper :username="author.username" class="max-h-[18px]">
                   <h3
                       @click="redirectProfile"
-                      class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2">
+                      class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2"
+                  >
                     {{ author?.name }}</h3>
                 </UserPopper>
                 <UserPopper :username="author.username">
                   <p
                       @click="redirectProfile"
-                      class="max-w-2xl text-sm leading-3 text-zinc-500">@{{ author?.username }}</p>
+                      class="max-w-2xl text-sm leading-3 text-zinc-500"
+                  >@{{ author?.username }}</p>
                 </UserPopper>
               </div>
             </div>
@@ -117,7 +119,7 @@
                   :class="'text-zinc-500'"
               />
 
-              <div class='icon-btn' @click="likePost" v-tooltip="'Like'">
+              <div class='icon-btn' @click="dislikeOrLikePost" v-tooltip="'Like'">
                 <HeartIconSolid v-if="isLike"/>
                 <HeartIcon v-else/>
               </div>
@@ -137,18 +139,18 @@
             </div>
           </div>
 
-<!--          <div class="border-b w-full"></div>-->
+          <!--          <div class="border-b w-full"></div>-->
         </div>
 
       </div>
     </div>
 
     <!--  Sub Posts ( Comments )-->
-    <Posts
-        :key="keyPostsComp"
-        :author="author"
-        :disabledComment="!post?.is_current_user_can_comment"
-    />
+        <Posts
+            :key="keyPostsComp"
+            :author="author"
+            :disabledComment="!post?.is_current_user_can_comment"
+        />
   </div>
 
 </template>
@@ -180,8 +182,8 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMini from "@components/HeaderMini.vue";
-import { formatTextWithHashTags } from "@/core/helper";
-import { parseTimePost } from "@/lib/dayjs-parse";
+import { formatTextWithHashTags, logger } from "@/core/helper";
+import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
 
 const router = useRouter()
@@ -205,64 +207,68 @@ const paramsPostId = route.params.id
 
 const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 
-// const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
-//
-// ws.onopen = () => {
-//   // console.log("Connected to websocket server");
-//   guid.value = Math.random().toString(36).substring(2, 15)
-//
-//   ws.send(
-//       JSON.stringify({
-//         identifier: JSON.stringify({
-//           command: "subscribe",
-//           id: guid,
-//           channel: "PostsChannel",
-//         }),
-//       })
-//   );
-// };
-//
-// ws.onmessage = (e) => {
-//   const data = JSON.parse(e.data);
-//   if (data.type === "ping") return;
-//   if (data.type === "welcome") return;
-//   if (data.type === "confirm_subscription") return;
-//
-//   // console.log('dauphaihau debug: data', data.message)
-//
-//   if (!data.message) {
-//     return;
-//   }
-//
-//   const dataPost = post.value
-//   if (post.value.id === data.message.post.id) {
-//
-//     if (data.message?.post.likes_count !== post.value.likes_count) {
-//       handleAnimationCount('likes_count')
-//     }
-//
-//     if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
-//       handleAnimationCount('sub_posts_count')
-//     }
-//
-//   }
-//
-//   function handleAnimationCount(key) {
-//     const isUp = data.message.post[key] > dataPost[key]
-//     let animation = key === 'likes_count' ? animationLikes : animationComments
-//     // 1. Old number goes up
-//     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
-//
-//     // 2. Incrementing the counter
-//     setTimeout(() => dataPost[key] = data.message.post[key], 100);
-//
-//     // 3. New number waits down
-//     setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
-//
-//     // 4. New number stays in the middle
-//     setTimeout(() => animation.value = 'initial', 200);
-//   }
-// };
+const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+
+ws.onopen = () => {
+  logger.info('Connected to websocket server', 'src/components/pages/post.vue')
+  guid.value = Math.random().toString(36).substring(2, 15)
+
+  ws.send(
+      JSON.stringify({
+        command: "subscribe",
+        identifier: JSON.stringify({
+          id: guid,
+          channel: "PostsChannel",
+        }),
+      })
+  );
+};
+
+ws.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+  if (data.type === "ping") return;
+  if (data.type === "welcome") return;
+  if (data.type === "confirm_subscription") return;
+
+
+  logger.debug('ws.onmessage response data message', data.message, 'src/components/pages/post.vue')
+
+  if (!data.message) {
+    return;
+  }
+
+  // const dataPost = post.value
+  if (post.value.id === data.message.post.id) {
+
+    if (data.message?.post.likes_count !== post.value.likes_count) {
+      handleAnimationCount('likes_count')
+    }
+
+    if (data.message.post.sub_posts_count !== post.value.sub_posts_count) {
+      handleAnimationCount('sub_posts_count')
+    }
+
+  }
+
+  function handleAnimationCount(key) {
+    const isUp = data.message.post[key] > post.value[key]
+    // if (key === 'likes_count') {
+    //   isLike.value = isUp
+    // }
+    let animation = key === 'likes_count' ? animationLikes : animationComments
+    // 1. Old number goes up
+    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+
+    // 2. Incrementing the counter
+    setTimeout(() => post.value[key] = data.message.post[key], 100);
+
+    // 3. New number waits down
+    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+
+    // 4. New number stays in the middle
+    setTimeout(() => animation.value = 'initial', 200);
+  }
+};
 
 onBeforeMount(() => {
   getDetailPost()
@@ -281,33 +287,34 @@ async function getDetailPost(post_id = null) {
     author.value = data.post.author
 
     if (data.post?.parent_post) {
-      parentPost.value = parseTimePost(data.post.parent_post)
+      parentPost.value = parseCreatedAt<IPost>(data.post.parent_post)
     }
   }
 }
 
-async function likePost() {
+async function dislikeOrLikePost() {
 
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
-  const { data } = await postAPI.like(postId)
+  const { data, status } = await postAPI.like(postId)
+
 
   if (data) {
     const isUp = data.likes_count > post.value.likes_count
     isLike.value = isUp
-    // 1. Old number goes up
-    setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
-
-    // 2. Incrementing the counter
-    setTimeout(() => post.value.likes_count = data.likes_count, 100);
-
-    // 3. New number waits down
-    setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
-
-    // 4. New number stays in the middle
-    setTimeout(() => animationLikes.value = 'initial', 200);
+  //   // 1. Old number goes up
+  //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
+  //
+  //   // 2. Incrementing the counter
+  //   setTimeout(() => post.value.likes_count = data.likes_count, 100);
+  //
+  //   // 3. New number waits down
+  //   setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
+  //
+  //   // 4. New number stays in the middle
+  //   setTimeout(() => animationLikes.value = 'initial', 200);
   }
 }
 

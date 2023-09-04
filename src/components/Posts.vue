@@ -64,7 +64,7 @@ import { IPost, PIN_STATUS } from "@/types/post";
 import CreatePostForm from "@/components/CreatePostForm.vue";
 import { useStore } from "@/store";
 import { IUser } from "@/types/user";
-import { parseTimePosts } from "@/lib/dayjs-parse";
+import { parseCreatedAts } from "@/lib/dayjs-parse";
 
 const store = useStore()
 
@@ -156,7 +156,7 @@ const getPosts = async () => {
       reachEndPage.value = true
     }
 
-    data.posts = parseTimePosts(data.posts)
+    data.posts = parseCreatedAts(data.posts)
 
     if (disableInfinityScroll.value) {
       posts.value = data.posts

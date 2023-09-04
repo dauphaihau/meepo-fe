@@ -72,14 +72,11 @@
                   v-if="currentRouteUsername !== getUser.username"
               >
                 <div class="flex-center p-1.5 border border-zinc-300 rounded-full">
-
                   <EnvelopeIcon
-                      v-tooltip="'Not available'"
                       class="h-[21px] w-[21px] cursor-pointer"
                       aria-hidden="true"
+                      @click="onClickMessage"
                   />
-                  <!--                      @click="onClickMessage"-->
-
                 </div>
 
                 <ToggleFollowBtn
@@ -88,7 +85,6 @@
                     @click="unOrFollow"
                 />
               </div>
-
             </div>
           </div>
 
@@ -205,7 +201,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import dayjs from 'dayjs';
-import { EnvelopeIcon, CalendarDaysIcon, MapPinIcon, LinkIcon, CakeIcon } from '@heroicons/vue/24/outline'
+import { CakeIcon, CalendarDaysIcon, EnvelopeIcon, LinkIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 
 import Loading from "@/core/components/Loading.vue";
 import Posts from "@/components/Posts.vue";
@@ -302,6 +298,17 @@ function redirect(name) {
     name,
     params: { username: currentRouteUsername, },
   });
+}
+
+function onClickMessage() {
+  if (!isLoggedIn.value) {
+    store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
+    return
+  }
+  store.commit(MutationEnums.MESSAGE_TO_USER, {
+      username: user.value.username,
+      name: user.value.name,
+  })
 }
 
 </script>

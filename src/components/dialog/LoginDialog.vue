@@ -58,7 +58,6 @@ function closeDialog() {
 }
 
 function openDialog() {
-  console.log('dauphaihau debug: open dialog')
   store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
 }
 

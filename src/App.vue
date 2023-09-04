@@ -6,14 +6,15 @@ import { useRoute, useRouter } from "vue-router";
 import Header from "@/components/layout/Header.vue";
 import SidebarLeft from "@/components/layout/SidebarLeft.vue";
 import SidebarRight from "@/components/layout/SidebarRight.vue";
+import ChatBox from "@/components/layout/Chatbox.vue";
+import About from "@components/About.vue";
 import { mapGetters } from "@/lib/map-state";
-import Help from "@components/Help.vue";
 
 const route = useRoute()
 const router = useRouter()
 const keyApp = ref(0)
 
-const { isLoggedIn } = mapGetters()
+const { isLoggedIn, getUser, getShowChatbox } = mapGetters()
 
 onMounted(async () => {
   await router.isReady()
@@ -47,8 +48,7 @@ watch(isLoggedIn, () => {
       }"
     />
     <Header/>
-
-    <div :key="keyApp" class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex">
+    <div class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex" :key="keyApp">
       <SidebarLeft/>
       <div class="flex gap-6">
         <div class="flex flex-col border-l border-r min-w-[600px] max-w-[600px]">
@@ -57,8 +57,8 @@ watch(isLoggedIn, () => {
         <SidebarRight/>
       </div>
     </div>
-    <Help/>
-
+<!--    <About/>-->
+    <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)"/>
   </div>
 </template>
 

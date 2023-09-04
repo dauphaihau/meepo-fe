@@ -17,6 +17,7 @@ dayjs.updateLocale('en', {
     future: "in %s",
     past: "%s",
     s: '1s',
+    ss: "%ds",
     m: "1m",
     mm: "%dm",
     h: "1h",
@@ -30,31 +31,40 @@ dayjs.updateLocale('en', {
   }
 })
 
-interface Post extends IPost{
+interface Post extends IPost {
   sub_post?: IPost
 }
 
-export function parseTimePosts(posts: Post[]) {
-  posts = posts.map((p) => {
+// export function parseCreatedAts(arr: Post[]) {
+export function parseCreatedAts(arr) {
+  arr = arr.map((obj) => {
 
-    if (p.sub_post) {
-      p.sub_post = parseTimePost(p.sub_post)
+    if (obj?.sub_post) {
+      obj.sub_post = parseCreatedAt(obj.sub_post)
     }
 
-    if (dayjs(p.created_at).isToday()) {
-      return { ...p, time: dayjs(p.created_at).fromNow() }
+    if (dayjs(obj.created_at).isToday()) {
+      return { ...obj, time: dayjs(obj.created_at).fromNow() }
     } else {
-      return { ...p, time: dayjs(p.created_at).format('MMM D') }
+      return { ...obj, time: dayjs(obj.created_at).format('MMM D') }
     }
   })
 
-  return posts
+  return arr
 }
 
-export function parseTimePost(post: IPost) {
-  if (dayjs(post.created_at).isToday()) {
-    return { ...post, time: dayjs(post.created_at).fromNow() }
+export const parseCreatedAt = <T extends {created_at: Date}>(obj: T) => {
+  if (dayjs(obj.created_at).isToday()) {
+    return { ...obj, time: dayjs(obj.created_at).fromNow() }
   } else {
-    return { ...post, time: dayjs(post.created_at).format('MMM D') }
+    return { ...obj, time: dayjs(obj.created_at).format('MMM D') }
+  }
+}
+
+export const parseMessageCreatedAt = <T extends {created_at: Date}>(obj: T) => {
+  if (dayjs(obj.created_at).isToday()) {
+    return { ...obj, time: dayjs(obj.created_at).format('hh:mm A') }
+  } else {
+    return { ...obj, time: dayjs(obj.created_at).format('MMM D, YYYY, hh:mm A') }
   }
 }

@@ -12,8 +12,10 @@ import { ISessionState } from "@/types/store/session";
 const state: IRootState = {
   openLoginDialog: false,
   openRegisterDialog: false,
-  getKeyMutatePosts: 0,
-  stateRouter: null
+  showChatbox: false,
+  keyMutatePosts: 0,
+  stateRouter: null,
+  currentUserToMessage: null
 };
 
 // mutations
@@ -22,7 +24,7 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
     state.openLoginDialog = payload;
   },
   [MutationEnums.MUTATE_POSTS](state: IRootState) {
-    state.getKeyMutatePosts++
+    state.keyMutatePosts++
   },
   [MutationEnums.SET_REGISTER_DIALOG](state: IRootState, payload: boolean) {
     state.openRegisterDialog = payload;
@@ -30,14 +32,20 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
   [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload: any) {
     state.stateRouter = payload;
   },
+  [MutationEnums.MESSAGE_TO_USER](state: IRootState, newState) {
+    state.showChatbox = !state.showChatbox
+    state.currentUserToMessage = newState
+  }
 };
 
 // getters
 const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
   getOpenLoginDialog: state => state.openLoginDialog,
   getOpenRegisterDialog: state => state.openRegisterDialog,
-  getKeyMutatePosts: state => state.getKeyMutatePosts,
+  getKeyMutatePosts: state => state.keyMutatePosts,
+  getShowChatbox: state => state.showChatbox,
   getStateRouter: state => state.stateRouter,
+  getCurrentUserToMessage: state => state.currentUserToMessage,
 };
 
 // actions

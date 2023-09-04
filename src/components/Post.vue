@@ -130,7 +130,6 @@
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
                     <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
-
                   <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
                 </div>
               </div>
@@ -246,7 +245,6 @@ ws.onmessage = (e) => {
   if (data.type === "confirm_subscription") return;
 
   logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
-  console.log('dauphaihau debug: data-message', data.message)
 
   if (!data.message) {
     return;
@@ -265,7 +263,9 @@ ws.onmessage = (e) => {
 
   function handleAnimationCount(key) {
     const isUp = data.message.post[key] > dataPost[key]
-    isLike.value = isUp
+    // if (key === 'likes_count') {
+    //   isLike.value = isUp
+    // }
     let animation = key === 'likes_count' ? animationLikes : animationComments
     // 1. Old number goes up
     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
@@ -299,9 +299,9 @@ const likePost = async () => {
 
   const { data } = await postAPI.like(dataPost.id)
 
-  // if (data) {
-  //   const isUp = data.likes_count > dataPost.likes_count
-  //   isLike.value = isUp
+  if (data) {
+    const isUp = data.likes_count > dataPost.likes_count
+    isLike.value = isUp
   //   // 1. Old number goes up
   //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
   //
@@ -314,8 +314,8 @@ const likePost = async () => {
   //   // 4. New number stays in the middle
   //   setTimeout(() => animationLikes.value = 'initial', 200);
   //
-  //   redirecting.value = ''
-  // }
+    redirecting.value = ''
+  }
 
 }
 

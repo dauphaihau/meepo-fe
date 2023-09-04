@@ -1,20 +1,25 @@
 import { CommitOptions, DispatchOptions, Store as VuexStore, } from "vuex";
 import { ISessionAction, ISessionState, SessionGetterTypes } from "@/types/store/session";
+import { IUser } from "@/types/user";
 
 // root state types
 export interface IRootState extends Partial<ISessionState>{
   openLoginDialog: boolean,
   openRegisterDialog: boolean,
-  getKeyMutatePosts: number,
+  showChatbox: boolean,
+  keyMutatePosts: number,
   stateRouter: any,
+  currentUserToMessage: IUser,
 }
 
 // Getter types
 export type GetterTypes = {
   getOpenLoginDialog(state: IRootState): boolean;
   getOpenRegisterDialog(state: IRootState): boolean;
+  getShowChatbox(state: IRootState): boolean;
   getKeyMutatePosts(state: IRootState): number;
   getStateRouter(state: IRootState): any;
+  getCurrentUserToMessage(state: IRootState): any;
 } & Partial<SessionGetterTypes>;
 
 // mutations and action enums
@@ -25,6 +30,7 @@ export enum MutationEnums {
   RESET_USER_INFO = 'RESET_USER_INFO',
   MUTATE_POSTS = 'MUTATE_POSTS',
   SET_STATE_ROUTER = 'SET_STATE_ROUTER',
+  MESSAGE_TO_USER = 'MESSAGE_TO_USER',
 }
 
 export enum ActionEnums {
@@ -40,6 +46,7 @@ export type MutationTypes<S = IRootState> = {
   [MutationEnums.SET_REGISTER_DIALOG](state: S, payload: boolean): void;
   [MutationEnums.MUTATE_POSTS](state: S): void;
   [MutationEnums.SET_STATE_ROUTER](state: S, payload: any): void;
+  [MutationEnums.MESSAGE_TO_USER](state: S, payload: any): void;
 };
 
 // actions interface
