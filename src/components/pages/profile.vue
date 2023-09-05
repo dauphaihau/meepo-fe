@@ -73,6 +73,7 @@
               >
                 <div class="flex-center p-1.5 border border-zinc-300 rounded-full">
                   <EnvelopeIcon
+                      v-tooltip="'Message'"
                       class="h-[21px] w-[21px] cursor-pointer"
                       aria-hidden="true"
                       @click="onClickMessage"

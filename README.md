@@ -10,14 +10,16 @@ Meepo is a free social networking site where people converse with each other in 
 3. Typescript (Statically Checked Types)
 4. Ruby on Rails (Full-stack framework)
 5. Postgresql (Database)
+6. Redis (Cache store)
 
 ## Work In Progress
 The app is being under maintenance, as more work needs to be done.
 
 Current functionality includes:
 - Log in, sign up, sign out, update profile
-- CURD, like, comment, pin, filters post
 - Follow/unfollow user
+- Chat
+- CURD, like, comment, pin, filters post
 - Search posts/users based on followers, likes, image, where user comment 
 - Search trends based on hashtags 
 
@@ -27,7 +29,7 @@ and feel free to share your opinion, constructive criticism, or comments about m
 
 ## Future Updates
 - Improve overall UX/UI and fix bugs
-- Realtime count likes, posts, notifications, chat
+- Realtime notifications
 - Limit the number of edits post
 
 And More ! There's always room for improvement!
@@ -65,19 +67,24 @@ https://github.com/dauphaihau/meepo-be.git
 
 2. **Configure Database**
  
-    set your url database into config/database.yml 
+    set your database url into config/database.yml 
  
 
-3. **Install gems**
+3. **Configure Cache store**
+ 
+    set your redis url into config/cable.yml 
+ 
+
+4. **Install gems**
 ```bash
 bundle install
 ```
 
-4. **Runs migrations**
+5. **Runs migrations**
 ```bash
 rails db:migrate
 ```
-5. **Launches a web server**
+6. **Launches a web server**
 ```bash
 rails s
 ```
