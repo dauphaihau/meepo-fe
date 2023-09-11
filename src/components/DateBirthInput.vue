@@ -1,8 +1,6 @@
 <template>
   <div :class="classWrapper">
-
     <label v-if="label" for="username" class="label">{{ label }}</label>
-
     <div class="flex gap-2 w-full mb-1">
       <Select
           :data="months"
@@ -47,11 +45,6 @@ interface Props {
   label?: string
   helperText?: string
   modelValue?: string
-  // modelValue?: {
-  //   day: string
-  //   month: string
-  //   year: string
-  // }
 }
 
 /*
@@ -59,12 +52,18 @@ interface Props {
    issue happens only for non-boolean fields: https://stackoverflow.com/questions/76322580/after-update-of-vue-3-withdefaults-throws-a-typescript-error
  */
 // @ts-ignore
-const { classWrapper, label, helperText, modelValue } = withDefaults(defineProps<Props>(), {
-  helperText: '',
+// const { classWrapper, label, helperText, modelValue } = withDefaults(defineProps<Props>(), {
+//   helperText: '',
+// })
+
+const { classWrapper, label, helperText, modelValue } = defineProps({
+  modelValue: { type: String, default: '' },
+  classWrapper: { type: String },
+  label: { type: [String, Boolean], },
+  helperText: { type: String, default: '' },
 })
 
 const dob = ref({ month: '', day: '', year: '' })
-
 const month = ref('')
 const day = ref('')
 const year = ref('')

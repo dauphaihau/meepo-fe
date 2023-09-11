@@ -4,13 +4,14 @@ Meepo is a free social networking site where people converse with each other in 
 
 <a href="https://meepo-app.onrender.com">Try it now</a>
 
-## Technologies
-1. Vue.js (JavaScript framework)
-2. Tailwind CSS (Styling)
-3. Typescript (Statically Checked Types)
-4. Ruby on Rails (Full-stack framework)
-5. Postgresql (Database)
-6. Redis (Cache store)
+## Stack
+- [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
+- [Vue](https://vuejs.org/) - The Progressive JavaScript Framework
+- [Vuex](https://vuex.vuejs.org/) - State management library for Vue
+- [Typescript](https://www.typescriptlang.org/) - Static Type Checking
+- [Ruby on Rails](https://www.typescriptlang.org/) - Full-stack Framework, use to build server-side
+- [Postgresql](https://www.postgresql.org/) - Relational Database
+- [Redis](https://redis.io/) - In-memory data structure store, use to cache data
 
 ## Work In Progress
 The app is being under maintenance, as more work needs to be done.
