@@ -127,24 +127,36 @@ function openDialog() {
                     <form @submit.prevent="validate">
                       <Input
                           :disabled="isLoading"
-                          :helper-text="isSubmitted ? errors.name : '' "
-                          classWrapper="mb-4" size="md" label="Name" v-model="name"
+                          :helperText="isSubmitted ? errors.name : '' "
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Name"
+                          v-model="name"
                       />
                       <Input
                           :disabled="isLoading"
-                          :helper-text="isSubmitted ? errors.username : '' "
-                          classWrapper="mb-4" size="md" label="Username" v-model="username"
+                          :helperText="isSubmitted ? errors.username : '' "
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Username"
+                          v-model="username"
                       />
                       <Input
                           :disabled="isLoading"
-                          :helper-text="isSubmitted ? errors.email : '' "
-                          classWrapper="mb-4" size="md" label="Email" v-model="email"
+                          :helperText="isSubmitted ? errors.email : '' "
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Email"
+                          v-model="email"
                       />
                       <Input
                           :disabled="isLoading"
-                          :helper-text="isSubmitted ? errors.password : '' "
+                          :helperText="isSubmitted ? errors.password : '' "
                           type="password"
-                          classWrapper="mb-4" size="md" label="Password" v-model="password"
+                          classWrapper="mb-4"
+                          size="md"
+                          label="Password"
+                          v-model="password"
                       />
                       <DateBirthInput
                           v-model="dob"
@@ -152,6 +164,8 @@ function openDialog() {
                           classWrapper="mb-8"
                           :helperText="isSubmitted ? errors.dob : '' "
                       />
+                      <!--                          :key="errors.dob"-->
+                      <!--                          :helperText="isSubmitted ? errors.dob : '' "-->
                       <Button
                           :key="isLoading.toString()"
                           :isLoading="isLoading"
