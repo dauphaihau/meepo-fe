@@ -5,7 +5,13 @@
       v-slot="{open}"
   >
     <div class="relative mt-1">
-      <ListboxButton class="list-button" :class="classWrapper">
+      <!--      bg-[#e5e5e5]-->
+      <!--      <ListboxButton class="list-button" :class="classWrapper">-->
+      <ListboxButton
+          class="list-button" :class="cn(classWrapper,
+                 disabled ? 'bg-[#e5e5e5]' : 'bg-white'
+              )"
+      >
         <span class="block truncate">{{ selectedOption.name }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <ChevronDownIcon
@@ -22,6 +28,7 @@
           leave-active-class="transition duration-100 ease-in"
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
+          v-if="!disabled"
       >
         <ListboxOptions
             class="list-options"
@@ -58,6 +65,7 @@
 
 <script setup lang="ts">
 // @ts-nocheck
+
 import { onBeforeMount, onMounted, ref } from 'vue'
 import {
   Listbox,
@@ -65,6 +73,8 @@ import {
   ListboxOptions,
   ListboxOption,
 } from '@headlessui/vue'
+
+import { cn, toUpperCaseFirstL } from '@/core/helper.js'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { logger } from "@/core/helper";
 
@@ -77,7 +87,8 @@ interface Props {
   name: string
   placeholder?: string
   data: {name: string}[]
-  shape?: 'input'
+  shape?: 'input',
+  disabled?: boolean
 }
 
 //    @ts-ignore
@@ -90,7 +101,8 @@ let {
   label,
   helperText,
   modelValue,
-  shape
+  shape,
+  disabled
 } = withDefaults(defineProps<Props>(), {
   data: [
     { name: 'November' },
@@ -107,12 +119,13 @@ const selectedOption = ref(data[0])
 
 onBeforeMount(() => {
   if (modelValue) {
-    selectedOption.value = data[1]
-    const option = data.find(d => d.name === modelValue)
+    let option = data.find(d => d.name === modelValue)
     if (!option) {
-      logger.warn(`Select input execute onBeforeMount: not found option at select input with name ${name}`)
+      logger.error(`Select input execute onBeforeMount: not found option at select input with name ${name}`, 'src/core/components/forms/Select.vue')
+      option = { name: toUpperCaseFirstL(name) }
     }
-    selectedOption.value = option || data[0]
+    data.unshift(option)
+    selectedOption.value = data[0]
     return
   }
 
@@ -132,7 +145,7 @@ const onChangeSelect = (val) => {
 <style scoped>
 
 .list-button {
-  @apply relative cursor-default rounded-md bg-white h-[42px] pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-zinc-300
+  @apply relative cursor-default rounded-md h-[42px] pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-zinc-300
   focus-within:ring-2 focus-within:ring-inset focus-within:ring-black focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2
   focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-sm
   ;
@@ -140,7 +153,7 @@ const onChangeSelect = (val) => {
 
 
 .list-options {
-  @apply absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;
+  @apply absolute mt-1 max-h-52 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;
 }
 
 .label {

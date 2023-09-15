@@ -4,6 +4,7 @@
     <div class="flex gap-2 w-full mb-1">
       <Select
           :data="months"
+          :disabled="disabled"
           @update:modelValue="onChangeSelect"
           classWrapper="w-[145px]"
           placeholder="Month"
@@ -12,6 +13,7 @@
       />
       <Select
           :data="days"
+          :disabled="disabled"
           @update:modelValue="onChangeSelect"
           placeholder="Day"
           classWrapper="w-[124px]"
@@ -20,6 +22,7 @@
       />
       <Select
           :data="years"
+          :disabled="disabled"
           @update:modelValue="onChangeSelect"
           placeholder="Year"
           classWrapper="w-[115px]"
@@ -35,6 +38,8 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import Select from "@/core/components/forms/Select.vue";
+import dayjs from 'dayjs';
+import { logger } from "@/core/helper";
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -56,11 +61,12 @@ interface Props {
 //   helperText: '',
 // })
 
-const { classWrapper, label, helperText, modelValue } = defineProps({
+const { classWrapper, label, helperText, modelValue, disabled } = defineProps({
   modelValue: { type: String, default: '' },
   classWrapper: { type: String },
   label: { type: [String, Boolean], },
   helperText: { type: String, default: '' },
+  disabled: { type: Boolean },
 })
 
 const dob = ref({ month: '', day: '', year: '' })
@@ -73,21 +79,6 @@ const days = ref([])
 const years = ref([])
 
 onBeforeMount(() => {
-  if (modelValue) {
-    const dobSplited = modelValue.split(' ')
-
-    // regex get only string number
-    // Number() to remove prefix 0 ( e.g 01, 02, 03, .. )
-    const numberDay = Number(dobSplited[1].replace(/[^0-9]/g, ""))
-    const stringDay = numberDay.toString()
-
-    dob.value = {
-      month: dobSplited[0],
-      day: stringDay,
-      year: dobSplited[2],
-    }
-  }
-
   months.value = [
     { name: 'January' },
     { name: 'February' },
@@ -111,6 +102,19 @@ onBeforeMount(() => {
     name: (1980 + i + 1).toString()
   })).reverse();
 
+  if (modelValue && typeof modelValue === "string") {
+    const formatModelValue = dayjs(modelValue).format('YYYY-MMMM-D')
+    if (!formatModelValue.includes('-')) {
+      logger.error(`Invalid format date: with modelValue is ${modelValue} `, 'src/components/DateBirthInput.vue')
+      return
+    }
+    const dobSplit = formatModelValue.split('-')
+    dob.value = {
+      year: dobSplit[0],
+      month: dobSplit[1],
+      day: dobSplit[2],
+    }
+  }
 })
 
 const onChangeSelect = (option: {name: string, value: string}) => {

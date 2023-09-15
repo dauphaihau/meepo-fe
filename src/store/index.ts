@@ -12,10 +12,11 @@ import { ISessionState } from "@/types/store/session";
 const state: IRootState = {
   openLoginDialog: false,
   openRegisterDialog: false,
+  openForgotPasswordDialog: false,
   showChatbox: false,
   keyMutatePosts: 0,
   stateRouter: null,
-  currentUserToMessage: null
+  currentUserToMessage: null,
 };
 
 // mutations
@@ -23,11 +24,14 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
   [MutationEnums.SET_LOGIN_DIALOG](state: IRootState, payload: boolean) {
     state.openLoginDialog = payload;
   },
-  [MutationEnums.MUTATE_POSTS](state: IRootState) {
-    state.keyMutatePosts++
-  },
   [MutationEnums.SET_REGISTER_DIALOG](state: IRootState, payload: boolean) {
     state.openRegisterDialog = payload;
+  },
+  [MutationEnums.SET_FORGOT_PASSWORD_DIALOG](state: IRootState, payload: boolean) {
+    state.openForgotPasswordDialog = payload;
+  },
+  [MutationEnums.MUTATE_POSTS](state: IRootState) {
+    state.keyMutatePosts++
   },
   [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload: any) {
     state.stateRouter = payload;
@@ -43,6 +47,7 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
 const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
   getOpenLoginDialog: state => state.openLoginDialog,
   getOpenRegisterDialog: state => state.openRegisterDialog,
+  getOpenForgotPasswordDialog: state => state.openForgotPasswordDialog,
   getKeyMutatePosts: state => state.keyMutatePosts,
   getShowChatbox: state => state.showChatbox,
   getStateRouter: state => state.stateRouter,

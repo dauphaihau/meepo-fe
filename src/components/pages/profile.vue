@@ -113,7 +113,8 @@
                   aria-hidden="true"
               />
               <div class="text-zinc-500 text-[15px]">
-                Born {{ user.dob }}
+                <!--                Born {{ user.dob }}-->
+                Born {{ dayjs(user.dob).format('MMMM DD, YYYY') }}
               </div>
             </div>
 
@@ -256,7 +257,6 @@ async function getProfile() {
   if (data) {
     user.value = data.user
     user.value.created_at = dayjs(data.user.created_at).format('MMMM YYYY')
-    user.value.dob = dayjs(data.user.dob).format('MMMM DD, YYYY')
     user.value.hostWebsite = data.user.website && data.user.website.includes('http') ? new URL(data.user.website).host : data.user.website
 
     if (getUser.value.id) {
@@ -278,7 +278,6 @@ async function unOrFollow() {
 
 const onUpdateProfile = (values) => {
   values.created_at = dayjs(values.created_at).format('MMMM YYYY')
-  values.dob = dayjs(values.dob).format('MMMM DD, YYYY')
   values.hostWebsite = values.website && values.website.includes('http') ? new URL(values.website).host : values.website
   user.value = { ...user.value, ...values }
   keyPostsComp.value++
@@ -307,8 +306,8 @@ function onClickMessage() {
     return
   }
   store.commit(MutationEnums.MESSAGE_TO_USER, {
-      username: user.value.username,
-      name: user.value.name,
+    username: user.value.username,
+    name: user.value.name,
   })
 }
 

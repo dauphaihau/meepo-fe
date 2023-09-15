@@ -2,20 +2,15 @@
 import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate';
 import { Form } from 'vee-validate';
-import {
-  TransitionRoot,
-  TransitionChild,
-  Dialog,
-  DialogPanel,
-} from '@headlessui/vue'
 
 import { useStore } from "@/store";
 import { ActionEnums, MutationEnums } from "@/types/store/root";
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
 import { logger } from "@/core/helper";
-import { validationLoginSchema } from "@/lib/validations/auth";
+import { validationLoginSchema } from "@/lib/validations/user";
 import { mapGetters } from "@/lib/map-state";
+import Dialog from "@/core/components/Dialog.vue";
 
 const store = useStore()
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
@@ -33,7 +28,6 @@ const { value: password } = useField<string>('password');
 
 const validate = (e: Event) => {
   isSubmitted.value = true
-  logger.debug('execute validate: errors', errors.value, 'src/components/dialog/RegisterDialog.vue')
   if (Object.keys(errors.value).length === 0) {
     onSubmit(e)
   }
@@ -54,6 +48,7 @@ const onSubmit = handleSubmit(async (vals) => {
 
 function closeDialog() {
   store.commit(MutationEnums.SET_LOGIN_DIALOG, false)
+  isSubmitted.value = false
   resetForm()
 }
 
@@ -66,100 +61,80 @@ const openRegisterDialog = () => {
   closeDialog()
 }
 
+const openForgotPasswordDialog = () => {
+  store.commit(MutationEnums.SET_FORGOT_PASSWORD_DIALOG, true)
+  closeDialog()
+}
+
 </script>
 
-
 <template>
-  <Button
-      v-if="!isLoggedIn"
-      @click="openDialog"
-      class="px-8 h-[32px]"
+  <Dialog
+      :show="isOpenDialog"
+      :closeDialog="closeDialog"
+      classPanel="min-w-[400px] max-w-sm"
   >
-    Log In
-  </Button>
-
-  <TransitionRoot appear :show="isOpenDialog" as="template">
-    <Dialog as="div" @close="closeDialog" class="relative z-50">
-      <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
+    <template
+        v-if="!isLoggedIn"
+        v-slot:trigger
+    >
+      <Button
+          @click="openDialog"
+          class="px-8 h-[32px]"
       >
-        <div class="fixed inset-0 bg-black bg-opacity-25"/>
-      </TransitionChild>
+        Log In
+      </Button>
+    </template>
 
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4 text-center">
-          <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-          >
-            <DialogPanel
-                class="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white py-6 px-8 text-left shadow-xl transition-all"
+    <template v-slot:panel>
+      <div class="flex flex-col gap-5">
+        <div class="text-center">
+          <h1 class="text-2xl mb-1 text-black">Welcome Back</h1>
+          <p class="text-sm text-zinc-700 font-light">We're so excited to see you again!</p>
+        </div>
+        <div class="flex flex-col gap-5 ">
+          <form @submit.prevent="validate" class="login-form">
+            <Input
+                :disabled="isLoading"
+                classWrapper="mb-4"
+                size="md"
+                label="Email"
+                v-model="email"
+                :helper-text="isSubmitted ? errors.email : '' "
+            />
+            <Input
+                :disabled="isLoading"
+                classWrapper="mb-4"
+                size="md"
+                label="Password"
+                v-model="password"
+                type="password"
+                :helper-text="isSubmitted ? errors.password : '' "
+            />
+            <div class=" flex justify-end">
+              <p
+                  @click="openForgotPasswordDialog"
+                  class="text-sm mb-4 text-link"
+              > Forgot
+                password? </p>
+            </div>
+            <Button
+                :key="isLoading.toString()"
+                :isLoading="isLoading"
+                radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
             >
-              <div class="mx-auto flex flex-col">
-                <div class="flex flex-col gap-5 block bg-white">
-                  <div class="text-center">
-                    <h1 class="text-2xl mb-1 text-black">Welcome Back</h1>
-                    <p class="text-sm text-zinc-700 font-light">We're so excited to see you again!</p>
-                  </div>
-                  <div class="flex flex-col gap-5  block bg-white">
-                    <form @submit.prevent="validate" class="login-form">
-                      <Input
-                          :disabled="isLoading"
-                          classWrapper="mb-4"
-                          size="md"
-                          label="Email"
-                          v-model="email"
-                          :helper-text=" isSubmitted ? errors.email : '' "
-                      />
-                      <Input
-                          :disabled="isLoading"
-                          classWrapper="mb-4"
-                          size="md"
-                          label="Password"
-                          v-model="password"
-                          type="password"
-                          :helper-text=" isSubmitted ? errors.password : '' "
-                      />
-                      <div class=" flex justify-end">
-                        <p
-                            v-tooltip="'Not available'"
-                            class="text-sm mb-4 underline underline-offset-2 text-zinc-700 cursor-pointer"
-                        > Forgot
-                          password? </p>
-                      </div>
-                      <Button
-                          :key="isLoading.toString()"
-                          :isLoading="isLoading"
-                          radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
-                      >
-                        Log in
-                      </Button>
-                    </form>
-                    <div class="text-center">
-                      <span class="text-[#787c7d] font-light mr-1">New to Meepo?</span>
-                      <span
-                          @click="openRegisterDialog"
-                          class="hover:underline hover:underline-offset-2 cursor-pointer"
-                      >Sign up </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+              Log in
+            </Button>
+          </form>
+          <div class="flex justify-center">
+            <p class="text-zinc-500 mr-1">New to Meepo?</p>
+            <p
+                @click="openRegisterDialog"
+                class="text-link"
+            >Sign up </p>
+          </div>
         </div>
       </div>
-    </Dialog>
-  </TransitionRoot>
+    </template>
+  </Dialog>
 </template>

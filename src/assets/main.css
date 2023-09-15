@@ -22,6 +22,10 @@
   .animate {
     @apply transition transform duration-200 ease-in-out;
   }
+
+  .text-link {
+    @apply text-zinc-500 hover:text-black underline underline-offset-2 cursor-pointer hover:text-black animate
+  }
 }
 
 

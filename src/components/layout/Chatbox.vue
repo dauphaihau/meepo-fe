@@ -172,7 +172,7 @@ ws.onmessage = (e) => {
   if (data.type === "confirm_subscription") return;
 
   if (!data.message?.username) {
-    console.log('dauphaihau debug: undefine username')
+    logger.error('undefine username', 'src/components/layout/Chatbox.vue')
     return;
   }
 

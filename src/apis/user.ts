@@ -41,10 +41,19 @@ export const userAPI = {
   register(payload) {
     return apiHelper.post<{user: IUser, message: string}>(`/users`, payload)
   },
+  forgetPassword(query) {
+    return apiHelper.post<{message: string}>(`/users/password/reset`, { query })
+  },
+  verifyCodeFromEmail(token) {
+    return apiHelper.patch<{message: string}>(`/users/password/reset`, { token })
+  },
+  resetPassword(payload) {
+    return apiHelper.put<{user: IUser, message: string}>(`/users/password/reset`, payload)
+  },
   logout() {
     return apiHelper.delete(`/users/sign_out`)
   },
   me(whereSrcRequest?: string) {
-    return apiHelper.get<{user: IUser}>(`/me` )
+    return apiHelper.get<{user: IUser}>(`/me`)
   },
 }

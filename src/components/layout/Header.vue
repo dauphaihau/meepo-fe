@@ -28,6 +28,7 @@
       />
 
       <div class="hidden lg:block lg:flex lg:flex-1 lg:justify-end items-center">
+        <ForgotPasswordDialog/>
         <LoginDialog/>
         <RegisterDialog/>
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
@@ -109,6 +110,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, } from '@heroicons/vue/24/outline'
 import LoginDialog from "@/components/dialog/LoginDialog.vue";
 import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
+import ForgotPasswordDialog from "@components/dialog/ForgetPasswordDialog/index.vue";
 import { ActionEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { mapGetters } from "@/lib/map-state";
@@ -152,8 +154,9 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 
 <style scoped>
 .header {
-  @apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;
+  @apply bg-white fixed top-0 w-full z-[5] h-fit  border-b border-zinc-200 px-6;
 }
+  /*@apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;*/
 
 .nav {
   @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex

@@ -3,14 +3,7 @@
   <div :class="classWrapper">
     <label v-if="label" for="username" class="label">{{ label }}</label>
     <div class="my-1">
-      <!--      <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black sm:max-w-md">-->
       <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
-
-        <span
-            class="flex select-none items-center pl-3 text-zinc-500 sm:text-sm"
-        ></span>
-        <!--        :class="disabled && 'bg-zinc-200'"-->
-
         <textarea
             v-if="shape === 'textarea'"
             type="text"
@@ -74,7 +67,9 @@ const SIZE_MAPS = {
 /*disabled:bg-zinc-200*/
 .input {
   @apply block flex-1 border-0 border-none bg-transparent
-  pl-1 pr-2
+  disabled:bg-[#e5e5e5]  rounded-md
+  pl-3 pr-2
+
   text-zinc-900 placeholder:text-zinc-400 focus:ring-0 focus:outline-none sm:text-sm sm:leading-6;
 }
 
