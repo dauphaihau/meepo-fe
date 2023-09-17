@@ -50,14 +50,14 @@
 
 
               <div v-if="!isFocus && currentRouteName === 'post'">
-                <Button :disabled="!content" @click.prevent="createPost">Post</Button>
+                <Button classes="px-6"  :disabled="!content" @click.prevent="createPost">Post</Button>
               </div>
 
             </div>
             <div class="relative" v-if="urlImage">
               <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
               <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
-                <XMarkIcon @click="deleteImage" class="text-zinc-500 h-5 w-5 cursor-pointer text-white"/>
+                <XMarkIcon @click="deleteImage" class="h-5 w-5 cursor-pointer text-white"/>
               </div>
             </div>
           </div>
@@ -89,15 +89,16 @@
                 class="hidden"
             />
 
-            <GifIcon class="icon-btn"/>
-            <FaceSmileIcon class="icon-btn"/>
-            <CalendarIcon class="icon-btn"/>
+            <GifIcon class="icon-btn" v-tooltip="'Not available'"/>
+            <FaceSmileIcon class="icon-btn" v-tooltip="'Not available'"/>
+            <CalendarIcon class="icon-btn" v-tooltip="'Not available'"/>
 
           </div>
 
         </div>
 
         <Button
+            classes="px-6"
             :key="isLoading.toString()"
             :isLoading="isLoading"
             :disabled="!content && !fileImage"

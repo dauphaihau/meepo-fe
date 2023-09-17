@@ -28,6 +28,7 @@
       />
 
       <div class="hidden lg:block lg:flex lg:flex-1 lg:justify-end items-center">
+        <ForgotPasswordDialog/>
         <LoginDialog/>
         <RegisterDialog/>
         <Menu v-if="isLoggedIn" as="div" class="ml-2 relative inline-block text-left">
@@ -64,26 +65,13 @@
             <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div class="">
                 <!--              <div class="py-1">-->
-
                 <div class="rounded-tl-md"></div>
-
                 <MenuItem v-slot="{ active }">
                   <a
-                      href="#"
-                      :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-tl-md rounded-tr-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >Account settings</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
+                      v-tooltip="'Not available'"
                       href="#"
                       :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >Support</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                      href="#"
-                      :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >License</a>
+                  >Add an existing account</a>
                 </MenuItem>
 
                 <MenuItem v-slot="{ active }">
@@ -109,6 +97,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, } from '@heroicons/vue/24/outline'
 import LoginDialog from "@/components/dialog/LoginDialog.vue";
 import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
+import ForgotPasswordDialog from "@components/dialog/ForgetPasswordDialog/index.vue";
 import { ActionEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { mapGetters } from "@/lib/map-state";
@@ -119,7 +108,7 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
+const { isLoggedIn, getUser } = mapGetters()
 
 const mobileMenuOpen = ref(false)
 const routerIsReady = ref(false)
@@ -152,8 +141,10 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 
 <style scoped>
 .header {
-  @apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;
+  @apply bg-white fixed top-0 w-full z-[5] h-fit  border-b border-zinc-200 px-6;
 }
+
+/*@apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;*/
 
 .nav {
   @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex

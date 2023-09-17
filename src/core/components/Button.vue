@@ -1,38 +1,28 @@
 <template>
   <button
-      :disabled="disabled"
-      :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
-      {'opacity-50 hover:opacity-50  cursor-default': isLoading},
-      )"
+      :disabled="disabledClick || isLoading"
       v-bind="$attrs"
+      :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
+        {
+         'opacity-50 hover:opacity-50 cursor-default': isLoading,
+         'bg-zinc-200/80 text-zinc-400/50 cursor-default hover:opacity-100 ring-1 ring-inset ring-zinc-300': disabledClick
+         },
+        classes
+      )"
   >
     <Loading
         v-if="isLoading"
-        classes="w-3.5 h-3.5"
-        :fill="variant === 'primary' ? 'white': 'black' "
+        :variant="variant"
+        classes="mr-2"
     />
-    <slot></slot>
+    <span v-if="isLoading">Processing...</span>
+    <slot v-else/>
   </button>
 </template>
 
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
 import Loading from "@/core/components/Loading.vue";
-
-interface Props {
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  radius?: 'sm' | 'md' | 'lg' | 'xl'
-  color?: 'primary'
-  variant?: 'primary' | 'secondary'
-  isLoading?: boolean,
-}
-
-// @ts-ignore
-const { size, variant, radius, isLoading, disable: buttonDisabled } = withDefaults(defineProps<Props>(), {
-  size: 'sm', radius: 'xl', color: 'primary', variant: 'primary'
-})
-
-const disabled = isLoading || buttonDisabled
 
 const RADIUS_MAPS = {
   sm: 'rounded-sm',
@@ -53,16 +43,61 @@ const SIZE_MAPS = {
   xl: 'p-11 h-14 text-xl',
 }
 
+// interface Props {
+//   size?: keyof typeof SIZE_MAPS
+//   radius?: keyof typeof RADIUS_MAPS
+//   variant?: keyof typeof VARIANT_MAPS
+//   isLoading?: boolean,
+// }
+
+/*
+ use withDefaults doesn't update component when props change
+  -> force use :key each component to update component
+*/
+
+// const { size, variant, radius, isLoading } = withDefaults(defineProps<Props>(), {
+//   size: 'sm', radius: 'xl', variant: 'primary'
+// })
+
+const { size, variant, radius, isLoading, classes, disabledClick } = defineProps({
+  disabledClick: { type: Boolean, default: false },
+  classes: { type: String },
+  size: {
+    type: String,
+    default: 'sm',
+    // validator(value: string): boolean {
+    //   return Object.keys(SIZE_MAPS).includes(value)
+    // }
+  },
+  variant: {
+    // type: ['primary', 'secondary'],
+    type: String,
+    default: 'primary',
+    // validator(value: string): boolean {
+    //   return ['primary', 'secondary'].includes(value)
+    // return Object.keys(VARIANT_MAPS).includes(value)
+    // }
+  },
+  radius: {
+    type: String,
+    default: 'xl',
+    // validator(value: string): boolean {
+    //   return Object.keys(RADIUS_MAPS).includes(value)
+    // }
+  },
+  isLoading: { type: Boolean, default: false },
+})
+
 </script>
 
 
 <style scoped>
-/*disabled:bg-zinc-200 disabled:text-[#aeb5bc] disabled:hover:opacity-100*/
 
 .button {
-  @apply shadow-sm disabled:opacity-50 disabled:cursor-default
-  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+  @apply shadow-sm
   flex items-center justify-center
+  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
 }
+/*disabled:bg-zinc-200/80 disabled:text-zinc-400/50 disabled:cursor-default disabled:hover:opacity-100 disabled:ring-1 disabled:ring-inset disabled:ring-zinc-300*/
 
 </style>

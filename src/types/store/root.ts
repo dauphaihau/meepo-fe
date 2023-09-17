@@ -5,6 +5,7 @@ import { IUser } from "@/types/user";
 // root state types
 export interface IRootState extends Partial<ISessionState>{
   openLoginDialog: boolean,
+  openForgotPasswordDialog: boolean,
   openRegisterDialog: boolean,
   showChatbox: boolean,
   keyMutatePosts: number,
@@ -16,6 +17,7 @@ export interface IRootState extends Partial<ISessionState>{
 export type GetterTypes = {
   getOpenLoginDialog(state: IRootState): boolean;
   getOpenRegisterDialog(state: IRootState): boolean;
+  getOpenForgotPasswordDialog(state: IRootState): boolean;
   getShowChatbox(state: IRootState): boolean;
   getKeyMutatePosts(state: IRootState): number;
   getStateRouter(state: IRootState): any;
@@ -26,6 +28,7 @@ export type GetterTypes = {
 export enum MutationEnums {
   SET_LOGIN_DIALOG = "SET_LOGIN_DIALOG",
   SET_REGISTER_DIALOG = "SET_REGISTER_DIALOG",
+  SET_FORGOT_PASSWORD_DIALOG = "SET_FORGOT_PASSWORD_DIALOG",
   SET_USER_INFO = "SET_USER_INFO",
   RESET_USER_INFO = 'RESET_USER_INFO',
   MUTATE_POSTS = 'MUTATE_POSTS',
@@ -47,6 +50,7 @@ export type MutationTypes<S = IRootState> = {
   [MutationEnums.MUTATE_POSTS](state: S): void;
   [MutationEnums.SET_STATE_ROUTER](state: S, payload: any): void;
   [MutationEnums.MESSAGE_TO_USER](state: S, payload: any): void;
+  [MutationEnums.SET_FORGOT_PASSWORD_DIALOG](state: S, payload: boolean): void;
 };
 
 // actions interface

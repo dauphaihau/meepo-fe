@@ -20,7 +20,7 @@
     </div>
 
     <div v-if="isLoading && page_count === 1" class="flex-center min-h-[35vh]">
-      <Loading/>
+      <Loading variant="secondary" classes="h-7 w-7"/>
     </div>
 
     <!-- Posts -->
@@ -44,7 +44,7 @@
     </div>
 
     <div v-if="isLoading && page_count > 1 && !reachEndPage" class="flex-center min-h-[35vh]">
-      <Loading/>
+      <Loading variant="secondary" classes="h-7 w-7"/>
     </div>
   </div>
 </template>

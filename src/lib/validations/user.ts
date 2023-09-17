@@ -23,14 +23,29 @@ const zodObj = {
   .refine((value) => /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^.&*-]).{8,}$/.test(value),
     'Password must has at least 8 characters that include at least 1 lowercase character, 1 uppercase characters, 1 number, and 1 special character in (!@#$%^&*)'),
 
+  confirmPassword: z.string({ required_error: 'Confirm password is required' }),
+
   dob: z.string({ required_error: 'Date of birth is required', invalid_type_error: 'Date of birth is required' })
 }
 
+const { name, dob, username, email, password, confirmPassword } = zodObj
+
 export const validationRegisterSchema = toTypedSchema(
-  z.object(zodObj)
+  z.object({ name, dob, username, email, password })
 );
 
-const { email, password } = zodObj
 export const validationLoginSchema = toTypedSchema(
   z.object({ email, password })
+);
+
+export const validationPasswordSchema = toTypedSchema(
+  z.object({ password, confirmPassword }).superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        path: ['confirmPassword'],
+        code: "custom",
+        message: "Password and Confirm Password must be match"
+      });
+    }
+  })
 );

@@ -56,8 +56,7 @@ export const mapKeyEnum = (enumObj) => {
   .filter((v) => isNaN(Number(v)))
 }
 
-export const toUpperCaseFirstL = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-
+export const toUpperCaseFirstL = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 
 export const debounce = (fn, delay = 300) => {
   let timeout

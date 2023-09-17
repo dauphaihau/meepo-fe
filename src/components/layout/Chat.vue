@@ -28,7 +28,7 @@
       <div class="h-[56px]"/>
       <!--        class="min-h-[380px] max-h-80 overflow-scroll scrollable-div px-4"-->
       <div v-if="isLoading" class="flex-center min-h-[35vh]">
-        <Loading/>
+        <Loading variant="secondary" classes="h-6 w-6"/>
       </div>
       <div v-else>
         <div v-for="(message, index) of messages">
