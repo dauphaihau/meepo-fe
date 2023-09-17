@@ -320,7 +320,6 @@ const handleDisabledUpdate = (): boolean => {
                   :disabledClick="handleDisabledUpdate()"
                   v-if="dataPost"
                   :isLoading="isLoading"
-                  :key="isLoading.toString()"
                   class="button"
                   @click="updatePost"
               >Update
@@ -328,7 +327,6 @@ const handleDisabledUpdate = (): boolean => {
               <Button
                   v-else
                   :disabledClick="!content && !fileImage"
-                  :key="isLoading.toString()"
                   :isLoading="isLoading"
                   @click.prevent="createPost"
               >Post

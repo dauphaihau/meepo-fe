@@ -101,7 +101,7 @@
             classes="px-6"
             :key="isLoading.toString()"
             :isLoading="isLoading"
-            :disabled="!content && !fileImage"
+            :disabledClick="!content && !fileImage"
             @click.prevent="createPost"
         >Post
         </Button>

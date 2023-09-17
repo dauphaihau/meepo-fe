@@ -188,7 +188,6 @@ function openDialog() {
                   :disabled="isLoading"
               />
               <DateBirthInput
-                  :key="isLoading.toString()"
                   :disabled="isLoading"
                   :helperText="errorDate"
                   classWrapper="mb-8"
