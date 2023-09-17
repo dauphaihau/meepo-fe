@@ -16,11 +16,10 @@ const store = useStore()
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
 
 const isSubmitted = ref(false);
-// const isLoading = ref(true);
 const isLoading = ref(false);
 
 const { handleSubmit, errors, resetForm, setErrors, setFieldError } = useForm({
-  // validationSchema: validationLoginSchema,
+  validationSchema: validationLoginSchema,
   validateOnMount: false
 });
 

@@ -16,7 +16,7 @@ const store = useStore()
 const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters()
 
 const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
-  // validationSchema: validationRegisterSchema,
+  validationSchema: validationRegisterSchema,
   validateOnMount: false,
 });
 
