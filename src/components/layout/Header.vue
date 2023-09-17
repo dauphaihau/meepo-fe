@@ -68,6 +68,7 @@
                 <div class="rounded-tl-md"></div>
                 <MenuItem v-slot="{ active }">
                   <a
+                      v-tooltip="'Not available'"
                       href="#"
                       :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
                   >Add an existing account</a>
@@ -107,7 +108,7 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters()
+const { isLoggedIn, getUser } = mapGetters()
 
 const mobileMenuOpen = ref(false)
 const routerIsReady = ref(false)
@@ -142,7 +143,8 @@ const logout = () => store.dispatch(ActionEnums.LOGOUT)
 .header {
   @apply bg-white fixed top-0 w-full z-[5] h-fit  border-b border-zinc-200 px-6;
 }
-  /*@apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;*/
+
+/*@apply bg-white fixed top-0 w-full z-40 h-fit  border-b border-zinc-200 px-6;*/
 
 .nav {
   @apply mx-auto max-w-7xl xl:max-w-[76rem] py-2 flex

@@ -1,8 +1,6 @@
 <template>
 
   <Button
-
-      :isLoading="true"
       v-if="show && isFollowing"
       variant="secondary"
       class="h-[32px]"

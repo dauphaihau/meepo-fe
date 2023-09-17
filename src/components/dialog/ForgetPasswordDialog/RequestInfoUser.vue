@@ -12,7 +12,6 @@ const emit = defineEmits<{
   (e: 'changeStep')
 }>()
 
-const isSubmitted = ref(false);
 const isLoading = ref(false);
 const inputQuery = ref(null);
 const query = ref('');
@@ -57,8 +56,7 @@ const onSubmit = async () => {
           v-model="query"
       />
       <Button
-          :disabled="!query"
-          :key="isLoading.toString()"
+          :disabledClick="!query"
           :isLoading="isLoading"
           v-on:submit.prevent="onSubmit"
           radius="lg"

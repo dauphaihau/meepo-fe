@@ -189,7 +189,7 @@ watch(content, () => {
   calcHeighTextarea()
 })
 
-const handleDisabledUpdate = () => {
+const handleDisabledUpdate = (): boolean => {
 
   if (content.value !== dataPost?.content) {
     return false
@@ -317,7 +317,7 @@ const handleDisabledUpdate = () => {
               <!--                      <Button v-if="isEditing" class="button" @click="updatePost">Update</Button>-->
               <!--                          :disabled="!content && !fileImage"-->
               <Button
-                  :disabled="handleDisabledUpdate()"
+                  :disabledClick="handleDisabledUpdate()"
                   v-if="dataPost"
                   :isLoading="isLoading"
                   :key="isLoading.toString()"
@@ -327,7 +327,7 @@ const handleDisabledUpdate = () => {
               </Button>
               <Button
                   v-else
-                  :disabled="!content && !fileImage"
+                  :disabledClick="!content && !fileImage"
                   :key="isLoading.toString()"
                   :isLoading="isLoading"
                   @click.prevent="createPost"

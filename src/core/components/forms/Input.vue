@@ -47,7 +47,6 @@ const emit = defineEmits<{
 
 const updateTitle = (event: Event) => {
   emit('update:modelValue', (event.target as HTMLInputElement).value)
-  // emit('update:modelValue', event.target.value)
 }
 
 const SIZE_MAPS = {

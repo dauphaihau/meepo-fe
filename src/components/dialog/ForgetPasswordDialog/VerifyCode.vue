@@ -14,7 +14,6 @@ const emit = defineEmits<{
 
 const token = ref('');
 const errorToken = ref('');
-const isSubmitted = ref(false);
 const isLoading = ref(false);
 
 const onSubmit = async () => {
@@ -50,9 +49,8 @@ const onSubmit = async () => {
           :helperText="errorToken"
       />
       <Button
-          :key="isLoading.toString()"
+          :disabledClick="!token"
           :isLoading="isLoading"
-          :disabled="!token"
           v-on:submit.prevent="onSubmit"
           radius="lg"
           class="w-full"

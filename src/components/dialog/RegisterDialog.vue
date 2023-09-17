@@ -145,9 +145,6 @@ function openDialog() {
                   :helperText="isSubmitted ? errors.dob : '' "
                   :disabled="isLoading"
               />
-<!--                  :key="isLoading.toString()"-->
-              <!--                          :key="errors.dob"-->
-              <!--                          :helperText="isSubmitted ? errors.dob : '' "-->
               <Button
                   :isLoading="isLoading"
                   v-on:submit.prevent="validate"

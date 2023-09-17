@@ -1,8 +1,12 @@
 <template>
   <button
+      :disabled="disabledClick || isLoading"
       v-bind="$attrs"
       :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
-        {'opacity-50 hover:opacity-50 cursor-default': isLoading },
+        {
+         'opacity-50 hover:opacity-50 cursor-default': isLoading,
+         'bg-zinc-200/80 text-zinc-400/50 cursor-default hover:opacity-100 ring-1 ring-inset ring-zinc-300': disabledClick
+         },
         classes
       )"
   >
@@ -39,7 +43,6 @@ const SIZE_MAPS = {
   xl: 'p-11 h-14 text-xl',
 }
 
-
 // interface Props {
 //   size?: keyof typeof SIZE_MAPS
 //   radius?: keyof typeof RADIUS_MAPS
@@ -56,11 +59,9 @@ const SIZE_MAPS = {
 //   size: 'sm', radius: 'xl', variant: 'primary'
 // })
 
-
-const { size, variant, radius, isLoading, classes } = defineProps({
-  classes: {
-    type: String,
-  },
+const { size, variant, radius, isLoading, classes, disabledClick } = defineProps({
+  disabledClick: { type: Boolean, default: false },
+  classes: { type: String },
   size: {
     type: String,
     default: 'sm',
@@ -74,7 +75,7 @@ const { size, variant, radius, isLoading, classes } = defineProps({
     default: 'primary',
     // validator(value: string): boolean {
     //   return ['primary', 'secondary'].includes(value)
-      // return Object.keys(VARIANT_MAPS).includes(value)
+    // return Object.keys(VARIANT_MAPS).includes(value)
     // }
   },
   radius: {
@@ -84,9 +85,8 @@ const { size, variant, radius, isLoading, classes } = defineProps({
     //   return Object.keys(RADIUS_MAPS).includes(value)
     // }
   },
-  isLoading: { type: Boolean },
+  isLoading: { type: Boolean, default: false },
 })
-
 
 </script>
 
@@ -97,8 +97,7 @@ const { size, variant, radius, isLoading, classes } = defineProps({
   @apply shadow-sm
   flex items-center justify-center
   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
-  disabled:bg-zinc-200/80 disabled:text-zinc-400/50 disabled:cursor-default disabled:hover:opacity-100
-  disabled:ring-1 disabled:ring-inset disabled:ring-zinc-300
 }
+/*disabled:bg-zinc-200/80 disabled:text-zinc-400/50 disabled:cursor-default disabled:hover:opacity-100 disabled:ring-1 disabled:ring-inset disabled:ring-zinc-300*/
 
 </style>

@@ -88,13 +88,12 @@ const onSubmit = handleSubmit(async () => {
           :helper-text=" isSubmitted ? errors.confirmPassword : ''"
       />
       <Button
-          :key="isLoading.toString()"
           :isLoading="isLoading"
+          :disabledClick="!password || !confirmPassword"
           v-on:submit.prevent="validate"
           radius="lg"
           class="w-full"
           size="md"
-          :disabled="!password || !confirmPassword"
       >
         Change Password
       </Button>

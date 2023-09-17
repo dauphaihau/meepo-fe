@@ -73,7 +73,6 @@ const onSubmit = async () => {
   isLoading.value = false
   if (status === 200) {
     toast('Your profile was updated')
-    // dob.value = dayjs(data.user.dob).format('DD MMMM YYYY')
     emits('onUpdateProfile', data.user)
     store.commit(MutationEnums.SET_USER_INFO, data.user);
     closeDialog()
@@ -116,7 +115,7 @@ function openDialog() {
         <Button
             :key="isLoading.toString()"
             :isLoading="isLoading"
-            :disabled="!name"
+            :disabledClick="!name"
             @click="onSubmit"
         >Save
         </Button>

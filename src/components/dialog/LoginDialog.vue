@@ -47,6 +47,7 @@ const onSubmit = handleSubmit(async (vals) => {
 })
 
 function closeDialog() {
+  if (isLoading.value) return
   store.commit(MutationEnums.SET_LOGIN_DIALOG, false)
   isSubmitted.value = false
   resetForm()
@@ -57,11 +58,13 @@ function openDialog() {
 }
 
 const openRegisterDialog = () => {
+  if (isLoading.value) return
   store.commit(MutationEnums.SET_REGISTER_DIALOG, true)
   closeDialog()
 }
 
 const openForgotPasswordDialog = () => {
+  if (isLoading.value) return
   store.commit(MutationEnums.SET_FORGOT_PASSWORD_DIALOG, true)
   closeDialog()
 }
@@ -120,7 +123,7 @@ const openForgotPasswordDialog = () => {
                 :isLoading="isLoading"
                 radius="lg"
                 class="w-full"
-                size="sm"
+                size="md"
                 v-on:submit.prevent="onSubmit"
             >
               Log in
