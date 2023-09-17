@@ -47,6 +47,7 @@ const onSubmit = async () => {
           size="md"
           label="Code"
           v-model="token"
+          :helperText="errorToken"
       />
       <Button
           :key="isLoading.toString()"

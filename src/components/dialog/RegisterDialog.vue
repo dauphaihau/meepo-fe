@@ -16,14 +16,13 @@ const store = useStore()
 const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters()
 
 const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
-  validationSchema: validationRegisterSchema,
+  // validationSchema: validationRegisterSchema,
   validateOnMount: false,
 });
 
 const errorDate = ref('');
 const isSubmitted = ref(false);
 const isLoading = ref(false);
-// const isLoading = ref(true);
 
 const { value: name } = useField<string>('name');
 const { value: username } = useField<string>('username');
@@ -64,11 +63,13 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 const openLoginDialog = () => {
+  if (isLoading.value) return
   store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
   closeDialog()
 }
 
 function closeDialog() {
+  if (isLoading.value) return
   store.commit(MutationEnums.SET_REGISTER_DIALOG, false)
   errorDate.value = ''
   resetForm()
@@ -85,7 +86,7 @@ function openDialog() {
   <Dialog
       :show="isOpenDialog"
       :closeDialog="closeDialog"
-      classPanel="min-w-[480px] max-w-[480px]"
+      classPanel="min-w-[465px] max-w-[465px]"
   >
     <template
         v-if="!isLoggedIn"
@@ -143,12 +144,11 @@ function openDialog() {
                   classWrapper="mb-8"
                   :helperText="isSubmitted ? errors.dob : '' "
                   :disabled="isLoading"
-                  :key="isLoading.toString()"
               />
+<!--                  :key="isLoading.toString()"-->
               <!--                          :key="errors.dob"-->
               <!--                          :helperText="isSubmitted ? errors.dob : '' "-->
               <Button
-                  :key="isLoading.toString()"
                   :isLoading="isLoading"
                   v-on:submit.prevent="validate"
                   radius="lg"

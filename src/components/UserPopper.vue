@@ -28,7 +28,7 @@
 
         <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
           <div v-if="isLoading" class="flex-center h-32">
-            <Loading/>
+            <Loading variant="secondary" classes="h-5 w-5"/>
           </div>
           <div v-else>
             <div class="flex justify-between mb-2">

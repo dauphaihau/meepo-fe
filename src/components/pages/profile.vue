@@ -1,7 +1,7 @@
 <template>
 
-  <div v-if="isLoading" class="flex-center min-h-[35vh]">
-    <Loading/>
+  <div v-if="isLoading" class="flex-center min-h-[40vh]">
+    <Loading variant="secondary" classes="h-7 w-7"/>
   </div>
 
   <div v-else>
@@ -246,7 +246,6 @@ onMounted(() => {
 async function getProfile() {
   const { data, status } = await userAPI.getProfile(currentRouteUsername)
   isLoading.value = false
-
   isUserNotExist.value = status === 404
 
   if (status === 404) {

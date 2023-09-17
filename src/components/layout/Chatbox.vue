@@ -19,27 +19,25 @@
       <!--      Header-->
       <div
           class="flex items-center justify-between px-4 cursor-pointer h-[56px]"
-          @click="handleShowFull"
+          @click="toggleShowFull"
       >
         <h3 class="text-xl font-bold">Messages</h3>
         <ChevronDoubleUpIcon
             class="h-6 w-6 cursor-pointer"
             aria-hidden="true"
-            @click="handleShowFull"
             v-if="!showFull"
         />
         <ChevronDoubleDownIcon
             v-else
             class="h-6 w-6 cursor-pointer"
             aria-hidden="true"
-            @click="handleShowFull"
         />
       </div>
 
       <!--      Body - Rooms-->
       <div id="rooms" class="overflow-scroll transition duration-300 h-[500px] ">
         <div v-if="isLoading" class="flex-center min-h-[35vh]">
-          <Loading/>
+          <Loading variant="secondary" classes="h-6 w-6"/>
         </div>
         <div v-else>
           <div v-for="message of messages">
@@ -194,14 +192,14 @@ watch(getCurrentUserToMessage, () => {
   showViewChatPrivate.value = true
   showFull.value = true
   keyChat.value++
-}, { deep: true, immediate: true })
+})
 
 const resetScroll = () => {
   if (!messagesContainer) return;
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 };
 
-const handleShowFull = () => {
+const toggleShowFull = () => {
   showFull.value = !showFull.value
 }
 
@@ -220,6 +218,5 @@ const handleShowFull = () => {
 .chatbox-shadow {
   box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
-
 
 </style>

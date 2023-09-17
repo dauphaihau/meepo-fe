@@ -8,9 +8,10 @@
       <!--      bg-[#e5e5e5]-->
       <!--      <ListboxButton class="list-button" :class="classWrapper">-->
       <ListboxButton
-          class="list-button" :class="cn(classWrapper,
-                 disabled ? 'bg-[#e5e5e5]' : 'bg-white'
-              )"
+          class="list-button"
+          :class="cn(classWrapper,
+             disabled ? 'bg-[#f7f8f9] text-[#c2c3c4] ring-1 ring-inset ring-zinc-300' : 'bg-white'
+           )"
       >
         <span class="block truncate">{{ selectedOption.name }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -45,7 +46,7 @@
                 v-if="placeholder && index > 0 "
                 :class="[
                   active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-900',
-                  'relative cursor-default select-none py-2 pl-3 pr-4',
+                  'relative cursor-pointer select-none py-2 pl-3 pr-4',
                 ]"
             >
               <span
@@ -87,11 +88,33 @@ interface Props {
   name: string
   placeholder?: string
   data: {name: string}[]
-  shape?: 'input',
   disabled?: boolean
 }
 
-//    @ts-ignore
+/*
+ use withDefaults doesn't update component when props change
+  -> force use :key each component to update component
+*/
+
+// let {
+//   name,
+//   placeholder,
+//   size,
+//   classWrapper,
+//   data,
+//   label,
+//   helperText,
+//   modelValue,
+//   shape,
+//   disabled
+// } = withDefaults(defineProps<Props>(), {
+//   data: [
+//     { name: 'November' },
+//     { name: 'July' },
+//     { name: 'August' },
+//   ]
+// });
+
 let {
   name,
   placeholder,
@@ -101,14 +124,25 @@ let {
   label,
   helperText,
   modelValue,
-  shape,
   disabled
-} = withDefaults(defineProps<Props>(), {
-  data: [
-    { name: 'November' },
-    { name: 'July' },
-    { name: 'August' },
-  ]
+} = defineProps({
+  data: {
+    type: Array,
+    default: [
+      { name: 'Option 1' },
+      { name: 'Option 2' },
+      { name: 'Option 3' },
+    ],
+  },
+  name: { type: String },
+  modelValue: { type: String },
+  classWrapper: { type: String, default: '' },
+  size: { type: String, default: 'sm', },
+  label: { type: String, },
+  helperText: { type: String, default: '' },
+  classHelperText: { type: String, default: '' },
+  placeholder: { type: String },
+  disabled: { type: Boolean },
 });
 
 const emit = defineEmits<{
@@ -153,7 +187,7 @@ const onChangeSelect = (val) => {
 
 
 .list-options {
-  @apply absolute mt-1 max-h-52 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;
+  @apply absolute mt-1 max-h-52 overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;
 }
 
 .label {

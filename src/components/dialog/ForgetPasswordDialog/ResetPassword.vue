@@ -42,7 +42,6 @@ const onSubmit = handleSubmit(async () => {
     token,
     password: password.value
   })
-  isLoading.value = false
   if (status === 200 && data?.user) {
     // store.commit(MutationEnums.SET_USER_INFO, data.user)
     await store.dispatch(ActionEnums.LOGIN, {
@@ -53,7 +52,7 @@ const onSubmit = handleSubmit(async () => {
     })
     emit('changeStep')
   }
-
+  isLoading.value = false
   if (status === 401) {
     toast('Invalid or expired code')
   }

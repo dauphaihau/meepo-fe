@@ -16,10 +16,11 @@ const store = useStore()
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
 
 const isSubmitted = ref(false);
+// const isLoading = ref(true);
 const isLoading = ref(false);
 
 const { handleSubmit, errors, resetForm, setErrors, setFieldError } = useForm({
-  validationSchema: validationLoginSchema,
+  // validationSchema: validationLoginSchema,
   validateOnMount: false
 });
 
@@ -44,7 +45,7 @@ const onSubmit = handleSubmit(async (vals) => {
     return
   }
   resetForm()
-});
+})
 
 function closeDialog() {
   store.commit(MutationEnums.SET_LOGIN_DIALOG, false)
@@ -81,8 +82,7 @@ const openForgotPasswordDialog = () => {
       <Button
           @click="openDialog"
           class="px-8 h-[32px]"
-      >
-        Log In
+      >Log In
       </Button>
     </template>
 
@@ -115,18 +115,19 @@ const openForgotPasswordDialog = () => {
               <p
                   @click="openForgotPasswordDialog"
                   class="text-sm mb-4 text-link"
-              > Forgot
-                password? </p>
+              >Forgot password?</p>
             </div>
             <Button
-                :key="isLoading.toString()"
                 :isLoading="isLoading"
-                radius="lg" class="w-full" size="md" v-on:submit.prevent="onSubmit"
+                radius="lg"
+                class="w-full"
+                size="sm"
+                v-on:submit.prevent="onSubmit"
             >
               Log in
             </Button>
           </form>
-          <div class="flex justify-center">
+          <div class="flex justify-center text-sm">
             <p class="text-zinc-500 mr-1">New to Meepo?</p>
             <p
                 @click="openRegisterDialog"

@@ -95,7 +95,7 @@
                 </p>
               </h3>
               <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                This simplified Twitter, Reddit clone is built with Vue.js, Tailwind, Typescript, Ruby on Rails,
+                This project was inspired from Twitter, Reddit and  built with Vue.js, Tailwind, Typescript, Ruby on Rails,
                 Postgresql
               </p>
               <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">

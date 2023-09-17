@@ -10,17 +10,20 @@
             class="input resize-none py-2"
             rows="4"
             :value="modelValue"
-            @input="updateTitle"
             v-bind="$attrs"
+            @input="onChangeInput"
         />
+        <!--            @input="$emit('update:modelValue', handleInputChange($event))"-->
+
+        <!--            v-if="shape === 'input'"-->
         <input
-            v-if="shape === 'input'"
+            :value="modelValue"
             class="input"
             :class="cn('input', SIZE_MAPS[size])"
-            :value="modelValue"
-            @input="updateTitle"
             v-bind="$attrs"
+            @input="onChangeInput"
         />
+        <!--            @input="$emit('update:modelValue', handleInputChange($event))"-->
       </div>
     </div>
     <p v-if="helperText" :class="classHelperText" class='text-red-500 text-[0.75rem]'>{{ helperText }}</p>
@@ -31,24 +34,40 @@
 <script setup lang="ts">
 import { cn } from '@/core/helper.js'
 
-const { size, classWrapper, classHelperText, label, helperText, modelValue, shape } = defineProps({
-  modelValue: { type: String, default: '' },
-  classWrapper: { type: String },
-  size: { type: String, default: 'sm', },
-  label: { type: [String, Boolean], },
-  shape: { type: String, default: 'input' },
-  helperText: { type: String, default: '' },
-  classHelperText: { type: String, default: '' },
+interface Props {
+  modelValue?: string | number
+  classWrapper?: string
+  size?: keyof typeof SIZE_MAPS
+  label?: string
+  shape?: 'input' | 'textarea'
+  helperText?: string
+  classHelperText?: string
+}
+
+const {
+  size,
+  classWrapper,
+  classHelperText,
+  label,
+  helperText,
+  shape
+// } = defineProps<Props>()
+// use withDefaults doesn't update component when props change
+} = withDefaults(defineProps<Props>(), {
+  size: 'sm', shape: 'input', helperText: ''
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void
 }>()
 
-const updateTitle = (event: Event) => {
-  emit('update:modelValue', (event.target as HTMLInputElement).value)
-  // emit('update:modelValue', event.target.value)
+const onChangeInput = (event) => {
+  emit('update:modelValue', event.target.value)
 }
+
+// const handleInputChange = (event: Event) => {
+//   return (event.target as HTMLInputElement).value
+// }
 
 const SIZE_MAPS = {
   sm: 'h-9',

@@ -65,26 +65,12 @@
             <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div class="">
                 <!--              <div class="py-1">-->
-
                 <div class="rounded-tl-md"></div>
-
-                <MenuItem v-slot="{ active }">
-                  <a
-                      href="#"
-                      :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-tl-md rounded-tr-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >Account settings</a>
-                </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <a
                       href="#"
                       :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >Support</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                      href="#"
-                      :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-                  >License</a>
+                  >Add an existing account</a>
                 </MenuItem>
 
                 <MenuItem v-slot="{ active }">

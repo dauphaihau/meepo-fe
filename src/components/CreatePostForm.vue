@@ -50,7 +50,7 @@
 
 
               <div v-if="!isFocus && currentRouteName === 'post'">
-                <Button :disabled="!content" @click.prevent="createPost">Post</Button>
+                <Button classes="px-6"  :disabled="!content" @click.prevent="createPost">Post</Button>
               </div>
 
             </div>
@@ -98,6 +98,7 @@
         </div>
 
         <Button
+            classes="px-6"
             :key="isLoading.toString()"
             :isLoading="isLoading"
             :disabled="!content && !fileImage"

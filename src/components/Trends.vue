@@ -11,7 +11,7 @@
       <!--      <h2 class="text-2xl font-black px-3">Trend for you</h2>-->
 
       <div v-if="isLoading" class="flex-center min-h-[35vh]">
-        <Loading/>
+        <Loading variant="secondary" classes="h-7 w-7"/>
       </div>
 
       <!-- List Hashtags -->

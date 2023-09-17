@@ -100,7 +100,7 @@ onBeforeMount(() => {
 
   years.value = new Array(43).fill("").map((_, i) => ({
     name: (1980 + i + 1).toString()
-  })).reverse();
+  })).reverse() ;
 
   if (modelValue && typeof modelValue === "string") {
     const formatModelValue = dayjs(modelValue).format('YYYY-MMMM-D')

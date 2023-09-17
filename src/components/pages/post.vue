@@ -5,7 +5,7 @@
   <div class="h-20"></div>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
-    <Loading/>
+    <Loading variant="secondary" classes="h-7 w-7"/>
   </div>
 
   <div v-else>
