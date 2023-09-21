@@ -3,11 +3,11 @@ import { onMounted, watch, ref } from "vue";
 import { Toaster } from 'vue-sonner'
 import { useRoute, useRouter } from "vue-router";
 
+import About from "@components/About.vue";
 import Header from "@/components/layout/Header.vue";
 import SidebarLeft from "@/components/layout/SidebarLeft.vue";
 import SidebarRight from "@/components/layout/SidebarRight.vue";
 import ChatBox from "@/components/layout/Chatbox.vue";
-import About from "@components/About.vue";
 import { mapGetters } from "@/lib/map-state";
 
 const route = useRoute()
@@ -35,21 +35,27 @@ watch(isLoggedIn, () => {
 <template>
   <div id="app" class="w-full">
     <Toaster
-        position="bottom-center" offset="20px"
+        position="bottom-center"
+        offset="20px"
         :toastOptions="{
-                style: {
-                  background: 'black',
-                  color: 'white',
-                  border: 'black',
-                  padding: '10px 20px',
-                  width: 'fit-content',
-                  marginLeft: '100px'
-             },
-      }"
+                    style: {
+                      background: 'black',
+                      color: 'white',
+                      border: 'black',
+                      padding: '10px 20px',
+                      borderRadius: '8px'
+                 },
+          }"
     />
     <Header/>
+
+<!--    <div class="fixed inset-0 z-[999] flex-center h-[5vh]  ">-->
+<!--      Center-->
+<!--    </div>-->
     <div class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex" :key="keyApp">
       <SidebarLeft/>
+
+      <About class="grow flex flex-col justify-end ml-3"/>
       <div class="flex gap-6">
         <div class="flex flex-col border-l border-r min-w-[600px] max-w-[600px]">
           <router-view :key="route.path"/>
@@ -57,7 +63,6 @@ watch(isLoggedIn, () => {
         <SidebarRight/>
       </div>
     </div>
-<!--    <About/>-->
     <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)"/>
   </div>
 </template>

@@ -78,7 +78,22 @@
                 class="rounded-xl mt-4 w-full h-auto"
             >
 
-            <div class="text-zinc-500 font-normal text-sm mt-4">{{ post.time }} · {{ post.date }}</div>
+            <div
+                v-if="post.edited_posts_count > 0"
+                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+                :class="{'hover:underline hover:underline-offset-2 cursor-pointer': post.edited_posts_count > 0}"
+                @click="redirectHistory"
+            >
+              <PencilIcon v-if="post.edited_posts_count > 0" class="h-4 w-4 inline mr-1.5"/>
+              Last edited {{ post.time }} · {{ post.date }}
+            </div>
+
+            <div
+                v-else
+                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+            >{{ post.time }} · {{ post.date }}
+            </div>
+
           </div>
 
           <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
@@ -119,7 +134,7 @@
                   :class="'text-zinc-500'"
               />
 
-              <div class='icon-btn' @click="dislikeOrLikePost" v-tooltip="'Like'">
+              <div class='icon-btn' @click="toggleLikePost" v-tooltip="'Like'">
                 <HeartIconSolid v-if="isLike"/>
                 <HeartIcon v-else/>
               </div>
@@ -146,11 +161,11 @@
     </div>
 
     <!--  Sub Posts ( Comments )-->
-        <Posts
-            :key="keyPostsComp"
-            :author="author"
-            :disabledComment="!post?.is_current_user_can_comment"
-        />
+    <Posts
+        :key="keyPostsComp"
+        :author="author"
+        :disabledComment="!post?.is_current_user_can_comment"
+    />
   </div>
 
 </template>
@@ -160,7 +175,7 @@
 import { onBeforeMount, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
-import { HeartIcon } from "@heroicons/vue/24/outline"
+import { HeartIcon, PencilIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid } from "@heroicons/vue/24/solid"
 import {
   ChatBubbleOvalLeftEllipsisIcon,
@@ -230,7 +245,6 @@ ws.onmessage = (e) => {
   if (data.type === "welcome") return;
   if (data.type === "confirm_subscription") return;
 
-
   logger.debug('ws.onmessage response data message', data.message, 'src/components/pages/post.vue')
 
   if (!data.message) {
@@ -282,6 +296,7 @@ async function getDetailPost(post_id = null) {
   if (data) {
     post.value = data.post
     isLike.value = data.post.is_current_user_like
+    post.value.isExpiresEdit = dayjs().isBefore(dayjs(post.value.created_at).add(1, 'h'))
     post.value.time = dayjs(post.value.created_at).format('h:mm A  ')
     post.value.date = dayjs(post.value.created_at).format('MMM D, YYYY')
     author.value = data.post.author
@@ -292,29 +307,17 @@ async function getDetailPost(post_id = null) {
   }
 }
 
-async function dislikeOrLikePost() {
+async function toggleLikePost() {
 
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
-  const { data, status } = await postAPI.like(postId)
 
-
-  if (data) {
-    const isUp = data.likes_count > post.value.likes_count
-    isLike.value = isUp
-  //   // 1. Old number goes up
-  //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
-  //
-  //   // 2. Incrementing the counter
-  //   setTimeout(() => post.value.likes_count = data.likes_count, 100);
-  //
-  //   // 3. New number waits down
-  //   setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
-  //
-  //   // 4. New number stays in the middle
-  //   setTimeout(() => animationLikes.value = 'initial', 200);
+  const { status } = await postAPI.like(postId)
+  isLike.value = !isLike.value
+  if (status !== 200) {
+    isLike.value = !isLike.value
   }
 }
 
@@ -329,6 +332,11 @@ watch(getKeyMutatePosts, () => {
 
 const redirectProfile = () => {
   router.push('/user/' + author.value.username)
+}
+const redirectHistory = () => {
+  if (post.value.edited_posts_count > 0) {
+    router.push({ name: 'history' })
+  }
 }
 
 </script>

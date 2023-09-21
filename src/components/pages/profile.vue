@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import dayjs from 'dayjs';
 import { CakeIcon, CalendarDaysIcon, EnvelopeIcon, LinkIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 

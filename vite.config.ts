@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -8,11 +9,14 @@ export default ({ mode }) => {
     define: {
       "process.env": env,
     },
-    plugins: [vue(),],
+    plugins: [
+      vue(),
+      vueJsx()
+    ],
     build: {
       sourcemap: true, // enable production source maps
       rollupOptions: { // to fix issue: Some chunks are larger than 500 KiB after minification
-        output:{
+        output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
               return id.toString().split('node_modules/')[1].split('/')[0].toString();

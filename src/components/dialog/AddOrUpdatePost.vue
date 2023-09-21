@@ -3,7 +3,6 @@ import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRoute, useRouter } from "vue-router";
 import { CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon, } from "@heroicons/vue/24/outline"
 import { PencilIcon } from "@heroicons/vue/24/outline"
-import { toast } from "vue-sonner";
 
 import Dialog from "@/core/components/Dialog.vue";
 import Input from "@/core/components/forms/Input.vue";
@@ -16,6 +15,7 @@ import { mapGetters } from "@/lib/map-state.ts";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
+import { customToast } from "@/lib/customToast";
 
 interface Props {
   showDialogFromProps?: boolean,
@@ -30,7 +30,7 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 
-const { getAuthToken, isLoggedIn, getUser } = mapGetters()
+const { isLoggedIn, getUser } = mapGetters()
 
 const showDialog = ref(false);
 const isLoading = ref(false);
@@ -78,11 +78,14 @@ const createPost = async () => {
     payload.image_url = await uploadImage()
   }
 
-  const { status } = await postAPI.create(payload)
+  const { status, data } = await postAPI.create(payload)
   isLoading.value = false
 
   if (status === 201) {
-    toast('Your post was sent')
+    customToast('Your post was sent. You have 1 hour to make any edits.', {
+      to: { name: 'post', params: { id: data.post.id } },
+    })
+
     if (currentRouteName !== 'post') {
       store.commit(MutationEnums.MUTATE_POSTS)
     }
@@ -109,16 +112,18 @@ const updatePost = async () => {
 
   logger.debug('execute postAPI.update', payload, 'src/components/dialog/AddOrUpdatePost.vue')
   const { status } = await postAPI.update(dataPost.id, payload)
-
-  setTimeout(() => {
-    isLoading.value = false
-    if (status === 200) {
-      toast('Your post was updated')
-      store.commit(MutationEnums.MUTATE_POSTS)
-      closeDialog()
-    }
-  }, 3000)
-
+  isLoading.value = false
+  if (status === 200) {
+    customToast('Your post has been edited', {
+      to: { name: 'post', params: { id: dataPost.id } },
+      style: {
+        width: 'fit-content',
+        marginLeft: '90px'
+      }
+    })
+    store.commit(MutationEnums.MUTATE_POSTS)
+    closeDialog()
+  }
 }
 
 const uploadImage = async () => {
@@ -216,6 +221,7 @@ const handleDisabledUpdate = (): boolean => {
 
 <template>
   <textarea
+      :disabled="isLoading"
       ref="textareaRef"
       v-model="content"
       class="hidden"
@@ -223,10 +229,10 @@ const handleDisabledUpdate = (): boolean => {
 
   <Dialog
       :show="showDialog"
+      :title="`${dataPost ? 'Edit' : 'Create'} Post`"
       :closeDialog="closeDialog"
       classPanel="min-w-[600px] max-w-[600px] max-h-[90vh] mt-20 align-middle relative px-4 py-2"
   >
-    <!--    w-full max-w-[600px] max-h-[90vh] transform rounded-2xl bg-white text-left align-middle shadow-xl transition-all relative-->
     <template v-slot:trigger>
       <div :class="responsive && 'hidden xl:block'">
         <Button v-if="!hideTrigger" size="md" class="w-2/3" @click="openDialog">Post</Button>
@@ -289,9 +295,9 @@ const handleDisabledUpdate = (): boolean => {
         </div>
         <div>
           <SelectWhoCanComment :defaultValue="whoCanComment" @update:modelValue="onChangeSelect"/>
-          <div class="border-b my-4"/>
+          <div class="border-b mt-4 mb-2"/>
           <!--     Toolbar input     -->
-          <div class="flex items-center justify-between gap-x-6 mb-2 w-full">
+          <div class="flex items-center justify-between gap-x-6 w-full">
             <div class="flex items-center gap-1.5">
 
               <!-- @vue-ignore -->

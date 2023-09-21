@@ -1,5 +1,5 @@
 <template>
-<!--  <div class="relative z-20">-->
+  <!--  <div class="relative z-20">-->
   <div class="">
     <div
         class="flex flex-row px-4 border-t"
@@ -50,7 +50,7 @@
 
 
               <div v-if="!isFocus && currentRouteName === 'post'">
-                <Button classes="px-6"  :disabled="!content" @click.prevent="createPost">Post</Button>
+                <Button classes="px-6" :disabled="!content" @click.prevent="createPost">Post</Button>
               </div>
 
             </div>
@@ -62,6 +62,7 @@
             </div>
           </div>
           <SelectWhoCanComment
+              class="relative z-[2]"
               @update:modelValue="onChangeSelect"
               v-if="currentRouteName === 'home' && isFocus"
           />
@@ -99,7 +100,6 @@
 
         <Button
             classes="px-6"
-            :key="isLoading.toString()"
             :isLoading="isLoading"
             :disabledClick="!content && !fileImage"
             @click.prevent="createPost"
@@ -111,8 +111,8 @@
 </template>
 
 
-<script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+<script setup lang="tsx">
+import { defineComponent, h, markRaw, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { PhotoIcon, XMarkIcon, GifIcon, CalendarIcon, FaceSmileIcon } from "@heroicons/vue/24/outline"
 
@@ -125,7 +125,7 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
-import { toast } from "vue-sonner";
+import { customToast } from "@/lib/customToast";
 
 const store = useStore()
 const route = useRoute()
@@ -191,12 +191,20 @@ const createPost = async () => {
   }
 
   logger.debug('execute postAPI.create', payload, 'src/components/CreatePostForm.vue')
-  const { status } = await postAPI.create(payload)
+  const { status, data } = await postAPI.create(payload)
 
   isLoading.value = false
 
   if (status === 201) {
-    toast('Your post was sent')
+    if (!data.post || !data.post.id) {
+      logger.error('response from postAPI.create, post id is null', 'src/components/CreatePostForm.vue')
+    }
+    customToast(
+        `Your post was sent.${currentRouteName === 'home' ? ' You have 1 hour to make any edits.' : ''}`,
+        {
+          to: { name: 'post', params: { id: data.post.id } },
+        }
+    )
     emit('onCreatePost')
     content.value = ''
     fileImage.value = null

@@ -16,7 +16,6 @@
             v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
             class="flex gap-3 items-center text-zinc-500 ml-[30px] mb-[-10px] mt-2"
         >
-          <!--            class="flex gap-3 items-center text-zinc-500 ml-[30px] "-->
           <StarIcon class="h-4 w-4"/>
           <p class="font-semibold text-[13px]">Pinned Post</p>
         </div>
@@ -28,8 +27,6 @@
               class="mr-3 basis-11 relative flex flex-col"
               :class="!isSubPost && 'pt-3'"
           >
-            <!--            <div v-if="isSubPost" class="border-r-2 h-2 w-5 absolute top-[-12px] "></div>-->
-
             <div
                 v-if="isSubPost && currentRouteName !== 'search'"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
@@ -67,18 +64,21 @@
                       @click="redirectProfile"
                       class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
                   >
-                    {{ dataPost.author_name }}
+                    {{ dataPost.author_name ?? dataPost.author.name }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                     <!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
                     <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">
-                      @{{ dataPost.author_username }}
+                      @{{ dataPost.author_username ?? dataPost.author.username }}
                     </div>
 
                   </UserPopper>
                   · {{ dataPost.time }}
+                  <div v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'" class="inline flex gap-1">
+                    ·<PencilIcon class="h-auto w-4"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,25 +112,27 @@
                   />
                   <ChatBubbleOvalLeftIcon
                       v-else
+                      :class="{'opacity-50': readonly}"
                       @click="router.push('/posts/' + dataPost.id)"
                       class="text-zinc-500 h-5 w-5 cursor-pointer"
                   />
-
                 </div>
-                <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
+                <span v-if="!readonly" :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
               </div>
 
               <!--              Likes -->
               <div class="flex items-center gap-2 group">
-                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
+                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('toggleLikePost')">
 
                   <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
                     <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"
+                    :class="{'opacity-50': readonly}"
+                    />
                   </div>
-                  <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
+                  <span v-if="!readonly" :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
                 </div>
               </div>
 
@@ -144,10 +146,9 @@
           :class="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN ? 'top-8' : 'top-3.5'"
       >
         <OptionsPost
-            v-if="getUser.id === dataPost.user_id"
+            v-if="getUser.id === dataPost.user_id && !readonly"
             @onDeletePostChildComp="onDeletePostChildComp"
             @onPinPost="onPinPost"
-            @onCloseMenu="onCloseMenu"
             :key="keyOptionsPost"
             :dataPost="dataPost"
         />
@@ -161,12 +162,17 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
-import { cn, logger } from '@/core/helper.js'
+import { logger } from '@/core/helper.js'
 import { FILTER_POST_BY } from "@/config/const";
-import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  ChatBubbleOvalLeftIcon,
+  HeartIcon,
+  PencilIcon
+} from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
@@ -180,10 +186,11 @@ import { formatTextWithHashTags } from "@/core/helper";
 interface Props {
   dataPost: IPost & {time?: string, sub_post?: IPost},
   isSubPost?: boolean
+  readonly?: boolean
   by?: number
 }
 
-let { dataPost, isSubPost, by } = defineProps<Props>()
+let { dataPost, isSubPost, by, readonly } = defineProps<Props>()
 
 const route = useRoute()
 const router = useRouter()
@@ -290,44 +297,33 @@ const onPinPost = () => {
   emit('onPinPost')
 }
 
-const likePost = async () => {
+const toggleLikePost = async () => {
 
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
 
-  const { data } = await postAPI.like(dataPost.id)
+  isLike.value = !isLike.value
+  const { status } = await postAPI.like(dataPost.id)
 
-  if (data) {
-    const isUp = data.likes_count > dataPost.likes_count
-    isLike.value = isUp
-  //   // 1. Old number goes up
-  //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
-  //
-  //   // 2. Incrementing the counter
-  //   setTimeout(() => dataPost.likes_count = data.likes_count, 100);
-  //
-  //   // 3. New number waits down
-  //   setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
-  //
-  //   // 4. New number stays in the middle
-  //   setTimeout(() => animationLikes.value = 'initial', 200);
-  //
+  if (status === 200) {
     redirecting.value = ''
+  } else {
+    isLike.value = !isLike.value
   }
-
 }
 
 const clickDetailPost = (type = '') => {
+  if (readonly) return
 
   switch (type) {
     case 'options':
       redirecting.value = type
       break
-    case 'likePost':
+    case 'toggleLikePost':
       redirecting.value = type
-      likePost()
+      toggleLikePost()
       break
   }
 
@@ -338,10 +334,6 @@ const clickDetailPost = (type = '') => {
 
 const redirectProfile = () => {
   router.push('/user/' + dataPost.author_username)
-}
-
-const onCloseMenu = () => {
-  openMenu.value = false
 }
 
 </script>

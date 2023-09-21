@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from "@/components/pages/home.vue";
 import Post from "@/components/pages/post.vue";
+import History from "@components/pages/history-edited-posts.vue";
 import Profile from "@/components/pages/profile.vue";
 import Follow from "@/components/pages/follow.vue";
 import Search from "@/components/pages/search.vue";
@@ -17,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/posts/:id',
     name: 'post',
     component: Post
+  },
+  {
+    path: '/posts/:id/history',
+    name: 'history',
+    component: History
   },
   {
     path: '/user/:username',

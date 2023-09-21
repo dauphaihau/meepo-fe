@@ -14,6 +14,7 @@
     "@headlessui/vue": "^1.7.15",
     "@heroicons/vue": "^2.0.18",
     "@vee-validate/zod": "^4.11.1",
+    "@vitejs/plugin-vue-jsx": "^3.0.2",
     "axios": "^1.4.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.9",

@@ -1,9 +1,8 @@
 <template>
   <div class="w-[90px] xl:w-[259px]"></div>
 
-  <div class="fixed top-[11%] h-[85%] w-[90px] xl:w-[259px] pl-[23px] xl:pl-0 z-[2]">
+  <div class="fixed top-[11%] h-[85%] w-[90px] xl:w-[259px] pl-[23px] xl:pl-0">
     <div class="flex flex-col h-full">
-
       <div class="flex flex-col gap-6 mb-6">
 
         <router-link
@@ -50,7 +49,6 @@
 
       </div>
       <AddOrUpdatePost responsive v-if="isLoggedIn"/>
-      <About class="grow flex flex-col justify-end ml-3"/>
     </div>
   </div>
 </template>
@@ -59,7 +57,6 @@
 import { mapGetters } from "@/lib/map-state";
 import AddOrUpdatePost from "@components/dialog/AddOrUpdatePost.vue";
 import { HomeIcon, UserIcon, BellIcon } from "@heroicons/vue/20/solid"
-// import { MagnifyingGlassIcon } from "@heroicons/vue/24/solid"
 import {
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
@@ -69,7 +66,6 @@ import {
   MagnifyingGlassIcon
 } from "@heroicons/vue/24/outline"
 import { useRoute, useRouter } from "vue-router";
-import About from "@components/About.vue";
 
 const { getUser, isLoggedIn } = mapGetters()
 
