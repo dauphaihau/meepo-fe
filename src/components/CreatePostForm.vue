@@ -50,7 +50,7 @@
 
 
               <div v-if="!isFocus && currentRouteName === 'post'">
-                <Button classes="px-6" :disabled="!content" @click.prevent="createPost">Post</Button>
+                <Button classes="px-6" disabledClick @click.prevent="createPost">Post</Button>
               </div>
 
             </div>
