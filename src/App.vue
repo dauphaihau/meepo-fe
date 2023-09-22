@@ -34,24 +34,8 @@ watch(isLoggedIn, () => {
 
 <template>
   <div id="app" class="w-full">
-    <Toaster
-        position="bottom-center"
-        offset="20px"
-        :toastOptions="{
-                    style: {
-                      background: 'black',
-                      color: 'white',
-                      border: 'black',
-                      padding: '10px 20px',
-                      borderRadius: '8px'
-                 },
-          }"
-    />
+    <Toaster position="bottom-center" offset="20px" class="flex justify-center"/>
     <Header/>
-
-<!--    <div class="fixed inset-0 z-[999] flex-center h-[5vh]  ">-->
-<!--      Center-->
-<!--    </div>-->
     <div class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex" :key="keyApp">
       <SidebarLeft/>
 

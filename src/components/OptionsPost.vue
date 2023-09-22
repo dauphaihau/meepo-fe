@@ -45,7 +45,7 @@
           <MenuItem v-if="dataPost.isExpiresEdit && dataPost.edited_posts_count < 5" v-slot="{ active }" as="div">
             <span
                 @click="showAddOrUpdatePost = true; keyAddPostDialog += 1"
-                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'menu-item']"
+                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'inactive', 'menu-item']"
             >
               <PencilIcon class="icon"/>
               Edit</span>
@@ -53,7 +53,7 @@
           <MenuItem v-slot="{ active }">
             <span
                 @click="onPin"
-                :class="[active ? 'active rounded-bl-md rounded-br-md' : 'un-active', 'menu-item']"
+                :class="[active ? 'active rounded-bl-md rounded-br-md' : 'inactive', 'menu-item']"
             >
               <SolidStarIcon v-if="dataPost.pin_status_int === PIN_STATUS.PIN" class="icon"/>
               <StarIcon v-else class="icon"/>
@@ -82,9 +82,11 @@ import { StarIcon as SolidStarIcon } from '@heroicons/vue/20/solid'
 import { postAPI } from "@/apis/post";
 import AddOrUpdatePost from "@/components/dialog/AddOrUpdatePost.vue";
 import { IPost, PIN_STATUS } from "@/types/post";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { customToast } from "@/lib/custom-toast";
 
 const route = useRoute()
+const router = useRouter()
 
 interface Props {
   dataPost: IPost
@@ -110,14 +112,10 @@ watch(menuItemsRef, () => {
 
 const onDelete = async () => {
   const { status } = await postAPI.delete(dataPost.id)
-  if (status >= 200) {
-    toast('Your post was deleted', {
-      style: {
-        width: 'fit-content',
-        marginLeft: '90px'
-      }
-    })
+  if (status === 200) {
+    customToast('Your post was deleted')
     emit('onDeletePostChildComp')
+    if (currentRouteName === 'history') router.push('/')
   }
 }
 
@@ -125,11 +123,7 @@ const onPin = async () => {
   const payload = { pin_status: dataPost.pin_status_int === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
   const { status } = await postAPI.update(dataPost.id, payload)
   if (status === 200) {
-    toast(
-        `Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,
-        {
-          style: { maxWidth: '290px', marginLeft: '40px' }
-        })
+    customToast(`Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,)
     dataPost.pin_status_int = payload.pin_status
     emit('onPinPost')
   }
@@ -143,7 +137,7 @@ const onPin = async () => {
   @apply bg-zinc-100;
 }
 
-.un-active {
+.inactive {
   @apply text-zinc-700;
 }
 

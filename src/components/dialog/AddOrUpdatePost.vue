@@ -15,7 +15,7 @@ import { mapGetters } from "@/lib/map-state.ts";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
-import { customToast } from "@/lib/customToast";
+import { customToast } from "@/lib/custom-toast";
 
 interface Props {
   showDialogFromProps?: boolean,
@@ -83,7 +83,7 @@ const createPost = async () => {
 
   if (status === 201) {
     customToast('Your post was sent. You have 1 hour to make any edits.', {
-      to: { name: 'post', params: { id: data.post.id } },
+      onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
     })
 
     if (currentRouteName !== 'post') {
@@ -114,12 +114,8 @@ const updatePost = async () => {
   const { status } = await postAPI.update(dataPost.id, payload)
   isLoading.value = false
   if (status === 200) {
-    customToast('Your post has been edited', {
-      to: { name: 'post', params: { id: dataPost.id } },
-      style: {
-        width: 'fit-content',
-        marginLeft: '90px'
-      }
+    customToast('Your post has been edited', currentRouteName !== 'post' && {
+      onClickBtn: () => router.push({ name: 'post', params: { id: dataPost.id } }),
     })
     store.commit(MutationEnums.MUTATE_POSTS)
     closeDialog()

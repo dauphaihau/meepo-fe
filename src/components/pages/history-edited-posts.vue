@@ -11,14 +11,11 @@
   <div v-else>
     <div class="mb-4 relative z-[2]">
       <h1 class="text-xl font-bold ml-3 mb-2">Latest post</h1>
-      <!--        @onPinPost="onGetPosts('pin')"-->
-      <!--        @onDeletePost="onGetPosts"-->
       <Post
           class="border-b"
           :dataPost="post"
           :pinStatus="post.pin_status"
       />
-      <!--        :by="by"-->
     </div>
 
     <!--  Previous Posts-->

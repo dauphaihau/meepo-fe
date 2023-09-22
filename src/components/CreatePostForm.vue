@@ -125,7 +125,8 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
-import { customToast } from "@/lib/customToast";
+import { customToast } from "@/lib/custom-toast";
+import { toast } from "vue-sonner";
 
 const store = useStore()
 const route = useRoute()
@@ -202,7 +203,7 @@ const createPost = async () => {
     customToast(
         `Your post was sent.${currentRouteName === 'home' ? ' You have 1 hour to make any edits.' : ''}`,
         {
-          to: { name: 'post', params: { id: data.post.id } },
+          onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
         }
     )
     emit('onCreatePost')

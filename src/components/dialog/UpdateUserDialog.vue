@@ -16,6 +16,7 @@ import { logger } from "@/core/helper";
 import { toast } from "vue-sonner";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
+import { customToast } from "@/lib/custom-toast";
 
 const emits = defineEmits<{(e: 'onUpdateProfile', value: Partial<IUser>)}>()
 const { user } = defineProps<{user: IUser}>()
@@ -72,7 +73,7 @@ const onSubmit = async () => {
   const { status, data } = await userAPI.updateProfile(getUser.value.id, payload)
   isLoading.value = false
   if (status === 200) {
-    toast('Your profile was updated')
+    customToast('Your profile was updated')
     emits('onUpdateProfile', data.user)
     store.commit(MutationEnums.SET_USER_INFO, data.user);
     closeDialog()
