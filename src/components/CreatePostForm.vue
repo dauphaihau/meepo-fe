@@ -1,9 +1,12 @@
 <template>
-  <!--  <div class="relative z-20">-->
-  <div class="">
+  <div>
     <div
         class="flex flex-row px-4 border-t"
-        :class="{'pt-3': currentRouteName==='home', 'py-3': currentRouteName==='post'}"
+        :class="{
+        'border-b': !isFocus && currentRouteName === 'post',
+        'pt-3': currentRouteName === 'home',
+        'py-3': currentRouteName === 'post'
+    }"
     >
       <!--         Avatar-->
       <div class="mr-4 mt-2 basis-11 h-full">
@@ -29,7 +32,10 @@
 
       <!--        Input -->
       <div class="w-full max-h-[81vh] h-fit">
-        <div class="flex flex-col gap-1 bg-white col-span-10 h-full">
+        <div
+            class="flex flex-col gap-1 bg-white col-span-10 h-full"
+            :class="currentRouteName === 'home' && isFocus && 'border-b'"
+        >
           <div class="">
             <div class="mt-2 flex ">
 
@@ -72,10 +78,9 @@
     </div>
 
     <!--     Toolbar + submit btn     -->
-    <div v-if="isFocus || currentRouteName === 'home'" class="pl-[70px] pr-6 border-b">
+    <div v-if="isFocus || currentRouteName === 'home'" class="pl-[70px] pr-4 border-b">
       <div
           class="flex items-center justify-between gap-x-6 mb-2 w-full pt-2"
-          :class="{'border-t': isFocus && currentRouteName === 'home'}"
       >
         <div class="flex-center">
           <div class="flex items-center gap-1.5">
@@ -112,7 +117,7 @@
 
 
 <script setup lang="tsx">
-import { defineComponent, h, markRaw, nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { PhotoIcon, XMarkIcon, GifIcon, CalendarIcon, FaceSmileIcon } from "@heroicons/vue/24/outline"
 
@@ -126,7 +131,6 @@ import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
 import { customToast } from "@/lib/custom-toast";
-import { toast } from "vue-sonner";
 
 const store = useStore()
 const route = useRoute()
@@ -144,7 +148,6 @@ const textareaRef = ref(null)
 const fileImage = ref(null)
 const urlImage = ref(null)
 
-const currentPath = route.path
 const currentRouteName = route.name
 
 const { isLoggedIn, getUser } = mapGetters()

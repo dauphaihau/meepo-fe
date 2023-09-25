@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate';
 import { Form } from 'vee-validate';
+import { useRouter } from "vue-router";
+import { useMediaQuery } from "@vueuse/core";
 
 import { useStore } from "@/store";
 import { ActionEnums, MutationEnums } from "@/types/store/root";
@@ -12,7 +14,10 @@ import { validationLoginSchema } from "@/lib/validations/user";
 import { mapGetters } from "@/lib/map-state";
 import Dialog from "@/core/components/Dialog.vue";
 
+const isLargeScreen = useMediaQuery('(min-width: 1024px)')
+
 const store = useStore()
+const router = useRouter()
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
 
 const isSubmitted = ref(false);
@@ -43,6 +48,7 @@ const onSubmit = handleSubmit(async (vals) => {
     setFieldError('email', message)
     return
   }
+  router.push({ name: 'home' })
   resetForm()
 })
 
@@ -82,8 +88,9 @@ const openForgotPasswordDialog = () => {
         v-slot:trigger
     >
       <Button
+          :variant="isLargeScreen ? 'primary' : 'outline'"
           @click="openDialog"
-          class="px-8 h-[32px]"
+          class="w-full"
       >Log In
       </Button>
     </template>

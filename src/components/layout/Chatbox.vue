@@ -18,29 +18,30 @@
 
       <!--      Header-->
       <div
-          class="flex items-center justify-between px-4 cursor-pointer h-[56px]"
+          class="absolute top-0 left-0 z-10 bg-white/80 w-full flex items-center justify-between px-4 cursor-pointer h-[56px]"
           @click="toggleShowFull"
       >
         <h3 class="text-xl font-bold">Messages</h3>
         <ChevronDoubleUpIcon
-            class="h-6 w-6 cursor-pointer"
+            class="icon"
             aria-hidden="true"
             v-if="!showFull"
         />
         <ChevronDoubleDownIcon
             v-else
-            class="h-6 w-6 cursor-pointer"
+            class="icon"
             aria-hidden="true"
         />
       </div>
 
       <!--      Body - Rooms-->
-      <div id="rooms" class="overflow-scroll transition duration-300 h-[500px] ">
+      <div id="rooms" class="overflow-scroll transition duration-300 h-[500px] pb-[50px]">
+        <div ref="refTop" class="h-[56px]"/>
         <div v-if="isLoading" class="flex-center min-h-[35vh]">
           <Loading variant="secondary" classes="h-6 w-6"/>
         </div>
         <div v-else>
-          <div v-for="message of messages">
+          <div v-for="message of lastMessages">
             <div
                 class="flex gap-2 items-center  px-4 h-[73px] hover:bg-zinc-50 cursor-pointer "
                 @click="clickRoom(message)"
@@ -73,12 +74,12 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <Chat
-        :key="keyChat"
         v-else
+        :key="keyChat"
+        :noLastMessages="lastMessages.length === 0"
         @onUpdateView="onUpdateView"
         :showFull="showFull"
     />
@@ -102,10 +103,11 @@ import { IMessage } from "@/types/message";
 const store = useStore()
 const { getCurrentUserToMessage, getUser } = mapGetters()
 
-const messages = ref<IMessage[] | []>([])
+const lastMessages = ref<IMessage[] | []>([])
 const showViewChatPrivate = ref(false)
 const showFull = ref(false)
 const isLoading = ref(false)
+const refTop = ref<null | HTMLDivElement>(null)
 const keyChat = ref(0)
 const guid = ref('')
 
@@ -114,13 +116,12 @@ onMounted(() => {
 })
 
 async function fetchPrivateRooms() {
-
   isLoading.value = true
   const { data } = await chatAPI.getMessages();
   isLoading.value = false
 
   if (data) {
-    messages.value = parseCreatedAts(data.messages)
+    lastMessages.value = parseCreatedAts(data.messages)
   }
 }
 
@@ -174,25 +175,21 @@ ws.onmessage = (e) => {
     return;
   }
 
-  const idx = messages.value.findIndex((item: IMessage) => item.participant_username === data.message.username)
+  const idx = lastMessages.value.findIndex((item: IMessage) => item.participant_username === data.message.username)
   if (idx !== -1) {
-    messages.value[idx].text = data.message.text
+    lastMessages.value[idx].text = data.message.text
   }
 
   resetScroll();
 };
 
-const setMessagesAndScrollDown = (data) => {
-  messages.value = data
-  // setMessages(data);
-  resetScroll();
-};
-
 watch(getCurrentUserToMessage, () => {
-  showViewChatPrivate.value = true
-  showFull.value = true
-  keyChat.value++
-})
+  if (getCurrentUserToMessage.value) {
+    showViewChatPrivate.value = true
+    showFull.value = true
+    keyChat.value++
+  }
+}, { immediate: true })
 
 const resetScroll = () => {
   if (!messagesContainer) return;
@@ -201,22 +198,18 @@ const resetScroll = () => {
 
 const toggleShowFull = () => {
   showFull.value = !showFull.value
+  refTop.value?.scrollIntoView();
 }
 
 </script>
 
 
 <style scoped>
-
-.wrapper-11 {
-  @apply fixed bottom-0 right-3 z-40 flex flex-col
-  max-w-[380px] bg-white rounded-t-2xl  w-full
-  border border-zinc-50 drop-shadow-2xl
-  transition-all duration-500 transform max-h-0
-}
-
 .chatbox-shadow {
   box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
 
+.icon {
+  @apply h-9 w-9 cursor-pointer  hover:bg-zinc-300/50 rounded-full p-2 animate
+}
 </style>

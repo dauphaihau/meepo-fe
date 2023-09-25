@@ -3,9 +3,9 @@
     <!--    Header-->
     <HeaderMini title="Search">
       <template v-slot:tabs>
-        <div class="grid grid-cols-4">
+        <div class="grid grid-cols-4 relative z-[-1]">
           <div v-for="(tab, index) of tabs">
-            <div @click="changeTab(tab, index)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
+            <div @click="changeTab(tab, index)" class="flex-center py-3.5 hover:bg-[#e7e7e8] relative cursor-pointer">
               <div
                   class="font-semibold"
                   :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
@@ -17,7 +17,7 @@
         </div>
       </template>
     </HeaderMini>
-    <div class="h-[126px] "></div>
+    <div class="h-[62px] "></div>
 
     <!--    Response error 404 -->
     <div v-if="!isLoading && isNotFound" class="max-w-[20rem] mx-auto mt-20">
@@ -78,7 +78,7 @@ import { mapGetters } from "@/lib/map-state";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import { useStore } from "@/store";
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 import Loading from "@/core/components/Loading.vue";
 import { commonAPI } from "@/apis/common";
 import { FILTER_SEARCH } from "@/config/const";

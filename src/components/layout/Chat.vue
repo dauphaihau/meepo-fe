@@ -1,14 +1,14 @@
 <template>
-  <div class="h-[500px] relative ">
+  <div class="h-[500px] relative">
 
     <!--    Header - Info user-->
     <div
-        class="absolute top-0 left-0 z-10 bg-white/80  w-full flex gap-4 items-center  cursor-pointer h-[56px] px-4"
+        class="absolute top-0 left-0 z-10 bg-white/80  w-full flex gap-4 items-center cursor-pointer h-[56px] px-4"
         @click="emit('onUpdateView', {showFull: !showFull})"
     >
       <ArrowLeftIcon
-          v-if="showFull"
-          class="h-9 w-9 cursor-pointer hover:bg-zinc-300 animate rounded-full p-2"
+          v-if="showFull && !noLastMessages"
+          class="h-9 w-9 cursor-pointer hover:bg-zinc-300/50 animate rounded-full p-2"
           aria-hidden="true"
           @click="emit('onUpdateView', {showViewChatPrivate: false})"
       />
@@ -21,18 +21,15 @@
 
     <!--    Body - Messages-->
     <div
-        ref="elMessages"
         class="min-h-[436px] max-h-80 overflow-scroll scrollable-div px-4"
         id="messagesId"
     >
       <div class="h-[56px]"/>
-      <!--        class="min-h-[380px] max-h-80 overflow-scroll scrollable-div px-4"-->
       <div v-if="isLoading" class="flex-center min-h-[35vh]">
         <Loading variant="secondary" classes="h-6 w-6"/>
       </div>
       <div v-else>
         <div v-for="(message, index) of messages">
-          <!--        id="messages" class="min-h-[380px] max-h-80 overflow-hidden">-->
           <div
               class="whitespace-pre-wrap max-w-[20rem]"
               :class="message.user_id === getUser.id ? 'me' : 'you' "
@@ -46,6 +43,8 @@
           </div>
         </div>
       </div>
+
+      <div ref="refBottom" class="h-12 mt-5"/>
     </div>
 
     <!--    Footer - Input-->
@@ -59,6 +58,7 @@
       </div>
       <div class="pl-2 flex flex-row  items-center w-full bg-[#f1f2f5] rounded-3xl h-[38px]">
         <input
+            ref="refInput"
             v-on:keyup.enter.stop="sendMessage"
             v-model="messageValue"
             class="w-full border bg-[#f1f2f5] ring-0 border-none rounded-2xl border-transparent
@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
 import { PaperAirplaneIcon } from '@heroicons/vue/20/solid'
 import { PlusCircleIcon } from '@heroicons/vue/20/solid'
@@ -93,19 +93,25 @@ import { mapGetters } from "@/lib/map-state";
 import Loading from "@/core/components/Loading.vue";
 import { logger } from "@/core/helper";
 import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
+import { MutationEnums } from "@/types/store/root";
+import { useStore } from "@/store";
 
-const { showFull } = defineProps<{showFull?: boolean}>()
+const {
+  showFull,
+  noLastMessages: noLastMessagesFromProp
+} = defineProps<{showFull?: boolean, noLastMessages: boolean}>();
 
 const { getUser, getCurrentUserToMessage } = mapGetters()
+const store = useStore()
+
 const messages = ref([])
 const roomId = ref()
 const isLoading = ref(null)
+const noLastMessages = ref(noLastMessagesFromProp)
 const messageValue = ref('')
 const guid = ref('')
-const elMessages = ref(null)
-
-// const messagesContainer = document.getElementById("messagesId");
-// const messagesContainer = document.getElementById("messages");
+const refBottom = ref(null)
+const refInput = ref(null)
 
 const emit = defineEmits<{
   (e: 'onUpdateView', value: {showFull?: boolean, showViewChatPrivate?: boolean})
@@ -134,16 +140,19 @@ ws.onmessage = (e) => {
   if (data.type === "welcome") return;
   if (data.type === "confirm_subscription") return;
 
-  setMessagesThenScrollDown([...messages.value, { ...data.message }]);
+  setMessagesThenScrollToBottom([...messages.value, { ...data.message }]);
 };
 
-onMounted(() => {
-  fetchPrivateRoomByUser()
+onMounted(async () => {
+  await fetchPrivateRoomByUser()
+  refBottom.value?.scrollIntoView();
+  refInput.value?.focus()
 })
 
-// watch(getCurrentUserToMessage, () => {
-//   fetchPrivateRoomByUser()
-// }, { deep: true, immediate: true })
+onUnmounted(() => {
+  store.commit(MutationEnums.MESSAGE_TO_USER, null)
+
+})
 
 async function fetchPrivateRoomByUser() {
   if (!getCurrentUserToMessage.value) {
@@ -155,7 +164,7 @@ async function fetchPrivateRoomByUser() {
   const { data } = await chatAPI.getPrivateRoomByUser(getCurrentUserToMessage.value.username);
   isLoading.value = false
   if (data.room) {
-    setMessagesThenScrollDown(data.room.messages);
+    setMessagesThenScrollToBottom(data.room.messages);
     roomId.value = data.room.id
   }
 }
@@ -167,6 +176,10 @@ type Payload = {
 }
 
 async function sendMessage() {
+  if (!messageValue.value) {
+    return
+  }
+
   const payload: Payload = { text: messageValue.value }
   if (roomId.value) {
     payload.room_id = roomId.value
@@ -174,21 +187,23 @@ async function sendMessage() {
     payload.username = getCurrentUserToMessage.value.username
   }
 
-  const { data } = await chatAPI.sendMessage(payload)
-  if (data.message) {
-    roomId.value = data.message.room_id
+  const { data, status } = await chatAPI.sendMessage(payload)
+  if (status === 201) {
+    if (data.message) {
+      roomId.value = data.message.room_id
+    }
+    if (noLastMessages.value) {
+      noLastMessages.value = false
+    }
+    messageValue.value = ''
   }
-  messageValue.value = ''
 }
 
-const setMessagesThenScrollDown = (data) => {
+const setMessagesThenScrollToBottom = (data) => {
   messages.value = data
-  scrollToBottom()
-};
-
-const scrollToBottom = () => {
-  if (!elMessages.value) return;
-  elMessages.value.scrollTop = elMessages.value.scrollHeight
+  refBottom.value?.scrollIntoView({
+    behavior: 'smooth',
+  })
 }
 
 </script>

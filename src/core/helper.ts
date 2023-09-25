@@ -72,3 +72,12 @@ export const debounce = (fn, delay = 300) => {
   }
 }
 
+
+export function parseJSON<T>(value: string | null): T | undefined {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return undefined
+  }
+}
+

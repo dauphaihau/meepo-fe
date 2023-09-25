@@ -27,7 +27,6 @@
       </div>
     </template>
   </HeaderMini>
-  <div class="h-[126px]"></div>
 
   <!--  Users-->
   <div v-for="(user) of users">
@@ -45,7 +44,7 @@ import { mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 import User from "@components/User.vue";
 
 const store = useStore()

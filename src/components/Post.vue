@@ -76,8 +76,12 @@
 
                   </UserPopper>
                   · {{ dataPost.time }}
-                  <div v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'" class="inline flex gap-1">
-                    ·<PencilIcon class="h-auto w-4"/>
+                  <div
+                      v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'"
+                      class="inline flex gap-1"
+                  >
+                    ·
+                    <PencilIcon class="h-auto w-4"/>
                   </div>
                 </div>
               </div>
@@ -128,14 +132,14 @@
                     <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"
-                    :class="{'opacity-50': readonly}"
+                    <HeartIcon
+                        class="text-zinc-500 h-5 w-5 cursor-pointer"
+                        :class="{'opacity-50': readonly}"
                     />
                   </div>
                   <span v-if="!readonly" :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -162,10 +166,11 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
+import { useWebSocket } from "@vueuse/core";
 
-import { logger } from '@/core/helper.js'
+import { logger, parseJSON } from '@/core/helper.js'
 import { FILTER_POST_BY } from "@/config/const";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
@@ -228,48 +233,55 @@ onBeforeMount(() => {
   }
 })
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server', 'src/components/Post.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "PostsChannel",
+          }),
+        })
+    );
+  },
+})
 
-ws.onopen = () => {
-  logger.info('Connected to websocket server', 'src/components/Post.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
+watch(data, () => {
 
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "PostsChannel",
-        }),
-      })
-  );
-};
+  const parsed = parseJSON<{type: string, message: any}>(data.value)
+  if (!parsed) {
+    logger.error('parse data is null', 'src/components/Post.vue')
+    return
+  }
 
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
+  if (parsed.type === "ping") return;
+  if (parsed.type === "welcome") return;
+  if (parsed.type === "confirm_subscription") return;
+  const message = parsed.message
 
-  logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
+  logger.debug('ws.onmessage response data message', message, 'src/components/Post.vue')
 
-  if (!data.message) {
+  if (!message) {
     return;
   }
 
-  if (dataPost.id === data.message.post.id) {
+  if (dataPost.id === message.post.id) {
 
-    if (data.message?.post.likes_count !== dataPost.likes_count) {
+    if (message?.post.likes_count !== dataPost.likes_count) {
       handleAnimationCount('likes_count')
     }
 
-    if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
+    if (message.post.sub_posts_count !== dataPost.sub_posts_count) {
       handleAnimationCount('sub_posts_count')
     }
   }
 
   function handleAnimationCount(key) {
-    const isUp = data.message.post[key] > dataPost[key]
+    const isUp = message.post[key] > dataPost[key]
     // if (key === 'likes_count') {
     //   isLike.value = isUp
     // }
@@ -278,7 +290,7 @@ ws.onmessage = (e) => {
     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
 
     // 2. Incrementing the counter
-    setTimeout(() => dataPost[key] = data.message.post[key], 100);
+    setTimeout(() => dataPost[key] = message.post[key], 100);
 
     // 3. New number waits down
     setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
@@ -286,8 +298,72 @@ ws.onmessage = (e) => {
     // 4. New number stays in the middle
     setTimeout(() => animation.value = 'initial', 200);
   }
+})
 
-};
+// const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+//
+// ws.onopen = () => {
+//   logger.info('Connected to websocket server', 'src/components/Post.vue')
+//   guid.value = Math.random().toString(36).substring(2, 15)
+//
+//   ws.send(
+//       JSON.stringify({
+//         command: "subscribe",
+//         identifier: JSON.stringify({
+//           id: guid,
+//           channel: "PostsChannel",
+//         }),
+//       })
+//   );
+// }
+//
+// ws.onmessage = (e) => {
+//   console.log('dauphaihau debug: e', e)
+//   const data = JSON.parse(e.data);
+//   console.log('dauphaihau debug: data', data)
+//   if (data.type === "ping") return;
+//   if (data.type === "welcome") return;
+//   if (data.type === "confirm_subscription") return;
+//
+//   logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
+//
+//   if (!data.message) {
+//     return;
+//   }
+//
+//   if (dataPost.id === data.message.post.id) {
+//
+//     if (data.message?.post.likes_count !== dataPost.likes_count) {
+//       handleAnimationCount('likes_count')
+//     }
+//
+//     if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
+//       handleAnimationCount('sub_posts_count')
+//     }
+//   }
+//
+//   function handleAnimationCount(key) {
+//     const isUp = data.message.post[key] > dataPost[key]
+//     // if (key === 'likes_count') {
+//     //   isLike.value = isUp
+//     // }
+//     let animation = key === 'likes_count' ? animationLikes : animationComments
+//     // 1. Old number goes up
+//     setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+//
+//     // 2. Incrementing the counter
+//     setTimeout(() => dataPost[key] = data.message.post[key], 100);
+//
+//     // 3. New number waits down
+//     setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+//
+//     // 4. New number stays in the middle
+//     setTimeout(() => animation.value = 'initial', 200);
+//   }
+//
+// };
+//
+// ws.onclose
 
 const onDeletePostChildComp = () => {
   emit('onDeletePost')
@@ -381,4 +457,33 @@ const redirectProfile = () => {
   transform: translate3d(0, 0px, 0);
   transition: 0.1s ease-in-out;
 }
+
+.heart {
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+  background-image: url('https://abs.twimg.com/a/1446542199/img/t1/web_heart_animation.png');
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 2900%;
+}
+
+.heart:hover {
+  background-position: right;
+}
+
+.is_animating {
+  animation: heart-burst .8s steps(28) 1;
+}
+
+@keyframes heart-burst {
+  from {
+    background-position: left;
+  }
+  to {
+    background-position: right;
+  }
+}
+
+
 </style>

@@ -6,13 +6,18 @@ import Profile from "@/components/pages/profile.vue";
 import Follow from "@/components/pages/follow.vue";
 import Search from "@/components/pages/search.vue";
 import Explore from "@/components/pages/explore.vue";
+import NotFound from "@/components/pages/not-found.vue";
 import Test from "@/components/pages/test.vue";
+import { mapGetters } from "@/lib/map-state";
+import { ActionEnums } from "@/types/store/root";
+import { store } from "@/store";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/home',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true }
   },
   {
     path: '/posts/:id',
@@ -28,11 +33,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user/:username',
     name: 'profile',
     component: Profile
-  },
-  {
-    path: '/test',
-    name: 'test',
-    component: Test
   },
   {
     path: '/user/:username/following',
@@ -57,6 +57,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'explore',
     component: Explore,
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFound,
+  },
+  // {
+  //   path: '/test',
+  //   name: 'test',
+  //   component: Test
+  // },
 ]
 
 const router = createRouter({
@@ -70,5 +80,35 @@ const router = createRouter({
     }
   },
 });
+
+router.beforeResolve(async (to, from, next) => {
+  const { isLoggedIn } = mapGetters()
+
+  if (!isLoggedIn.value) {
+    let localAuthToken = localStorage.auth_token;
+    let tokenExists = localAuthToken !== "undefined" && localAuthToken !== null;
+    if (tokenExists) {
+      const auth_token = localStorage.getItem("auth_token");
+      const authTokenExists = auth_token !== "undefined" && auth_token !== null;
+      if (authTokenExists) {
+        await store.dispatch(ActionEnums.LOGIN_WITH_TOKEN);
+      }
+    }
+  }
+
+  if (to.meta.requiresAuth && !isLoggedIn.value) {
+    return next('/explore')
+  }
+
+  if (to.path === '/') {
+    if (isLoggedIn.value) {
+      return next('/home')
+    } else {
+      return next('/explore')
+    }
+  }
+
+  next()
+})
 
 export default router

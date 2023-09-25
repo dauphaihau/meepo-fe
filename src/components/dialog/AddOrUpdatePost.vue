@@ -233,7 +233,7 @@ const handleDisabledUpdate = (): boolean => {
       <div :class="responsive && 'hidden xl:block'">
         <Button v-if="!hideTrigger" size="md" class="w-2/3" @click="openDialog">Post</Button>
       </div>
-      <div v-if="responsive" class="xl:hidden relative cursor-pointer ml-[-3px]" @click="openDialog">
+      <div v-if="responsive" class="xl:hidden relative cursor-pointer ml-[19px]" @click="openDialog">
         <PencilIcon class="h-[52px] p-4 absolute z-10 top-0 left-0 text-white"/>
         <div class="bg-black z-[-1] absolute top-0 left-0 h-[52px] w-[52px] rounded-full"></div>
       </div>

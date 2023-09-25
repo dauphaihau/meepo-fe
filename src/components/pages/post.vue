@@ -2,7 +2,7 @@
 
   <!--  Header-->
   <HeaderMini title="Post"/>
-  <div class="h-20"></div>
+  <div class="h-4"></div>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
     <Loading variant="secondary" classes="h-7 w-7"/>
@@ -10,11 +10,20 @@
 
   <div v-else>
 
+    <!--    Response error 404 -->
+    <div v-if="isPostNotExist" class="max-w-[20rem] mx-auto mt-20">
+      <div class="space-y-2">
+        <div class="text-3xl font-bold">This post doesn’t exist</div>
+        <div class="text-zinc-500 font-semibold">Try searching for another.</div>
+        <Button @click="router.push({name: 'explore'})">Search</Button>
+      </div>
+    </div>
+
     <!--    Parent post-->
     <Post v-if="parentPost" :dataPost="parentPost" class="mb-2"/>
 
     <!-- Detail Post-->
-    <div class="px-4">
+    <div class="px-4" v-if="!isPostNotExist">
       <div class="flex justify-between items-center">
 
         <div class="w-full">
@@ -162,6 +171,7 @@
 
     <!--  Sub Posts ( Comments )-->
     <Posts
+        v-if="!isPostNotExist"
         :key="keyPostsComp"
         :author="author"
         :disabledComment="!post?.is_current_user_can_comment"
@@ -171,10 +181,10 @@
 </template>
 
 <script setup lang="ts">
-
 import { onBeforeMount, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
+
 import { HeartIcon, PencilIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid } from "@heroicons/vue/24/solid"
 import {
@@ -196,10 +206,11 @@ import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 import { formatTextWithHashTags, logger } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
+import Button from "@/core/components/Button.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -215,6 +226,7 @@ const author = ref<IUser | null>(null)
 const keyPostsComp = ref(0)
 const isLoading = ref(false)
 const isLike = ref(false)
+const isPostNotExist = ref(false)
 const guid = ref('')
 
 const postId = route.params.id
@@ -290,8 +302,13 @@ onBeforeMount(() => {
 
 async function getDetailPost(post_id = null) {
   isLoading.value = true
-  const { data } = await postAPI.detail(post_id ?? postId)
+  const { data, status } = await postAPI.detail(post_id ?? postId)
   isLoading.value = false
+
+  if (status === 404) {
+    isPostNotExist.value = true
+    return
+  }
 
   if (data) {
     post.value = data.post

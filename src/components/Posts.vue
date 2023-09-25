@@ -27,9 +27,6 @@
     <div
         :key="keyPosts"
         class="flex flex-col relative z-[1]"
-        :class="{
-          'border-t': currentRouteName === 'post',
-        }"
     >
       <div v-for="post in posts" :key="post.id">
         <Post
@@ -43,7 +40,6 @@
         />
       </div>
     </div>
-
     <div v-if="isLoading && page_count > 1 && !reachEndPage" class="flex-center min-h-[35vh]">
       <Loading variant="secondary" classes="h-7 w-7"/>
     </div>
@@ -180,7 +176,7 @@ const onGetPosts = (type?: string) => {
     window.scrollTo(0, 0);
   }
   if (type === 'pin' && currentRouteName !== 'profile') {
-   return
+    return
   }
   disableInfinityScroll.value = true
   page_count.value = 1

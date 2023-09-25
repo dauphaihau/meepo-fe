@@ -3,25 +3,27 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
-import { useStore } from "@/store";
 import { userAPI } from "@/apis/user";
-import { MutationEnums } from "@/types/store/root";
 
-const store = useStore()
 const emit = defineEmits<{
   (e: 'changeStep')
 }>()
 
 const isLoading = ref(false);
-const inputQuery = ref(null);
+const refInput = ref(null);
 const query = ref('');
 const errorQuery = ref('');
 
 onMounted(() => {
   // nextTick(() => {
-  //   inputQuery.value.focus();
+  //   refInput.value?.focus();
   // });
+  // refInput.value?.focus()
 })
+
+// watch(refInput, () => {
+//   refInput.value?.focus()
+// })
 
 const onSubmit = async () => {
   isLoading.value = true
@@ -45,9 +47,10 @@ const onSubmit = async () => {
       <h2 class="text-base text-zinc-600 leading-6">Enter the email or username associated with your account to change
         your password.</h2>
     </div>
+
     <form @submit.prevent="onSubmit">
       <Input
-          ref="inputQuery"
+          ref="refInput"
           :disabled="isLoading"
           classWrapper="mb-4"
           size="md"

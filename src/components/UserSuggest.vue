@@ -1,8 +1,8 @@
 <template>
   <div
-      class="relative"
       @mouseover="isHover = true"
       @mouseleave="isHover = false"
+      class="relative"
       :class="{'z-[1]': isHover}"
   >
     <div
@@ -11,7 +11,12 @@
         @click="!isOpenPopover && redirectProfile"
     >
       <div class="flex items-center gap-2">
-        <UserPopper :key="keyUserPopper" :userData="user" @onOpenPopover="onOpenPopover" class="min-h-10 max-h-10 min-w-[40px]">
+        <UserPopper
+            :key="keyUserPopper"
+            :userData="user"
+            @onOpenPopover="onOpenPopover"
+            class="min-h-10 max-h-10 min-w-[40px]"
+        >
           <div class="before:absolute">
             <img
                 v-if="user.avatar_url"
@@ -81,10 +86,9 @@ const isHover = ref(false)
 const isOpenPopover = ref(false)
 const keyUserPopper = ref(0)
 
-const { getUser, isLoggedIn, getStateRouter } = mapGetters()
+const { getUser, isLoggedIn } = mapGetters()
 const { user } = defineProps<{user: IUser}>()
 
-const currentRouteUsername = route.params.username
 const currentRouteName = route.name
 
 const unOrFollow = async () => {

@@ -6,9 +6,12 @@
       <template v-slot:tabs>
         <div class="grid grid-cols-2">
           <div v-for="tab of tabs">
-            <div @click="changeTab(tab.id)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
+            <div
+                @click="changeTab(tab.id)"
+                class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer"
+            >
               <div
-                  class="font-semibold"
+                  class="font-semibold text-sm lg:text-base"
                   :class="tab.id === currentTab ? 'text-black' : 'text-zinc-500' "
               >{{ tab.name }}
               </div>
@@ -22,17 +25,18 @@
     <Posts
         :by="currentTab"
         :key="keyPostsComp"
-        :class="isLoggedIn ? 'pt-16': 'pt-[15px]'"
+        :class="isLoggedIn ? 'pt-[45px] lg:pt-16': 'pt-[15px]'"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
+
 import Posts from "@/components/Posts.vue";
 import { FILTER_POST_BY } from "@/config/const";
 import { mapGetters } from "@/lib/map-state";
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 
 const { isLoggedIn, getKeyMutatePosts } = mapGetters()
 const tabs = [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }]

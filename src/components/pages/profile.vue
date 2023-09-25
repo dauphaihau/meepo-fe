@@ -6,11 +6,10 @@
 
   <div v-else>
     <!--    Header-->
-    <HeaderMini
+    <Header
         :title="!isUserNotExist ? user?.name : 'Profile' "
         :subTitle="`${user?.posts_count ?? 0 } posts`"
     />
-    <div class="h-[4.5rem]"></div>
 
     <!--    Background-->
     <div class="bg-zinc-300 h-[198px]">
@@ -32,9 +31,9 @@
         <!--        <div  class="rounded-full border-white border-4 bg-white h-[133.5px] w-[141.5px] mb-6">-->
         <div class="rounded-full ring-white ring-4 bg-white mb-6">
           <img
-              v-if="user.avatar_url"
+              v-if="user?.avatar_url"
               alt="avatar"
-              :src="user.avatar_url"
+              :src="user?.avatar_url"
               class="rounded-full h-[133.5px] w-[133.5px]"
           />
           <img
@@ -64,6 +63,7 @@
             <div>
               <h3 class="text-[20px] font-bold  text-zinc-900">{{ user?.name }}</h3>
               <p v-if="!isUserNotExist" class="max-w-2xl text-sm text-zinc-500">@{{ user?.username }}</p>
+              <h3 v-else class="text-[20px] font-bold  text-zinc-900">@{{ route.params.username }}</h3>
             </div>
 
             <div v-if="!isUserNotExist">
@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import dayjs from 'dayjs';
 import { CakeIcon, CalendarDaysIcon, EnvelopeIcon, LinkIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 
@@ -216,7 +216,7 @@ import { IUser } from "@/types/user";
 import { useStore } from "@/store";
 import Link from "@/core/components/Link.vue";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
-import HeaderMini from "@components/HeaderMini.vue";
+import Header from "@components/layout/HeaderMainContent.vue";
 import { formatTextWithHashTags } from "@/core/helper";
 
 const route = useRoute()
@@ -246,10 +246,9 @@ onMounted(() => {
 async function getProfile() {
   const { data, status } = await userAPI.getProfile(currentRouteUsername)
   isLoading.value = false
-  isUserNotExist.value = status === 404
 
   if (status === 404) {
-    user.value.name = '@' + currentRouteUsername
+    isUserNotExist.value = status === 404
     return
   }
 

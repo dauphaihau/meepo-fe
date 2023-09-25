@@ -1,4 +1,3 @@
-
 <template>
   <div class="">
     <Popover v-slot="{ open }" class="relative">
@@ -13,8 +12,8 @@
             aria-hidden="true"
         />
       </PopoverButton>
-      <PopoverOverlay class="fixed inset-0" />
-<!--      <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
+      <PopoverOverlay class="fixed inset-0"/>
+      <!--      <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
       <transition
           enter-active-class="transition duration-200 ease-out"
           enter-from-class="translate-y-1 opacity-0"
@@ -73,7 +72,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 
@@ -165,4 +164,8 @@ const solutions = [
     `,
   },
 ]
+
 </script>
+
+<style scoped>
+</style>

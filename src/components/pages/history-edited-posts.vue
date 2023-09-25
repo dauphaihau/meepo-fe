@@ -48,7 +48,7 @@ import { mapGetters } from "@/lib/map-state";
 import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 import { logger } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 

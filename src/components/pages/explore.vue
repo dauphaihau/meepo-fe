@@ -2,16 +2,15 @@
   <div>
     <!--    Header-->
     <HeaderMini title="Explore"/>
-    <div class="h-[70px]"></div>
 
-    <Trends/>
+    <Trends class="mt-2"/>
 
     <!--    <Posts/>-->
   </div>
 </template>
 
 <script setup lang="ts">
-import HeaderMini from "@components/HeaderMini.vue";
+import HeaderMini from "@components/layout/HeaderMainContent.vue";
 import Trends from "@components/Trends.vue";
 
 </script>

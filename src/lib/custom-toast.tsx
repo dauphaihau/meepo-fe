@@ -16,6 +16,6 @@ export function customToast(message: string, options?: Partial<Options>, options
         labelBtn={options?.labelBtn}
       />
     ),
-    {duration: 3000, ...optionsLib}
+    {duration: 5000, ...optionsLib}
   )
 }
