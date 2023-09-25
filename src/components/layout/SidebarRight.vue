@@ -65,7 +65,7 @@ import Trends from "@components/Trends.vue";
 import SearchBar from "@components/layout/SearchBar.vue";
 import Auth from "@components/layout/Auth.vue";
 import { mapGetters } from "@/lib/map-state";
-import { useMediaQuery } from "@vueuse/core/index";
+// import { useMediaQuery } from "@vueuse/core";
 
 const router = useRouter()
 const route = useRoute()
