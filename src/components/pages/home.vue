@@ -2,7 +2,7 @@
   <div>
 
     <!--    Header-->
-    <HeaderMini v-if="isLoggedIn">
+    <HeaderMainContent v-if="isLoggedIn">
       <template v-slot:tabs>
         <div class="grid grid-cols-2">
           <div v-for="tab of tabs">
@@ -20,7 +20,7 @@
           </div>
         </div>
       </template>
-    </HeaderMini>
+    </HeaderMainContent>
 
     <Posts
         :by="currentTab"
@@ -36,7 +36,7 @@ import { watch, ref } from "vue";
 import Posts from "@/components/Posts.vue";
 import { FILTER_POST_BY } from "@/config/const";
 import { mapGetters } from "@/lib/map-state";
-import HeaderMini from "@components/layout/HeaderMainContent.vue";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 
 const { isLoggedIn, getKeyMutatePosts } = mapGetters()
 const tabs = [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }]

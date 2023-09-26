@@ -1,7 +1,7 @@
 <template>
 
   <!--  Header-->
-  <HeaderMini title="Post"/>
+  <HeaderMainContent title="Post"/>
   <div class="h-4"></div>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
@@ -206,7 +206,7 @@ import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/layout/HeaderMainContent.vue";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import { formatTextWithHashTags, logger } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--    Header-->
-    <HeaderMini title="Search">
+    <HeaderMainContent title="Search">
       <template v-slot:tabs>
         <div class="grid grid-cols-4 relative z-[-1]">
           <div v-for="(tab, index) of tabs">
@@ -16,7 +16,7 @@
           </div>
         </div>
       </template>
-    </HeaderMini>
+    </HeaderMainContent>
     <div class="h-[62px] "></div>
 
     <!--    Response error 404 -->
@@ -78,7 +78,7 @@ import { mapGetters } from "@/lib/map-state";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import { useStore } from "@/store";
-import HeaderMini from "@components/layout/HeaderMainContent.vue";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import Loading from "@/core/components/Loading.vue";
 import { commonAPI } from "@/apis/common";
 import { FILTER_SEARCH } from "@/config/const";

@@ -1,8 +1,8 @@
 <template>
 
   <!--  Header-->
-  <HeaderMini title="Edit History"/>
-  <div class="h-20"></div>
+  <HeaderContentMenu title="Edit History"/>
+  <div class="h-10"/>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
     <Loading variant="secondary" classes="h-7 w-7"/>
@@ -48,7 +48,7 @@ import { mapGetters } from "@/lib/map-state";
 import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/layout/HeaderMainContent.vue";
+import HeaderContentMenu from "@components/layout/HeaderMainContent.vue";
 import { logger } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 

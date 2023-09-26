@@ -1,7 +1,7 @@
 <template>
 
   <!--  Header with tabs-->
-  <HeaderMini
+  <HeaderMainContent
       :title="user?.name"
       :subTitle="user?.username"
       :backTo="`/user/${currentRouteUsername}`"
@@ -26,7 +26,9 @@
         </div>
       </div>
     </template>
-  </HeaderMini>
+  </HeaderMainContent>
+
+  <div class="h-16"></div>
 
   <!--  Users-->
   <div v-for="(user) of users">
@@ -44,7 +46,7 @@ import { mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/layout/HeaderMainContent.vue";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import User from "@components/User.vue";
 
 const store = useStore()

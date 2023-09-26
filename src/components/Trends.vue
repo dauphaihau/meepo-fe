@@ -19,7 +19,6 @@
           v-else-if="!isLoading && hashtags.length > 0"
           class="flex flex-col w-full mt-4"
       >
-<!--          :class="isExplorePage && 'gap-4'"-->
         <div v-for="(hashtag, index) in hashtags" :key="index">
           <div
               @click="search(hashtag.name)"

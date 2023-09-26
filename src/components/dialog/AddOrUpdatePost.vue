@@ -227,7 +227,7 @@ const handleDisabledUpdate = (): boolean => {
       :show="showDialog"
       :title="`${dataPost ? 'Edit' : 'Create'} Post`"
       :closeDialog="closeDialog"
-      classPanel="min-w-[600px] max-w-[600px] max-h-[90vh] mt-20 align-middle relative px-4 py-2"
+      classPanel="min-w-[600px] max-w-[600px] max-h-[90vh] mt-12 align-middle relative px-4 py-2"
   >
     <template v-slot:trigger>
       <div :class="responsive && 'hidden xl:block'">
@@ -263,9 +263,9 @@ const handleDisabledUpdate = (): boolean => {
           </div>
 
           <!--        Input -->
-          <div class="w-full max-h-[81vh]">
+          <div class="w-full max-h-[71vh] min-h-[10vh] overflow-y-scroll">
             <div class="flex flex-col gap-1 bg-white col-span-10 h-full">
-              <div class="sm:col-span-4 ">
+              <div class="sm:col-span-4">
                 <div class="mt-2 flex ">
                   <textarea
                       ref="textareaRef"
@@ -277,10 +277,10 @@ const handleDisabledUpdate = (): boolean => {
                   />
 
                 </div>
-                <div class="relative" v-if="urlImage">
+                <div v-if="urlImage" class="relative mt-3 mb-1">
                   <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
-                  <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
-                    <XMarkIcon @click="deleteImage" class="text-zinc-500 h-5 w-5 cursor-pointer text-white"/>
+                  <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute z-[1] top-2 right-2 hover:opacity-60 transition ease-out duration-300">
+                    <XMarkIcon @click="deleteImage" class="text-white h-5 w-5 cursor-pointer text-white"/>
                   </div>
                 </div>
               </div>
@@ -289,7 +289,8 @@ const handleDisabledUpdate = (): boolean => {
 
 
         </div>
-        <div>
+        <div class="h-[100px]"/>
+        <div class="absolute bottom-2 left-0 z-[1] bg-white w-full rounded-2xl px-4 pt-1">
           <SelectWhoCanComment :defaultValue="whoCanComment" @update:modelValue="onChangeSelect"/>
           <div class="border-b mt-4 mb-2"/>
           <!--     Toolbar input     -->

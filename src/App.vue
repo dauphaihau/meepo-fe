@@ -39,7 +39,7 @@ watch(isLoggedIn, () => {
         <SidebarRight class="hidden lg:block"/>
       </main>
     </div>
-<!--    <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)"/>-->
+    <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)"/>
   </div>
 </template>
 
