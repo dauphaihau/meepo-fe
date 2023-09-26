@@ -155,7 +155,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
   store.commit(MutationEnums.MESSAGE_TO_USER, null)
-
 })
 
 async function fetchPrivateRoomByUser() {
