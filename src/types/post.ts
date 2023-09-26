@@ -36,7 +36,10 @@ export interface IPost {
   is_current_user_can_comment?: boolean
   who_can_comment_int?: number
   pin_status_int?: number
+  edited_posts_count: number
+  edited_parent_id?: number
   author?: IUser
+  isExpiresEdit?: boolean
 }
 
 export interface IHashtag {

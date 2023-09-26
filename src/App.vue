@@ -3,12 +3,11 @@ import { onMounted, watch, ref } from "vue";
 import { Toaster } from 'vue-sonner'
 import { useRoute, useRouter } from "vue-router";
 
-import Header from "@/components/layout/Header.vue";
 import SidebarLeft from "@/components/layout/SidebarLeft.vue";
 import SidebarRight from "@/components/layout/SidebarRight.vue";
 import ChatBox from "@/components/layout/Chatbox.vue";
-import About from "@components/About.vue";
 import { mapGetters } from "@/lib/map-state";
+import AuthBar from "@components/pages/AuthBar.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -20,11 +19,6 @@ onMounted(async () => {
   await router.isReady()
 })
 
-watch(router.currentRoute, (value) => {
-  if (value.path === '/') {
-    router.push('/home')
-  }
-})
 
 watch(isLoggedIn, () => {
   keyApp.value++
@@ -34,30 +28,17 @@ watch(isLoggedIn, () => {
 
 <template>
   <div id="app" class="w-full">
-    <Toaster
-        position="bottom-center" offset="20px"
-        :toastOptions="{
-                style: {
-                  background: 'black',
-                  color: 'white',
-                  border: 'black',
-                  padding: '10px 20px',
-                  width: 'fit-content',
-                  marginLeft: '100px'
-             },
-      }"
-    />
-    <Header/>
-    <div class="max-w-7xl xl:max-w-[76rem] mx-auto pt-12 flex" :key="keyApp">
-      <SidebarLeft/>
-      <div class="flex gap-6">
-        <div class="flex flex-col border-l border-r min-w-[600px] max-w-[600px]">
+    <Toaster position="bottom-center" offset="20px" class="flex justify-center"/>
+    <AuthBar v-if="!isLoggedIn" class="lg:hidden"/>
+    <div class="max-w-4xl xl:max-w-[76rem] mx-auto flex" :key="keyApp">
+      <SidebarLeft class="ml-8 lg:ml-0"/>
+      <main class="flex gap-6">
+        <div class="pt-12 flex flex-col w-full border-l border-r min-w-[600px] max-w-[600px] min-h-screen">
           <router-view :key="route.path"/>
         </div>
-        <SidebarRight/>
-      </div>
+        <SidebarRight class="hidden lg:block"/>
+      </main>
     </div>
-<!--    <About/>-->
     <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)"/>
   </div>
 </template>

@@ -20,7 +20,7 @@ Current functionality includes:
 - Log in, sign up, sign out, forgot password, update profile
 - Follow/unfollow user
 - Chat
-- CURD, like, comment, pin, filters post
+- CURD, like, comment, pin, filters, limit edit post
 - Search posts/users based on followers, likes, image, where user comment 
 - Search trends based on hashtags 
 
@@ -31,7 +31,6 @@ and feel free to share your opinion, constructive criticism, or comments about m
 ## Future Updates
 - Improve overall UX/UI and fix bugs
 - Realtime notifications
-- Limit the number of edits post
 
 And More ! There's always room for improvement!
 

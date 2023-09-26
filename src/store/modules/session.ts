@@ -117,6 +117,7 @@ const mutations: MutationTree<Partial<ISessionState>> & SessionMutationTypes = {
     };
     state.auth_token = '';
     state.openLoginDialog = false
+    state.showChatbox = false
     localStorage.removeItem("auth_token");
     apiHelper.defaults.headers.common["Authorization"] = '';
   },

@@ -1,8 +1,8 @@
 <template>
 
   <!--  Header-->
-  <HeaderMini title="Post"/>
-  <div class="h-20"></div>
+  <HeaderMainContent title="Post"/>
+  <div class="h-4"></div>
 
   <div v-if="isLoading" class="flex-center min-h-[35vh]">
     <Loading variant="secondary" classes="h-7 w-7"/>
@@ -10,11 +10,20 @@
 
   <div v-else>
 
+    <!--    Response error 404 -->
+    <div v-if="isPostNotExist" class="max-w-[20rem] mx-auto mt-20">
+      <div class="space-y-2">
+        <div class="text-3xl font-bold">This post doesn’t exist</div>
+        <div class="text-zinc-500 font-semibold">Try searching for another.</div>
+        <Button @click="router.push({name: 'explore'})">Search</Button>
+      </div>
+    </div>
+
     <!--    Parent post-->
     <Post v-if="parentPost" :dataPost="parentPost" class="mb-2"/>
 
     <!-- Detail Post-->
-    <div class="px-4">
+    <div class="px-4" v-if="!isPostNotExist">
       <div class="flex justify-between items-center">
 
         <div class="w-full">
@@ -78,7 +87,22 @@
                 class="rounded-xl mt-4 w-full h-auto"
             >
 
-            <div class="text-zinc-500 font-normal text-sm mt-4">{{ post.time }} · {{ post.date }}</div>
+            <div
+                v-if="post.edited_posts_count > 0"
+                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+                :class="{'hover:underline hover:underline-offset-2 cursor-pointer': post.edited_posts_count > 0}"
+                @click="redirectHistory"
+            >
+              <PencilIcon v-if="post.edited_posts_count > 0" class="h-4 w-4 inline mr-1.5"/>
+              Last edited {{ post.time }} · {{ post.date }}
+            </div>
+
+            <div
+                v-else
+                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+            >{{ post.time }} · {{ post.date }}
+            </div>
+
           </div>
 
           <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
@@ -119,7 +143,7 @@
                   :class="'text-zinc-500'"
               />
 
-              <div class='icon-btn' @click="dislikeOrLikePost" v-tooltip="'Like'">
+              <div class='icon-btn' @click="toggleLikePost" v-tooltip="'Like'">
                 <HeartIconSolid v-if="isLike"/>
                 <HeartIcon v-else/>
               </div>
@@ -146,21 +170,22 @@
     </div>
 
     <!--  Sub Posts ( Comments )-->
-        <Posts
-            :key="keyPostsComp"
-            :author="author"
-            :disabledComment="!post?.is_current_user_can_comment"
-        />
+    <Posts
+        v-if="!isPostNotExist"
+        :key="keyPostsComp"
+        :author="author"
+        :disabledComment="!post?.is_current_user_can_comment"
+    />
   </div>
 
 </template>
 
 <script setup lang="ts">
-
 import { onBeforeMount, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
-import { HeartIcon } from "@heroicons/vue/24/outline"
+
+import { HeartIcon, PencilIcon } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid } from "@heroicons/vue/24/solid"
 import {
   ChatBubbleOvalLeftEllipsisIcon,
@@ -181,10 +206,13 @@ import { IPost } from "@/types/post";
 import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
-import HeaderMini from "@components/HeaderMini.vue";
-import { formatTextWithHashTags, logger } from "@/core/helper";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
+import { formatTextWithHashTags, logger, parseJSON } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
+import Button from "@/core/components/Button.vue";
+import { useWebSocket } from "@vueuse/core";
+import { IMessage } from "@/types/message";
 
 const router = useRouter()
 const route = useRoute()
@@ -200,6 +228,7 @@ const author = ref<IUser | null>(null)
 const keyPostsComp = ref(0)
 const isLoading = ref(false)
 const isLike = ref(false)
+const isPostNotExist = ref(false)
 const guid = ref('')
 
 const postId = route.params.id
@@ -207,68 +236,73 @@ const paramsPostId = route.params.id
 
 const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server - PostsChannel', 'src/components/pages/post.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
 
-ws.onopen = () => {
-  logger.info('Connected to websocket server', 'src/components/pages/post.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "PostsChannel",
+          }),
+        })
+    );
+  },
+  onError: (e) => {
+    logger.error('Something error with websocket server - PostsChannel', 'src/components/pages/post.vue')
+  },
+  onMessage: () => {
+    const parsed = parseJSON<{type: string, message: any}>(data.value)
+    if (!parsed) {
+      logger.error('parse data is null', 'src/components/pages/post.vue')
+      return
+    }
+    if (parsed.type === "ping") return;
+    if (parsed.type === "welcome") return;
+    if (parsed.type === "confirm_subscription") return;
+    const message = parsed.message
+    logger.debug('Websocket server response message - PostsChannel', message, 'src/components/pages/post.vue')
 
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "PostsChannel",
-        }),
-      })
-  );
-};
-
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
-
-
-  logger.debug('ws.onmessage response data message', data.message, 'src/components/pages/post.vue')
-
-  if (!data.message) {
-    return;
-  }
-
-  // const dataPost = post.value
-  if (post.value.id === data.message.post.id) {
-
-    if (data.message?.post.likes_count !== post.value.likes_count) {
-      handleAnimationCount('likes_count')
+    if (!message) {
+      return;
     }
 
-    if (data.message.post.sub_posts_count !== post.value.sub_posts_count) {
-      handleAnimationCount('sub_posts_count')
+    if (post.value.id === message.post.id) {
+
+      if (message?.post.likes_count !== post.value.likes_count) {
+        handleAnimationCount('likes_count')
+      }
+
+      if (message.post.sub_posts_count !== post.value.sub_posts_count) {
+        handleAnimationCount('sub_posts_count')
+      }
+
     }
 
+    function handleAnimationCount(key) {
+      const isUp = message.post[key] > post.value[key]
+      // if (key === 'likes_count') {
+      //   isLike.value = isUp
+      // }
+      let animation = key === 'likes_count' ? animationLikes : animationComments
+      // 1. Old number goes up
+      setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+
+      // 2. Incrementing the counter
+      setTimeout(() => post.value[key] = message.post[key], 100);
+
+      // 3. New number waits down
+      setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+
+      // 4. New number stays in the middle
+      setTimeout(() => animation.value = 'initial', 200);
+    }
   }
-
-  function handleAnimationCount(key) {
-    const isUp = data.message.post[key] > post.value[key]
-    // if (key === 'likes_count') {
-    //   isLike.value = isUp
-    // }
-    let animation = key === 'likes_count' ? animationLikes : animationComments
-    // 1. Old number goes up
-    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
-
-    // 2. Incrementing the counter
-    setTimeout(() => post.value[key] = data.message.post[key], 100);
-
-    // 3. New number waits down
-    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
-
-    // 4. New number stays in the middle
-    setTimeout(() => animation.value = 'initial', 200);
-  }
-};
+})
 
 onBeforeMount(() => {
   getDetailPost()
@@ -276,12 +310,18 @@ onBeforeMount(() => {
 
 async function getDetailPost(post_id = null) {
   isLoading.value = true
-  const { data } = await postAPI.detail(post_id ?? postId)
+  const { data, status } = await postAPI.detail(post_id ?? postId)
   isLoading.value = false
+
+  if (status === 404) {
+    isPostNotExist.value = true
+    return
+  }
 
   if (data) {
     post.value = data.post
     isLike.value = data.post.is_current_user_like
+    post.value.isExpiresEdit = dayjs().isBefore(dayjs(post.value.created_at).add(1, 'h'))
     post.value.time = dayjs(post.value.created_at).format('h:mm A  ')
     post.value.date = dayjs(post.value.created_at).format('MMM D, YYYY')
     author.value = data.post.author
@@ -292,29 +332,17 @@ async function getDetailPost(post_id = null) {
   }
 }
 
-async function dislikeOrLikePost() {
+async function toggleLikePost() {
 
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
-  const { data, status } = await postAPI.like(postId)
 
-
-  if (data) {
-    const isUp = data.likes_count > post.value.likes_count
-    isLike.value = isUp
-  //   // 1. Old number goes up
-  //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
-  //
-  //   // 2. Incrementing the counter
-  //   setTimeout(() => post.value.likes_count = data.likes_count, 100);
-  //
-  //   // 3. New number waits down
-  //   setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
-  //
-  //   // 4. New number stays in the middle
-  //   setTimeout(() => animationLikes.value = 'initial', 200);
+  const { status } = await postAPI.like(postId)
+  isLike.value = !isLike.value
+  if (status !== 200) {
+    isLike.value = !isLike.value
   }
 }
 
@@ -329,6 +357,12 @@ watch(getKeyMutatePosts, () => {
 
 const redirectProfile = () => {
   router.push('/user/' + author.value.username)
+}
+
+const redirectHistory = () => {
+  if (post.value.edited_posts_count > 0) {
+    router.push({ name: 'history' })
+  }
 }
 
 </script>

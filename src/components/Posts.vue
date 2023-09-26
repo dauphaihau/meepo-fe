@@ -27,9 +27,6 @@
     <div
         :key="keyPosts"
         class="flex flex-col relative z-[1]"
-        :class="{
-          'border-t': currentRouteName === 'post',
-        }"
     >
       <div v-for="post in posts" :key="post.id">
         <Post
@@ -37,12 +34,12 @@
             @onPinPost="onGetPosts('pin')"
             @onDeletePost="onGetPosts"
             :dataPost="post"
+            :readonly="readonly"
             :by="by"
             :pinStatus="post.pin_status"
         />
       </div>
     </div>
-
     <div v-if="isLoading && page_count > 1 && !reachEndPage" class="flex-center min-h-[35vh]">
       <Loading variant="secondary" classes="h-7 w-7"/>
     </div>
@@ -71,11 +68,12 @@ const store = useStore()
 interface IProps {
   hideInput?: boolean,
   disabledComment?: boolean,
+  readonly?: boolean,
   by?: number
   author?: Pick<IUser, 'username' | 'id'>
 }
 
-const { hideInput, disabledComment, by, author } = defineProps<IProps>()
+const { hideInput, disabledComment, by, author, readonly } = defineProps<IProps>()
 
 const route = useRoute()
 const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
@@ -91,6 +89,7 @@ const keyPosts = ref(0)
 const perPage = 10
 
 const currentRouteName = route.name
+const currentPostId = route.params.id
 const username = route.params.username
 
 onMounted(() => {
@@ -116,7 +115,7 @@ function onScroll() {
 type Params = {
   by?: number
   page: number
-} & Partial<Pick<IPost, 'parent_id' | 'pin_status' | 'user_id'>>
+} & Partial<Pick<IPost, 'parent_id' | 'pin_status' | 'user_id' | 'edited_parent_id'>>
 
 const getPosts = async () => {
   isLoading.value = true
@@ -135,6 +134,10 @@ const getPosts = async () => {
 
   if (currentRouteName !== 'home' && by === FILTER_POST_BY.DEFAULT) {
     payload.user_id = author?.id
+  }
+
+  if (currentRouteName === 'history') {
+    payload.edited_parent_id = Number(currentPostId)
   }
 
   if (currentRouteName === 'post') {
@@ -169,11 +172,14 @@ const getPosts = async () => {
 }
 
 const onGetPosts = (type?: string) => {
-  disableInfinityScroll.value = true
-  page_count.value = 1
   if (!type) {
     window.scrollTo(0, 0);
   }
+  if (type === 'pin' && currentRouteName !== 'profile') {
+    return
+  }
+  disableInfinityScroll.value = true
+  page_count.value = 1
   getPosts()
 }
 

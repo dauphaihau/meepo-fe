@@ -24,32 +24,40 @@
         leave-from-class="transform opacity-100 scale-100"
         leave-to-class="transform opacity-0 scale-95"
     >
-      <MenuItems
-          ref="popperRef"
-          class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-      >
-        <div class="">
-          <MenuItem v-slot="{ active }">
+      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div ref="menuItemsRef">
+          <span
+              v-if="!confirmDelete"
+              @click="confirmDelete = true"
+              class="menu-item text-zinc-900 hover:bg-zinc-100 rounded-tl-2xl rounded-tr-2xl"
+          >
+            <TrashIcon class="icon"/>
+            Delete</span>
+          <MenuItem v-else v-slot="{ active }">
             <span
                 @click="onDelete"
-                :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-tl-md rounded-tr-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-            >Delete</span>
+                :class="[active ? 'active text-red-400 rounded-tl-2xl rounded-tr-2xl' : 'text-red-400', 'menu-item']"
+            >
+              <CheckIcon class="icon"/>
+              Confirm</span>
           </MenuItem>
-          <MenuItem v-slot="{ active }">
+
+          <MenuItem v-if="dataPost.isExpiresEdit && dataPost.edited_posts_count < 5" v-slot="{ active }" as="div">
             <span
                 @click="showAddOrUpdatePost = true; keyAddPostDialog += 1"
-                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
-            >Edit</span>
+                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'inactive', 'menu-item']"
+            >
+              <PencilIcon class="icon"/>
+              Edit</span>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <span
                 @click="onPin"
-                :class="[active ? 'bg-zinc-100 text-zinc-900 rounded-bl-md rounded-br-md' : 'text-zinc-700', 'block px-4 py-2 text-sm']"
+                :class="[active ? 'active rounded-bl-2xl rounded-br-2xl' : 'inactive', 'menu-item']"
             >
-              <!--                :class="[active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700', 'block px-4 py-2 text-sm']"-->
-              {{
-                dataPost.pin_status_int === PIN_STATUS.PIN ? 'Unpin from profile' : 'Pin to your profile'
-              }}
+              <SolidStarIcon v-if="dataPost.pin_status_int === PIN_STATUS.PIN" class="icon"/>
+              <StarIcon v-else class="icon"/>
+              {{ dataPost.pin_status_int === PIN_STATUS.PIN ? 'Unpin from profile' : 'Pin to your profile' }}
             </span>
           </MenuItem>
           <!--          <MenuItem v-slot="{ active }">-->
@@ -66,16 +74,18 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { toast } from "vue-sonner";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { EllipsisHorizontalIcon, } from '@heroicons/vue/24/outline'
+import { EllipsisHorizontalIcon, TrashIcon, CheckIcon, PencilIcon, StarIcon } from '@heroicons/vue/24/outline'
+import { StarIcon as SolidStarIcon } from '@heroicons/vue/20/solid'
 
 import { postAPI } from "@/apis/post";
 import AddOrUpdatePost from "@/components/dialog/AddOrUpdatePost.vue";
 import { IPost, PIN_STATUS } from "@/types/post";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { customToast } from "@/lib/custom-toast";
 
 const route = useRoute()
+const router = useRouter()
 
 interface Props {
   dataPost: IPost
@@ -86,26 +96,25 @@ const { dataPost, classDotIcon } = defineProps<Props>();
 
 const emit = defineEmits<{
   (e: 'onDeletePostChildComp'): void,
-  (e: 'onCloseMenu'): void
   (e: 'onPinPost'): void
 }>()
 
 const showAddOrUpdatePost = ref<boolean>(false);
 const keyAddPostDialog = ref(0);
-const popperRef = ref(null)
+const menuItemsRef = ref(null)
+const confirmDelete = ref(false)
 const currentRouteName = route.name
 
-watch(popperRef, (value, oldValue: HTMLElement | any) => {
-  if (oldValue?.textContent) {
-    emit('onCloseMenu')
-  }
+watch(menuItemsRef, () => {
+  confirmDelete.value = false
 })
 
 const onDelete = async () => {
   const { status } = await postAPI.delete(dataPost.id)
-  if (status >= 200) {
-    toast('Your post was deleted')
+  if (status === 200) {
+    customToast('Your post was deleted')
     emit('onDeletePostChildComp')
+    if (currentRouteName === 'history') router.push('/')
   }
 }
 
@@ -113,6 +122,7 @@ const onPin = async () => {
   const payload = { pin_status: dataPost.pin_status_int === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
   const { status } = await postAPI.update(dataPost.id, payload)
   if (status === 200) {
+    customToast(`Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,)
     dataPost.pin_status_int = payload.pin_status
     emit('onPinPost')
   }
@@ -121,5 +131,21 @@ const onPin = async () => {
 </script>
 
 <style scoped>
+
+.active {
+  @apply bg-zinc-100;
+}
+
+.inactive {
+  @apply text-zinc-700;
+}
+
+.menu-item {
+  @apply block px-4 py-2 text-sm cursor-pointer flex items-center gap-2;
+}
+
+.icon {
+  @apply w-4 stroke-[2];
+}
 
 </style>

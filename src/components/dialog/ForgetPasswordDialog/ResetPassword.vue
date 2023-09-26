@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useField, useForm } from "vee-validate";
-import { toast } from "vue-sonner";
 
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
@@ -9,6 +8,7 @@ import { useStore } from "@/store";
 import { userAPI } from "@/apis/user";
 import { ActionEnums } from "@/types/store/root";
 import { validationPasswordSchema } from "@/lib/validations/user";
+import { customToast } from "@/lib/custom-toast";
 
 const emit = defineEmits<{
   (e: 'changeStep')
@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async () => {
   }
   isLoading.value = false
   if (status === 401) {
-    toast('Invalid or expired code')
+    customToast('Invalid or expired code')
   }
 })
 

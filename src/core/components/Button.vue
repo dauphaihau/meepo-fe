@@ -33,7 +33,8 @@ const RADIUS_MAPS = {
 
 const VARIANT_MAPS = {
   primary: 'bg-black hover:opacity-80 font-semibold text-white',
-  secondary: 'bg-white text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-100 font-semibold'
+  outline: 'bg-black hover:opacity-80 font-semibold text-white ring-1 ring-inset ring-zinc-300',
+  secondary: 'bg-white text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-100 font-semibold',
 }
 
 const SIZE_MAPS = {
@@ -58,6 +59,7 @@ const SIZE_MAPS = {
 // const { size, variant, radius, isLoading } = withDefaults(defineProps<Props>(), {
 //   size: 'sm', radius: 'xl', variant: 'primary'
 // })
+
 
 const { size, variant, radius, isLoading, classes, disabledClick } = defineProps({
   disabledClick: { type: Boolean, default: false },

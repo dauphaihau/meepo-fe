@@ -38,24 +38,21 @@ interface Post extends IPost {
 // export function parseCreatedAts(arr: Post[]) {
 export function parseCreatedAts(arr) {
   arr = arr.map((obj) => {
-
     if (obj?.sub_post) {
       obj.sub_post = parseCreatedAt(obj.sub_post)
     }
-
-    if (dayjs(obj.created_at).isToday()) {
-      return { ...obj, time: dayjs(obj.created_at).fromNow() }
-    } else {
-      return { ...obj, time: dayjs(obj.created_at).format('MMM D') }
-    }
+    return parseCreatedAt(obj)
   })
-
   return arr
 }
 
 export const parseCreatedAt = <T extends {created_at: Date}>(obj: T) => {
   if (dayjs(obj.created_at).isToday()) {
-    return { ...obj, time: dayjs(obj.created_at).fromNow() }
+    return {
+      ...obj,
+      time: dayjs(obj.created_at).fromNow(),
+      isExpiresEdit: dayjs().isBefore(dayjs(obj.created_at).add(1, 'h'))
+    }
   } else {
     return { ...obj, time: dayjs(obj.created_at).format('MMM D') }
   }

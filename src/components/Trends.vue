@@ -4,8 +4,8 @@
       :class="!isExplorePage && 'bg-zinc-100'"
   >
     <div
-        class="py-3"
-        :class="!isExplorePage && 'w-[348px]'"
+        class="py-3 h-fit rounded-2xl"
+        :class="!isExplorePage && 'w-[348px] bg-zinc-100'"
     >
       <h2 class="title">What’s happening</h2>
       <!--      <h2 class="text-2xl font-black px-3">Trend for you</h2>-->
@@ -19,7 +19,6 @@
           v-else-if="!isLoading && hashtags.length > 0"
           class="flex flex-col w-full mt-4"
       >
-<!--          :class="isExplorePage && 'gap-4'"-->
         <div v-for="(hashtag, index) in hashtags" :key="index">
           <div
               @click="search(hashtag.name)"

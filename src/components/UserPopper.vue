@@ -26,7 +26,7 @@
           class="absolute z-[3] bg-white rounded-xl mt-0.5 w-10 -translate-x-28 transform px-4 sm:px-0 lg:max-w-3xl"
       >
 
-        <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
+        <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl popper-shadow ring-1 ring-black ring-opacity-5">
           <div v-if="isLoading" class="flex-center h-32">
             <Loading variant="secondary" classes="h-5 w-5"/>
           </div>
@@ -214,4 +214,7 @@ watch(popoverHover, (value: any) => {
 
 <style scoped>
 
+.popper-shadow {
+  box-shadow: rgba(101, 119, 134, 0.3) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+}
 </style>

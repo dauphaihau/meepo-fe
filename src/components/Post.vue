@@ -16,7 +16,6 @@
             v-if="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN"
             class="flex gap-3 items-center text-zinc-500 ml-[30px] mb-[-10px] mt-2"
         >
-          <!--            class="flex gap-3 items-center text-zinc-500 ml-[30px] "-->
           <StarIcon class="h-4 w-4"/>
           <p class="font-semibold text-[13px]">Pinned Post</p>
         </div>
@@ -28,8 +27,6 @@
               class="mr-3 basis-11 relative flex flex-col"
               :class="!isSubPost && 'pt-3'"
           >
-            <!--            <div v-if="isSubPost" class="border-r-2 h-2 w-5 absolute top-[-12px] "></div>-->
-
             <div
                 v-if="isSubPost && currentRouteName !== 'search'"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
@@ -67,18 +64,25 @@
                       @click="redirectProfile"
                       class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
                   >
-                    {{ dataPost.author_name }}
+                    {{ dataPost.author_name ?? dataPost.author.name }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                     <!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
                     <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">
-                      @{{ dataPost.author_username }}
+                      @{{ dataPost.author_username ?? dataPost.author.username }}
                     </div>
 
                   </UserPopper>
                   · {{ dataPost.time }}
+                  <div
+                      v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'"
+                      class="inline flex gap-1"
+                  >
+                    ·
+                    <PencilIcon class="h-auto w-4"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,28 +116,30 @@
                   />
                   <ChatBubbleOvalLeftIcon
                       v-else
+                      :class="{'opacity-50': readonly}"
                       @click="router.push('/posts/' + dataPost.id)"
                       class="text-zinc-500 h-5 w-5 cursor-pointer"
                   />
-
                 </div>
-                <span :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
+                <span v-if="!readonly" :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
               </div>
 
               <!--              Likes -->
               <div class="flex items-center gap-2 group">
-                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('likePost')">
+                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('toggleLikePost')">
 
                   <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
                     <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIcon class="text-zinc-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIcon
+                        class="text-zinc-500 h-5 w-5 cursor-pointer"
+                        :class="{'opacity-50': readonly}"
+                    />
                   </div>
-                  <span :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
+                  <span v-if="!readonly" :class="animationLikes">{{ dataPost.likes_count ?? 0 }}</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -144,10 +150,9 @@
           :class="currentRouteName === 'profile' && dataPost.pin_status_int === PIN_STATUS.PIN ? 'top-8' : 'top-3.5'"
       >
         <OptionsPost
-            v-if="getUser.id === dataPost.user_id"
+            v-if="getUser.id === dataPost.user_id && !readonly"
             @onDeletePostChildComp="onDeletePostChildComp"
             @onPinPost="onPinPost"
-            @onCloseMenu="onCloseMenu"
             :key="keyOptionsPost"
             :dataPost="dataPost"
         />
@@ -161,12 +166,18 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
+import { useWebSocket } from "@vueuse/core";
 
-import { cn, logger } from '@/core/helper.js'
+import { logger, parseJSON } from '@/core/helper.js'
 import { FILTER_POST_BY } from "@/config/const";
-import { ChatBubbleOvalLeftEllipsisIcon, ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/vue/24/outline"
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  ChatBubbleOvalLeftIcon,
+  HeartIcon,
+  PencilIcon
+} from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
@@ -180,10 +191,11 @@ import { formatTextWithHashTags } from "@/core/helper";
 interface Props {
   dataPost: IPost & {time?: string, sub_post?: IPost},
   isSubPost?: boolean
+  readonly?: boolean
   by?: number
 }
 
-let { dataPost, isSubPost, by } = defineProps<Props>()
+let { dataPost, isSubPost, by, readonly } = defineProps<Props>()
 
 const route = useRoute()
 const router = useRouter()
@@ -221,66 +233,74 @@ onBeforeMount(() => {
   }
 })
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server - PostsChannel', 'src/components/Post.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "PostsChannel",
+          }),
+        })
+    );
+  },
+  onMessage: () => {
+    const parsed = parseJSON<{type: string, message: any}>(data.value)
+    if (!parsed) {
+      logger.error('parse data is null', 'src/components/Post.vue')
+      return
+    }
+    if (parsed.type === "ping") return;
+    if (parsed.type === "welcome") return;
+    if (parsed.type === "confirm_subscription") return;
+    const message = parsed.message
 
-ws.onopen = () => {
-  logger.info('Connected to websocket server', 'src/components/Post.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
+    logger.debug('Websocket server response message - PostsChannel', message, 'src/components/Post.vue')
 
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "PostsChannel",
-        }),
-      })
-  );
-};
-
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
-
-  logger.debug('ws.onmessage response data message', data.message, 'src/components/Post.vue')
-
-  if (!data.message) {
-    return;
-  }
-
-  if (dataPost.id === data.message.post.id) {
-
-    if (data.message?.post.likes_count !== dataPost.likes_count) {
-      handleAnimationCount('likes_count')
+    if (!message) {
+      logger.error('message is null', 'src/components/Post.vue')
+      return;
     }
 
-    if (data.message.post.sub_posts_count !== dataPost.sub_posts_count) {
-      handleAnimationCount('sub_posts_count')
+    if (dataPost.id === message.post.id) {
+
+      if (message?.post.likes_count !== dataPost.likes_count) {
+        handleAnimationCount('likes_count')
+      }
+
+      if (message.post.sub_posts_count !== dataPost.sub_posts_count) {
+        handleAnimationCount('sub_posts_count')
+      }
     }
-  }
 
-  function handleAnimationCount(key) {
-    const isUp = data.message.post[key] > dataPost[key]
-    // if (key === 'likes_count') {
-    //   isLike.value = isUp
-    // }
-    let animation = key === 'likes_count' ? animationLikes : animationComments
-    // 1. Old number goes up
-    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+    function handleAnimationCount(key) {
+      const isUp = message.post[key] > dataPost[key]
+      // if (key === 'likes_count') {
+      //   isLike.value = isUp
+      // }
+      let animation = key === 'likes_count' ? animationLikes : animationComments
+      // 1. Old number goes up
+      setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
 
-    // 2. Incrementing the counter
-    setTimeout(() => dataPost[key] = data.message.post[key], 100);
+      // 2. Incrementing the counter
+      setTimeout(() => dataPost[key] = message.post[key], 100);
 
-    // 3. New number waits down
-    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+      // 3. New number waits down
+      setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
 
-    // 4. New number stays in the middle
-    setTimeout(() => animation.value = 'initial', 200);
-  }
+      // 4. New number stays in the middle
+      setTimeout(() => animation.value = 'initial', 200);
+    }
 
-};
+  },
+  onError: (e) => {
+    logger.error('Something error with websocket server - PostsChannel', 'src/components/Post.vue')
+  },
+})
 
 const onDeletePostChildComp = () => {
   emit('onDeletePost')
@@ -290,44 +310,33 @@ const onPinPost = () => {
   emit('onPinPost')
 }
 
-const likePost = async () => {
+const toggleLikePost = async () => {
 
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
   }
 
-  const { data } = await postAPI.like(dataPost.id)
+  isLike.value = !isLike.value
+  const { status } = await postAPI.like(dataPost.id)
 
-  if (data) {
-    const isUp = data.likes_count > dataPost.likes_count
-    isLike.value = isUp
-  //   // 1. Old number goes up
-  //   setTimeout(() => animationLikes.value = isUp ? 'goUp' : 'goDown', 0);
-  //
-  //   // 2. Incrementing the counter
-  //   setTimeout(() => dataPost.likes_count = data.likes_count, 100);
-  //
-  //   // 3. New number waits down
-  //   setTimeout(() => animationLikes.value = isUp ? 'waitUp' : 'waitDown', 0);
-  //
-  //   // 4. New number stays in the middle
-  //   setTimeout(() => animationLikes.value = 'initial', 200);
-  //
+  if (status === 200) {
     redirecting.value = ''
+  } else {
+    isLike.value = !isLike.value
   }
-
 }
 
 const clickDetailPost = (type = '') => {
+  if (readonly) return
 
   switch (type) {
     case 'options':
       redirecting.value = type
       break
-    case 'likePost':
+    case 'toggleLikePost':
       redirecting.value = type
-      likePost()
+      toggleLikePost()
       break
   }
 
@@ -338,10 +347,6 @@ const clickDetailPost = (type = '') => {
 
 const redirectProfile = () => {
   router.push('/user/' + dataPost.author_username)
-}
-
-const onCloseMenu = () => {
-  openMenu.value = false
 }
 
 </script>
@@ -389,4 +394,33 @@ const onCloseMenu = () => {
   transform: translate3d(0, 0px, 0);
   transition: 0.1s ease-in-out;
 }
+
+.heart {
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+  background-image: url('https://abs.twimg.com/a/1446542199/img/t1/web_heart_animation.png');
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 2900%;
+}
+
+.heart:hover {
+  background-position: right;
+}
+
+.is_animating {
+  animation: heart-burst .8s steps(28) 1;
+}
+
+@keyframes heart-burst {
+  from {
+    background-position: left;
+  }
+  to {
+    background-position: right;
+  }
+}
+
+
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="top-16 w-[656px]">
+  <div>
     <Combobox v-model="selected" v-slot="{open}">
-      <div class="relative mt-1">
+      <div class="relative">
         <div
             class="wrapper-input group"
             :class="{
@@ -10,12 +10,12 @@
               'rounded-t-3xl': isFocus && (people.length > 0 || storedSearches.length > 0 || query),
           }"
         >
-          <MagnifyingGlassIcon class="h-5 w-5 text-zinc-500"/>
+          <MagnifyingGlassIcon class="h-5 min-w-5 text-zinc-500"/>
           <ComboboxInput
               placeholder="Search Meepo"
               @focus="handleFocus"
               @focusout="isFocus = false"
-              class="input group-hover:bg-white animate w-[570px]"
+              class="input group-hover:bg-white animate"
               :class="{'!bg-white': isFocus, 'pr-8': query }"
               @input="(e) => {query = e.target.value; handleSearch(e)} "
               v-on:keyup.enter="handleEnter"
@@ -76,7 +76,7 @@
             <ComboboxOption>
               <div
                   v-if="query"
-                  class="flex items-center gap-2 px-4 cursor-pointer hover:bg-zinc-100 py-3 animate"
+                  class="flex items-center gap-2 px-4 cursor-pointer hover:bg-zinc-100 py-2.5 animate"
                   @click="handleRedirect('search')"
               >
                 <MagnifyingGlassIcon class="h-5 w-5 min-w-[1.25rem]"/>
@@ -158,7 +158,7 @@
 
             <!--             People-->
             <div v-if="people && people.length > 0" class="border-t">
-              <p class="pl-10 font-bold pt-3 pb-2">People</p>
+<!--              <p class="pl-10 font-bold pt-3 pb-2">People</p>-->
               <!--                  as="template"-->
               <ComboboxOption
                   v-for="person in people"
@@ -167,10 +167,9 @@
                   :value="person"
                   v-slot="{ selected, active }"
               >
-
                 <li
                     @click="handleRedirect('user', person)"
-                    class="relative cursor-pointer select-none py-4 pl-10 pr-4 block"
+                    class="relative cursor-pointer select-none py-4 pl-4 pr-4 block"
                     :class="{
                   'bg-[#f3f4f5] text-black': active,
                   'text-zinc-900': !active,
@@ -345,17 +344,22 @@ const removeSearch = (search) => {
 <style scoped>
 
 .wrapper-input {
-  @apply relative cursor-pointer overflow-hidden bg-zinc-100 hover:bg-white animate text-left border border-zinc-200  sm:text-sm flex items-center pl-4;
-  width: 600px;
+  @apply relative cursor-pointer overflow-hidden bg-zinc-100 hover:bg-white animate
+  text-left border border-zinc-200  sm:text-sm flex items-center pl-4;
 }
 
 .input {
-  @apply w-full border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white focus:pr-8;
-  width: 550px;
+  /*w-full w-[200px] lg:w-[550px] border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black*/
+  /*w-full  border-0 border-none py-2.5 pl-3 pr-[38px] text-sm leading-5 placeholder:text-[#818182] text-black*/
+  @apply
+  h-9 lg:h-10
+  w-[92%]  border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black
+  focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white focus:pr-8
+  ;
 }
-
 
 .options {
-  @apply absolute max-h-96 max-w-[598px] ml-[1px] w-full overflow-auto rounded-b-md bg-white text-base shadow-lg ring-black ring-opacity-5 focus:outline-none sm:text-sm
+  @apply absolute max-h-96 ml-[1px] w-[99.6%] overflow-auto rounded-b-md bg-white text-base shadow-lg ring-black ring-opacity-5 focus:outline-none sm:text-sm
 }
+
 </style>

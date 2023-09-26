@@ -16,11 +16,10 @@ export const postAPI = {
     if (hashtags && hashtags.length) {
       values.hashtags = hashtags.map(v => v.replace('#', ''))
     }
-
-    return apiHelper.post('/posts', values)
+    return apiHelper.post<{post: IPost}>('/posts', values)
   },
   update(id, payload) {
-    return apiHelper.put(`/posts/${id}`, payload)
+    return apiHelper.put<{post: IPost}>(`/posts/${id}`, payload)
   },
   delete(id) {
     return apiHelper.delete(`posts/${id}`)

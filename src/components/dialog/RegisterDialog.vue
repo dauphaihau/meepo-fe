@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useField, useForm } from "vee-validate";
+import { useRouter } from "vue-router";
 
 import Dialog from "@/core/components/Dialog.vue";
 import Input from "@/core/components/forms/Input.vue";
@@ -13,6 +14,7 @@ import { validationRegisterSchema } from "@/lib/validations/user";
 import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
+const router = useRouter()
 const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters()
 
 const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
@@ -59,6 +61,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
     return
   }
+  router.push({ name: 'home' })
   resetForm()
 });
 
@@ -93,8 +96,9 @@ function openDialog() {
         v-slot:trigger
     >
       <Button
+          class="w-full"
+          variant="secondary"
           @click="openDialog"
-          class="px-8 h-[32px] ml-3"
       >Sign Up
       </Button>
     </template>
@@ -102,7 +106,7 @@ function openDialog() {
     <template v-slot:panel>
       <div class="mx-auto flex flex-col gap-8">
         <div class="flex flex-col">
-          <h1 class="text-2xl mb-4 text-black text-center">Create an account</h1>
+          <h1 class="text-2xl mb-4 text-black text-center">Create account</h1>
           <div class="flex flex-col gap-5">
             <form @submit.prevent="validate">
               <Input
