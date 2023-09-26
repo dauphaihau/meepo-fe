@@ -96,7 +96,6 @@ import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { useWebSocket } from "@vueuse/core";
-import { IMessage } from "@/types/message";
 
 const {
   showFull,

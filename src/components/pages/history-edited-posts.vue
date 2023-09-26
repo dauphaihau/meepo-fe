@@ -75,7 +75,7 @@ const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
   autoReconnect: true,
   onConnected: () => {
-    logger.info('Connected to websocket server - PostsChannel', 'src/components/pages/post.vue')
+    logger.info('Connected to websocket server - PostsChannel', 'src/components/pages/history-edited-posts.vue')
     guid.value = Math.random().toString(36).substring(2, 15)
 
     send(
@@ -89,7 +89,7 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     );
   },
   onError: (e) => {
-    logger.error('Something error with websocket server - PostsChannel', 'src/components/pages/post.vue')
+    logger.error('Something error with websocket server - PostsChannel', 'src/components/pages/history-edited-posts.vue')
   },
   onMessage: () => {
     const parsed = parseJSON<{type: string, message: any}>(data.value)
