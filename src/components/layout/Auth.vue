@@ -60,7 +60,7 @@
       or
       <div class="border border-zinc-300/50 border-[0.1px] w-1/2"></div>
     </div>
-    <div>
+    <div v-if="isLargeScreen">
       <RegisterDialog/>
       <p class="text-xs mt-2 text-zinc-500">
         By signing up, you agree to the <span class="text-link">Terms of Service</span> and <span class="text-link">Privacy
@@ -77,6 +77,9 @@ import LoginDialog from "@/components/dialog/LoginDialog.vue";
 import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
 import ForgotPasswordDialog from "@components/dialog/ForgetPasswordDialog/index.vue";
 import Button from "@/core/components/Button.vue";
+import { useMediaQuery } from "@vueuse/core";
+
+const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 </script>
 
 <style scoped></style>

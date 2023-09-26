@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
 import { PaperAirplaneIcon } from '@heroicons/vue/20/solid'
 import { PlusCircleIcon } from '@heroicons/vue/20/solid'
@@ -91,10 +91,12 @@ import Input from "@/core/components/forms/Input.vue";
 import { chatAPI } from "@/apis/chat";
 import { mapGetters } from "@/lib/map-state";
 import Loading from "@/core/components/Loading.vue";
-import { logger } from "@/core/helper";
+import { logger, parseJSON } from "@/core/helper";
 import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
+import { useWebSocket } from "@vueuse/core";
+import { IMessage } from "@/types/message";
 
 const {
   showFull,
@@ -117,31 +119,34 @@ const emit = defineEmits<{
   (e: 'onUpdateView', value: {showFull?: boolean, showViewChatPrivate?: boolean})
 }>()
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
-
-ws.onopen = () => {
-  logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
-
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "MessagesChannel",
-        }),
-      })
-  );
-};
-
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
-
-  setMessagesThenScrollToBottom([...messages.value, { ...data.message }]);
-};
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "MessagesChannel",
+          }),
+        })
+    );
+  },
+  onError: (e) => {
+    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+  },
+  onMessage: () => {
+    const parsed = parseJSON<{type: string, message: any}>(data.value)
+    if (parsed.type === "ping") return;
+    if (parsed.type === "welcome") return;
+    if (parsed.type === "confirm_subscription") return;
+    const message = parsed.message
+    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Chat.vue')
+    setMessagesThenScrollToBottom([...messages.value, { ...message }]);
+  }
+})
 
 onMounted(async () => {
   await fetchPrivateRoomByUser()

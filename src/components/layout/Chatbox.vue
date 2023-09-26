@@ -63,7 +63,7 @@
                   class="flex flex-col justify-center"
               >
                 <div class="flex gap-2 text-[15px]">
-                  <p class="font-semibold max-w-[9rem] truncate">{{ message.participant_name }}</p>
+                  <p class="font-semibold max-w-[7rem] truncate">{{ message.participant_name }}</p>
                   <p class="text-zinc-500 max-w-[8rem] truncate">@{{ message.participant_username }}</p>
                   <span class="text-zinc-500">·</span>
                   <p class="text-zinc-500 max-w-[5rem] truncate">{{ message.time }}</p>
@@ -96,9 +96,10 @@ import { mapGetters } from "@/lib/map-state";
 import { chatAPI } from "@/apis/chat";
 import { MutationEnums } from "@/types/store/root";
 import { parseCreatedAts } from "@/lib/dayjs-parse";
-import { logger } from "@/core/helper";
+import { logger, parseJSON } from "@/core/helper";
 import { useStore } from "@/store";
 import { IMessage } from "@/types/message";
+import { useWebSocket } from "@vueuse/core";
 
 const store = useStore()
 const { getCurrentUserToMessage, getUser } = mapGetters()
@@ -147,41 +148,50 @@ const onUpdateView = (newData) => {
   }
 }
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chatbox.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
 
-ws.onopen = () => {
-  logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chatbox.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "MessagesChannel",
+          }),
+        })
+    );
+  },
+  onError: (e) => {
+    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Chatbox.vue')
+  },
+  onMessage: () => {
+    const parsed = parseJSON<{type: string, message: any}>(data.value)
+    if (!parsed) {
+      logger.error('parse data is null', 'src/components/layout/Chatbox.vue')
+      return
+    }
+    if (parsed.type === "ping") return;
+    if (parsed.type === "welcome") return;
+    if (parsed.type === "confirm_subscription") return;
+    const message = parsed.message
+    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Chatbox.vue')
 
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "MessagesChannel",
-        }),
-      })
-  );
-}
+    if (!message?.username) {
+      logger.error('undefine username', 'src/components/layout/Chatbox.vue')
+      return;
+    }
 
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
+    const idx = lastMessages.value.findIndex((item: IMessage) => item.participant_username === message.username)
+    if (idx !== -1) {
+      lastMessages.value[idx].text = message.text
+    }
 
-  if (!data.message?.username) {
-    logger.error('undefine username', 'src/components/layout/Chatbox.vue')
-    return;
+    resetScroll();
   }
-
-  const idx = lastMessages.value.findIndex((item: IMessage) => item.participant_username === data.message.username)
-  if (idx !== -1) {
-    lastMessages.value[idx].text = data.message.text
-  }
-
-  resetScroll();
-};
+})
 
 watch(getCurrentUserToMessage, () => {
   if (getCurrentUserToMessage.value) {

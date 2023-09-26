@@ -12,7 +12,7 @@
           @changeRoute="changeRoute"
           :key="keySearchAllComp"
       />
-      <div class="h-10 bg-gradient-to-b from-white"/>
+      <div class="h-5 bg-gradient-to-b from-white"/>
     </div>
 
     <div :class="!showSearchBar ? 'pb-8' : 'pb-[4.5rem]'"/>

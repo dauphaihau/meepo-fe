@@ -207,10 +207,12 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
-import { formatTextWithHashTags, logger } from "@/core/helper";
+import { formatTextWithHashTags, logger, parseJSON } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
 import Button from "@/core/components/Button.vue";
+import { useWebSocket } from "@vueuse/core";
+import { IMessage } from "@/types/message";
 
 const router = useRouter()
 const route = useRoute()
@@ -234,67 +236,73 @@ const paramsPostId = route.params.id
 
 const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 
-const ws = new WebSocket(process.env.BASE_URL_WEBSOCKET);
+const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  autoReconnect: true,
+  onConnected: () => {
+    logger.info('Connected to websocket server - PostsChannel', 'src/components/pages/post.vue')
+    guid.value = Math.random().toString(36).substring(2, 15)
 
-ws.onopen = () => {
-  logger.info('Connected to websocket server', 'src/components/pages/post.vue')
-  guid.value = Math.random().toString(36).substring(2, 15)
+    send(
+        JSON.stringify({
+          command: "subscribe",
+          identifier: JSON.stringify({
+            id: guid,
+            channel: "PostsChannel",
+          }),
+        })
+    );
+  },
+  onError: (e) => {
+    logger.error('Something error with websocket server - PostsChannel', 'src/components/pages/post.vue')
+  },
+  onMessage: () => {
+    const parsed = parseJSON<{type: string, message: any}>(data.value)
+    if (!parsed) {
+      logger.error('parse data is null', 'src/components/pages/post.vue')
+      return
+    }
+    if (parsed.type === "ping") return;
+    if (parsed.type === "welcome") return;
+    if (parsed.type === "confirm_subscription") return;
+    const message = parsed.message
+    logger.debug('Websocket server response message - PostsChannel', message, 'src/components/pages/post.vue')
 
-  ws.send(
-      JSON.stringify({
-        command: "subscribe",
-        identifier: JSON.stringify({
-          id: guid,
-          channel: "PostsChannel",
-        }),
-      })
-  );
-};
-
-ws.onmessage = (e) => {
-  const data = JSON.parse(e.data);
-  if (data.type === "ping") return;
-  if (data.type === "welcome") return;
-  if (data.type === "confirm_subscription") return;
-
-  logger.debug('ws.onmessage response data message', data.message, 'src/components/pages/post.vue')
-
-  if (!data.message) {
-    return;
-  }
-
-  // const dataPost = post.value
-  if (post.value.id === data.message.post.id) {
-
-    if (data.message?.post.likes_count !== post.value.likes_count) {
-      handleAnimationCount('likes_count')
+    if (!message) {
+      return;
     }
 
-    if (data.message.post.sub_posts_count !== post.value.sub_posts_count) {
-      handleAnimationCount('sub_posts_count')
+    if (post.value.id === message.post.id) {
+
+      if (message?.post.likes_count !== post.value.likes_count) {
+        handleAnimationCount('likes_count')
+      }
+
+      if (message.post.sub_posts_count !== post.value.sub_posts_count) {
+        handleAnimationCount('sub_posts_count')
+      }
+
     }
 
+    function handleAnimationCount(key) {
+      const isUp = message.post[key] > post.value[key]
+      // if (key === 'likes_count') {
+      //   isLike.value = isUp
+      // }
+      let animation = key === 'likes_count' ? animationLikes : animationComments
+      // 1. Old number goes up
+      setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
+
+      // 2. Incrementing the counter
+      setTimeout(() => post.value[key] = message.post[key], 100);
+
+      // 3. New number waits down
+      setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
+
+      // 4. New number stays in the middle
+      setTimeout(() => animation.value = 'initial', 200);
+    }
   }
-
-  function handleAnimationCount(key) {
-    const isUp = data.message.post[key] > post.value[key]
-    // if (key === 'likes_count') {
-    //   isLike.value = isUp
-    // }
-    let animation = key === 'likes_count' ? animationLikes : animationComments
-    // 1. Old number goes up
-    setTimeout(() => animation.value = isUp ? 'goUp' : 'goDown', 0);
-
-    // 2. Incrementing the counter
-    setTimeout(() => post.value[key] = data.message.post[key], 100);
-
-    // 3. New number waits down
-    setTimeout(() => animation.value = isUp ? 'waitUp' : 'waitDown', 0);
-
-    // 4. New number stays in the middle
-    setTimeout(() => animation.value = 'initial', 200);
-  }
-};
+})
 
 onBeforeMount(() => {
   getDetailPost()
@@ -350,6 +358,7 @@ watch(getKeyMutatePosts, () => {
 const redirectProfile = () => {
   router.push('/user/' + author.value.username)
 }
+
 const redirectHistory = () => {
   if (post.value.edited_posts_count > 0) {
     router.push({ name: 'history' })

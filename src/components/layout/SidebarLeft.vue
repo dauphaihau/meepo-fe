@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <div class="fixed bottom-5 ml-[30px] lg:ml-0 z-[9]">
+    <div class="fixed bottom-5 ml-[26px] lg:ml-0 z-[9]">
       <Menu v-if="isLoggedIn" as="div" class="relative">
         <MenuButton>
           <div class="flex gap-2 hover:bg-zinc-300/50 lg:py-2 lg:pl-2 lg:pr-6 rounded-full animate">
@@ -75,13 +75,13 @@
                 v-if="getUser.avatar_url"
                 alt="avatar"
                 :src="getUser.avatar_url"
-                class="h-8 w-8 lg:h-10 lg:w-10 rounded-full "
+                class="h-10 w-10 lg:h-10 lg:w-10 rounded-full "
             />
             <img
                 v-else
                 alt="avatar"
                 src="@/assets/default-avatar.png"
-                class="h-8 w-8 lg:h-10 lg:w-10 rounded-full "
+                class="h-10 w-10 lg:h-10 lg:w-10 rounded-full "
             />
             <div class="hidden lg:block text-left max-w-[150px]">
               <h3 class="text-[13px] font-bold text-zinc-900 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -100,7 +100,7 @@
             leave-from-class="transform opacity-100 scale-100"
             leave-to-class="transform opacity-0 scale-95"
         >
-          <MenuItems class="absolute left-0 bottom-12 lg:bottom-16 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <MenuItems class="absolute left-0 bottom-14 lg:bottom-16 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div class="">
               <!--              <div class="py-1">-->
               <div class="rounded-tl-lg"></div>
