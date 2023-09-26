@@ -32,7 +32,7 @@ watch(isLoggedIn, () => {
     <AuthBar v-if="!isLoggedIn" class="lg:hidden"/>
     <div class="max-w-4xl xl:max-w-[76rem] mx-auto flex" :key="keyApp">
       <SidebarLeft class="ml-8 lg:ml-0"/>
-      <main class="flex gap-6">
+      <main class="flex gap-6 min-h-[200vh]">
         <div class="pt-12 flex flex-col w-full border-l border-r min-w-[600px] max-w-[600px] min-h-screen">
           <router-view :key="route.path"/>
         </div>

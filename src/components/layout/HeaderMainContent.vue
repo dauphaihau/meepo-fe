@@ -29,7 +29,7 @@
 
       </div>
     </div>
-    <slot name="tabs" class="relative z-[-2]"/>
+    <slot name="tabs" class="relative"/>
   </div>
 </template>
 

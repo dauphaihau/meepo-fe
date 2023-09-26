@@ -1,8 +1,9 @@
 <template>
 
-  <div class="pb-14 z-[2]">
-
-    <!--    <div class="fixed top-3 lg:top-2 h-[85%] w-[90px] xl:w-[259px] lg:pl-[23px] xl:pl-0">-->
+  <div
+      class="pb-14 z-[4]"
+      ref="sidebar"
+  >
     <div class="fixed top-0 z-[3] w-[350px] max-w-[350px]">
       <div class="h-2 bg-white"/>
       <SearchBar
@@ -17,40 +18,22 @@
 
     <div :class="!showSearchBar ? 'pb-8' : 'pb-[4.5rem]'"/>
 
-    <Auth class="mb-5" v-if="!isLoggedIn"/>
-
     <div
-        class="flex justify-end gap-2 max-w-[350px] relative mb-4"
-        ref="refSb"
+        class="flex flex-col gap-5 pb-40"
+        ref="content"
     >
-      <div
-          class="flex flex-col gap-5 min-h-0 w-[350px] "
-      >
-<!--                        :class="(scrollHeight > (is2XlScreen ? 330 : 870) ) ?-->
-<!--                                     currentRouteName === 'profile' ?-->
-<!--                                     'fixed bottom-20 right-[17px]' : 'fixed bottom-20 pl-[22rem] z-[2]': ''"-->
-
-<!--                                     'fixed bottom-20 right-[17px]' : 'fixed bottom-20 pl-[22rem] z-[2]': ''"-->
-        <!--                             'fixed bottom-20 right-[17px]' : 'fixed bottom-20 pl-[22rem] z-[2]': 'sticky top-70 z-[2]'"-->
-
-
-
-        <PhotosProfile v-if="showPhotoComp"/>
-        <UsersSuggest/>
-        <Trends v-if="route.name !== 'explore'"/>
-
-        <div class="flex justify-center items-center gap-2 text-zinc-500 w-[348px]">
-          <About/>
-          ·
-          <div class="text-zinc-500 text-sm">
-            © 2023 Hau Tran
-          </div>
+      <Auth v-if="!isLoggedIn"/>
+      <PhotosProfile v-if="showPhotoComp"/>
+      <UsersSuggest/>
+      <Trends v-if="route.name !== 'explore'"/>
+      <div class="flex-center gap-2 text-zinc-500 -mt-2">
+        <About/>
+        ·
+        <div class="text-zinc-500 text-sm">
+          © 2023 Hau Tran
         </div>
-
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -65,7 +48,6 @@ import Trends from "@components/Trends.vue";
 import SearchBar from "@components/layout/SearchBar.vue";
 import Auth from "@components/layout/Auth.vue";
 import { mapGetters } from "@/lib/map-state";
-// import { useMediaQuery } from "@vueuse/core";
 
 const router = useRouter()
 const route = useRoute()
@@ -73,15 +55,13 @@ const { isLoggedIn, getUser } = mapGetters()
 
 const currentRouteName = route.name;
 
-// const is2XlScreen = useMediaQuery('(min-width: 1536px)')
-
 const routerIsReady = ref(false)
 const showPhotoComp = ref(false)
 const showSearchBar = ref(false)
-const scrollHeight = ref(0)
-const refSb = ref(null)
 const keySearchAllComp = ref(0)
 const query = ref('')
+let sidebar = ref<HTMLDivElement | null>(null)
+let content = ref<HTMLDivElement | null>(null)
 
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", onScroll)
@@ -94,14 +74,19 @@ onMounted(async () => {
 })
 
 const onScroll = (e) => {
-  scrollHeight.value = e.target.documentElement.scrollTop;
-  // console.log('dauphaihau debug: document scroll height', document.body.scrollHeight)
-  // console.log('dauphaihau debug: window-inner-height', window.innerHeight)
-  // console.log('dauphaihau debug: scroll top', e.target.documentElement.scrollTop)
+  let scrollTop = window.scrollY; // current scroll position
+  let viewportHeight = window.innerHeight; // viewport height
+  let sidebarTop = sidebar.value?.getBoundingClientRect()?.top + window.pageYOffset; // current content height
+  let contentHeight = content.value?.getBoundingClientRect().height; // distance from top to sidebar
+  // console.log('dauphaihau debug: -scroll-top-viewport-height-sidebar-top-content-height-', [scrollTop, viewportHeight, sidebarTop, contentHeight])
 
-  // console.log('dauphaihau debug: ref-sb', refSb.value)
-  // console.log('dauphaihau debug: ref-sb offsetHeight', refSb.value.offsetHeight)
-  // console.log('dauphaihau debug: ref-sb offsetTop', refSb.value.offsetTop)
+  if (scrollTop >= contentHeight - viewportHeight + sidebarTop) {
+    content.value.style.transform = `translateY(-${(contentHeight - viewportHeight + sidebarTop)}px)`;
+    content.value.style.position = "fixed";
+  } else {
+    content.value.style.transform = "";
+    content.value.style.position = "";
+  }
 }
 
 watch(router.currentRoute, (value) => {

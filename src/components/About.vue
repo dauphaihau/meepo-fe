@@ -1,7 +1,7 @@
 <template>
   <Popover v-slot="{ open }" class="relative">
+    <!--        :class="open ? '' : 'text-opacity-90'"-->
     <PopoverButton
-        :class="open ? '' : 'text-opacity-90'"
         class="focus:outline-none w-fit text-zinc-500 text-sm hover:underline hover:underline-offset-2"
     >
       About
