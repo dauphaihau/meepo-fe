@@ -213,6 +213,9 @@ const createPost = async () => {
     fileImage.value = null
     urlImage.value = null
     post_id.value = 0;
+    await nextTick(() => {
+      textareaRef.value.style.height = "auto";
+    })
   }
 
 }
