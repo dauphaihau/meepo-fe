@@ -13,7 +13,6 @@ import { commonAPI } from "@/apis/common";
 import DateBirthInput from "@/components/DateBirthInput.vue";
 import { IUser } from "@/types/user";
 import { logger } from "@/core/helper";
-import { toast } from "vue-sonner";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { customToast } from "@/lib/custom-toast";
@@ -130,6 +129,7 @@ function openDialog() {
               type="file"
               name="file"
               id="file"
+              accept="image/*"
               class="invisible h-[198px]"
           />
           <!--                      @change="set"-->
@@ -155,6 +155,7 @@ function openDialog() {
                   type="file"
                   name="file"
                   id="file"
+                  accept="image/*"
                   ref="imageInput"
                   class="hidden"
                   @change="onChangeImage"

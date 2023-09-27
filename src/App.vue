@@ -11,17 +11,11 @@ import AuthBar from "@components/pages/AuthBar.vue";
 
 const route = useRoute()
 const router = useRouter()
-const keyApp = ref(0)
 
 const { isLoggedIn, getUser, getShowChatbox } = mapGetters()
 
 onMounted(async () => {
   await router.isReady()
-})
-
-
-watch(isLoggedIn, () => {
-  keyApp.value++
 })
 
 </script>
@@ -30,7 +24,7 @@ watch(isLoggedIn, () => {
   <div id="app" class="w-full">
     <Toaster position="bottom-center" offset="20px" class="flex justify-center"/>
     <AuthBar v-if="!isLoggedIn" class="lg:hidden"/>
-    <div class="max-w-4xl xl:max-w-[76rem] mx-auto flex" :key="keyApp">
+    <div class="max-w-4xl xl:max-w-[76rem] mx-auto flex">
       <SidebarLeft class="ml-8 lg:ml-0"/>
       <main class="flex gap-6 min-h-[200vh]">
         <div class="pt-12 flex flex-col w-full border-l border-r min-w-[600px] max-w-[600px] min-h-screen">

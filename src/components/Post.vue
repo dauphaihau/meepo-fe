@@ -24,7 +24,7 @@
 
           <!--          Avatar-->
           <div
-              class="mr-3 basis-11 relative flex flex-col"
+              class="mr-3 basis-11 relative flex flex-col min-w-[40px]"
               :class="!isSubPost && 'pt-3'"
           >
             <div
@@ -55,7 +55,8 @@
             />
           </div>
 
-          <div class="w-full py-3">
+          <div class="w-full  max-w-[90%] py-3">
+<!--          <div class="py-3">-->
             <div class="flex justify-between">
               <!--              info author-->
               <div class="flex gap-2 text-[15px]">
@@ -92,7 +93,7 @@
             <!--              {{ dataPost.content }}-->
             <!--            </p>-->
             <p
-                class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line mt-1.5"
+                class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line  mt-1.5 break-words"
                 v-html="formatTextWithHashTags(dataPost.content)"
             />
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useField, useForm } from "vee-validate";
+import { useRouter } from "vue-router";
 
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 const { token } = defineProps<{token: string}>()
 
 const store = useStore()
+const router = useRouter()
 
 const isSubmitted = ref(false);
 const isLoading = ref(false);
@@ -42,6 +44,11 @@ const onSubmit = handleSubmit(async () => {
     token,
     password: password.value
   })
+  if (status === 401) {
+    customToast('Invalid or expired code')
+    isLoading.value = false
+    return
+  }
   if (status === 200 && data?.user) {
     // store.commit(MutationEnums.SET_USER_INFO, data.user)
     await store.dispatch(ActionEnums.LOGIN, {
@@ -51,11 +58,9 @@ const onSubmit = handleSubmit(async () => {
       }
     })
     emit('changeStep')
+    router.push({ name: 'home' })
   }
   isLoading.value = false
-  if (status === 401) {
-    customToast('Invalid or expired code')
-  }
 })
 
 </script>

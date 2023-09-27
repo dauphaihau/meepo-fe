@@ -49,6 +49,7 @@ const onSubmit = handleSubmit(async (vals) => {
     return
   }
   router.push({ name: 'home' })
+  closeDialog()
   resetForm()
 })
 
