@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <div class="fixed bottom-5 ml-[26px] lg:ml-0 z-[9]">
+    <div class="fixed bottom-5 ml-[26px] lg:ml-0 z-[5]">
       <Menu v-if="isLoggedIn" as="div" class="relative">
         <MenuButton>
           <div class="flex gap-2 hover:bg-zinc-300/50 lg:py-2 lg:pl-2 lg:pr-6 rounded-full animate">
@@ -128,10 +128,8 @@
 </template>
 
 <script setup lang="ts">
-import { mapGetters } from "@/lib/map-state";
-import AddOrUpdatePost from "@components/dialog/AddOrUpdatePost.vue";
-import { HomeIcon, UserIcon, BellIcon } from "@heroicons/vue/20/solid"
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { HomeIcon, UserIcon, BellIcon } from "@heroicons/vue/20/solid"
 import {
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
@@ -141,6 +139,9 @@ import {
   MagnifyingGlassIcon
 } from "@heroicons/vue/24/outline"
 import { useRoute, useRouter } from "vue-router";
+
+import { mapGetters } from "@/lib/map-state";
+import AddOrUpdatePost from "@components/dialog/AddOrUpdatePost.vue";
 import { ActionEnums } from "@/types/store/root";
 import { store } from "@/store";
 

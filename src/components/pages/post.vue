@@ -77,7 +77,7 @@
           <div class="pb-4">
             <!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
             <p
-                class="whitespace-pre-line"
+                class="whitespace-pre-line break-words"
                 v-html="formatTextWithHashTags(post.content)"
             ></p>
             <img

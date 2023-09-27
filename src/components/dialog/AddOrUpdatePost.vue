@@ -305,6 +305,7 @@ const handleDisabledUpdate = (): boolean => {
                   name="file"
                   id="file"
                   ref="file"
+                  accept="image/*"
                   @change="onChangeImage"
                   class="hidden"
               />

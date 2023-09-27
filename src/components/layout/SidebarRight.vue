@@ -1,10 +1,10 @@
 <template>
 
   <div
-      class="pb-14 z-[4]"
+      class="pb-14 z-[4] w-sidebar"
       ref="sidebar"
   >
-    <div class="fixed top-0 z-[3] w-[350px] max-w-[350px]">
+    <div class="fixed top-0 z-[3] w-sidebar">
       <div class="h-2 bg-white"/>
       <SearchBar
           v-if="showSearchBar"
@@ -19,10 +19,10 @@
     <div :class="!showSearchBar ? 'pb-8' : 'pb-[4.5rem]'"/>
 
     <div
-        class="flex flex-col gap-5 pb-40"
+        class="flex flex-col gap-5 pb-40 w-sidebar"
         ref="content"
     >
-      <Auth v-if="!isLoggedIn"/>
+      <Auth :class="isLoggedIn ? 'absolute z-[-1] invisible' : ''"/>
       <PhotosProfile v-if="showPhotoComp"/>
       <UsersSuggest/>
       <Trends v-if="route.name !== 'explore'"/>
@@ -107,4 +107,8 @@ const changeRoute = () => {
 </script>
 
 <style scoped>
+
+.w-sidebar {
+  @apply w-[350px] max-w-[350px]
+}
 </style>

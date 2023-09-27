@@ -31,16 +31,14 @@
       </div>
 
       <!--        Input -->
-      <div class="w-full max-h-[81vh] h-fit">
+      <div class="w-full max-h-[81vh] h-fit overflow-y-scroll">
         <div
             class="flex flex-col gap-1 bg-white col-span-10 h-full"
             :class="currentRouteName === 'home' && isFocus && 'border-b'"
         >
-          <div class="">
+          <div>
             <div class="mt-2 flex ">
-
               <!--                <span class="flex select-none items-center pl-3 text-zinc-500 sm:text-sm"></span>-->
-
               <!--                    @focusout="onFocusOut"-->
               <textarea
                   @focus="onFocus"
@@ -60,7 +58,7 @@
               </div>
 
             </div>
-            <div class="relative" v-if="urlImage">
+            <div class="relative mt-3" v-if="urlImage">
               <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
               <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
                 <XMarkIcon @click="deleteImage" class="h-5 w-5 cursor-pointer text-white"/>
@@ -91,6 +89,7 @@
                 name="file"
                 id="file"
                 ref="fileInput"
+                accept="image/*"
                 @change="onChangeImage"
                 class="hidden"
             />
@@ -214,6 +213,9 @@ const createPost = async () => {
     fileImage.value = null
     urlImage.value = null
     post_id.value = 0;
+    await nextTick(() => {
+      textareaRef.value.style.height = "auto";
+    })
   }
 
 }

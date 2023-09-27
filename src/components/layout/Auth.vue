@@ -1,5 +1,5 @@
 <template>
-  <div class="border rounded-xl p-4">
+  <div class="border rounded-xl p-4 ">
     <div>
       <p class="text-2xl text-black font-black text-black mb-4">Join today.</p>
       <div class=" flex flex-col justify-center gap-3">
