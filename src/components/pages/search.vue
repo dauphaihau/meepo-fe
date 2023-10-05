@@ -7,7 +7,7 @@
           <div v-for="(tab, index) of tabs">
             <div @click="changeTab(tab, index)" class="flex-center py-3.5 hover:bg-[#e7e7e8] relative cursor-pointer">
               <div
-                  class="font-semibold"
+                  class="font-semibold text-[15px]"
                   :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
               >{{ tab.name }}
               </div>
@@ -17,7 +17,7 @@
         </div>
       </template>
     </HeaderMainContent>
-    <div class="h-[62px] "></div>
+    <div class="h-[56px]"></div>
 
     <!--    Response error 404 -->
     <div v-if="!isLoading && isNotFound" class="max-w-[20rem] mx-auto mt-20">
@@ -34,6 +34,7 @@
 
     <!--  Users-->
     <div
+        class="bg-white"
         v-if="users.length > 0 && (currentTab === 2 || currentTab === 0)"
         :class="currentTab !== 2 && 'border-b'"
     >
@@ -72,10 +73,8 @@
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import Post from "@/components/Post.vue";
-import { userAPI } from "@/apis/user";
 import { useRoute, useRouter } from "vue-router";
 import { mapGetters } from "@/lib/map-state";
-import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import { useStore } from "@/store";
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
@@ -154,7 +153,6 @@ async function getSearch() {
     route.query.f = 'top'
   }
   if (route.query?.f && route.query.f !== 'top') {
-  // if (route.query?.f) {
     route.query.page = page_count.value.toString()
     if (route.query.f === 'people') {
       perPage = 15
@@ -198,34 +196,7 @@ const resetState = () => {
   isLoading.value = false
 }
 
-const unOrFollow = async (user: IUser) => {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
-    return
-  }
-
-  const { status } = user.is_current_user_following ? await userAPI.unfollow(user.id) : await userAPI.follow(user.id)
-
-  if (status === 200) {
-    user.is_current_user_following = !user.is_current_user_following
-  }
-}
-
 </script>
 
-
 <style scoped>
-
-.tabs {
-  @apply grid grid-cols-2 w-[599px] z-10;
-}
-
-.tab {
-  @apply flex-center py-4 hover:bg-[#e7e7e8] animate relative cursor-pointer;
-}
-
-.tab .active-underline {
-  @apply bg-black w-[60px] absolute bottom-0 h-[4px] rounded-full;
-}
-
 </style>

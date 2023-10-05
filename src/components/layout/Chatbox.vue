@@ -1,6 +1,6 @@
 <template>
   <div
-      class="fixed bottom-0 right-3 z-[4]
+      class="hidden md:block fixed bottom-0 right-3 z-[4]
       flex flex-col
       max-w-[400px] bg-white rounded-t-2xl  w-full
       border border-zinc-50
@@ -74,6 +74,7 @@
           </div>
         </div>
       </div>
+
     </div>
 
     <Chat

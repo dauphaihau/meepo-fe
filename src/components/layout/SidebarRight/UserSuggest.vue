@@ -29,7 +29,7 @@
                 v-else
                 @click="redirectProfile"
                 alt="avatar"
-                src="@/assets/default-avatar.png"
+                src="@assets/default-avatar.png"
                 class="rounded-full h-10 w-10 bg-black "
             />
           </div>

@@ -1,14 +1,16 @@
 <script setup>
-import { onMounted, watch, ref } from "vue";
+import { onMounted } from "vue";
 import { Toaster } from 'vue-sonner'
 import { useRoute, useRouter } from "vue-router";
+import { useMediaQuery } from "@vueuse/core";
 
-import SidebarLeft from "@/components/layout/SidebarLeft.vue";
-import SidebarRight from "@/components/layout/SidebarRight.vue";
+import SidebarLeft from "@components/layout/SidebarLeft/index.vue";
+import SidebarRight from "@components/layout/SidebarRight/index.vue";
 import ChatBox from "@/components/layout/Chatbox.vue";
 import { mapGetters } from "@/lib/map-state";
-import AuthBar from "@components/pages/AuthBar.vue";
+import AuthBar from "@components/AuthBar.vue";
 
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
 const route = useRoute()
 const router = useRouter()
 
@@ -18,16 +20,22 @@ onMounted(async () => {
   await router.isReady()
 })
 
+
 </script>
 
 <template>
   <div id="app" class="w-full">
     <Toaster position="bottom-center" offset="20px" class="flex justify-center"/>
     <AuthBar v-if="!isLoggedIn" class="lg:hidden"/>
-    <div class="max-w-4xl xl:max-w-[76rem] mx-auto flex">
-      <SidebarLeft class="ml-8 lg:ml-0"/>
-      <main class="flex gap-6 min-h-[200vh]">
-        <div class="pt-12 flex flex-col w-full border-l border-r min-w-[600px] max-w-[600px] min-h-screen">
+    <div class="max-w-[100vw] lg:max-w-4xl xl:max-w-[76rem] mx-auto flex">
+
+      <SidebarLeft
+          v-if="isTabletScreen || (!isTabletScreen && isLoggedIn)"
+          class="w-0 md:w-auto md:ml-8 lg:ml-0"
+      />
+
+      <main class="flex gap-6 w-full md:min-h-[200vh]">
+        <div class="pt-12 flex flex-col w-full border-l border-r md:min-w-[598px] md:max-w-[598px] min-h-screen">
           <router-view :key="route.path"/>
         </div>
         <SidebarRight class="hidden lg:block"/>

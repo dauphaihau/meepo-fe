@@ -1,5 +1,14 @@
 <template>
   <div>
+
+    <ReplyPostDialog
+        :key="keyReplyPostDialog"
+        :showDialogFromProps="showReplyPostDialog"
+        :hideTrigger="true"
+        :postComment="dataPost"
+        @onClose="() => action = ''"
+    />
+
     <div
         class="flex flex-col relative"
         @mouseover="isHover = true"
@@ -9,7 +18,7 @@
       <div
           class="px-4 bg-white flex flex-col animate hover:bg-zinc-100"
           :class="{'cursor-pointer': !isOpenPopover, }"
-          @click="!isOpenPopover && clickDetailPost('post')"
+          @click="!isOpenPopover && clickPost('post')"
       >
         <!--         Pin Post-->
         <div
@@ -55,8 +64,9 @@
             />
           </div>
 
-          <div class="w-full  max-w-[90%] py-3">
-<!--          <div class="py-3">-->
+          <!--          <div class="w-full md:max-w-[80%] py-3">-->
+          <div class="w-full max-w-[83%] md:max-w-[90%] py-3">
+
             <div class="flex justify-between">
               <!--              info author-->
               <div class="flex gap-2 text-[15px]">
@@ -92,6 +102,7 @@
             <!--            <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
             <!--              {{ dataPost.content }}-->
             <!--            </p>-->
+
             <p
                 class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line  mt-1.5 break-words"
                 v-html="formatTextWithHashTags(dataPost.content)"
@@ -104,37 +115,43 @@
                 class="rounded-xl my-4 w-full h-auto"
             >
 
-            <!--              Statistic post ( likes, comment, .. ) -->
+            <!--              Statistic post ( comment, likes, .. ) -->
             <div class="flex gap-8 -ml-[9px]">
 
-              <!--              Comments-->
+              <!-- Reply -->
               <div class="flex items-center gap-1 group">
-                <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                <div
+                    class="p-2 group-hover:bg-zinc-200 animate rounded-full"
+                    @click="clickPost('commentPost')"
+                >
                   <ChatBubbleOvalLeftEllipsisIcon
+                      v-tooltip="'Reply'"
                       v-if="dataPost.sub_posts_count > 0"
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-zinc-500 h-5 w-5 cursor-pointer"
+                      class="icon-action"
+                      :class="{'opacity-50': !dataPost.is_current_user_can_comment}"
                   />
                   <ChatBubbleOvalLeftIcon
+                      v-tooltip="'Reply'"
                       v-else
-                      :class="{'opacity-50': readonly}"
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-zinc-500 h-5 w-5 cursor-pointer"
+                      :class="{'opacity-50': readonly || !dataPost.is_current_user_can_comment}"
+                      class="icon-action"
                   />
+
                 </div>
                 <span v-if="!readonly" :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
               </div>
 
-              <!--              Likes -->
+              <!-- Like -->
               <div class="flex items-center gap-2 group">
-                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('toggleLikePost')">
+                <div class='cursor-pointer flex items-center gap-1' @click="clickPost('toggleLikePost')">
 
                   <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIconSolid v-tooltip="'Like'" class="icon-action"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
                     <HeartIcon
-                        class="text-zinc-500 h-5 w-5 cursor-pointer"
+                        v-tooltip="'Like'"
+                        class="icon-action"
                         :class="{'opacity-50': readonly}"
                     />
                   </div>
@@ -170,9 +187,8 @@
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { useWebSocket } from "@vueuse/core";
+import ReplyPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
 
-import { logger, parseJSON } from '@/core/helper.js'
-import { FILTER_POST_BY } from "@/config/const";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   ChatBubbleOvalLeftIcon,
@@ -180,6 +196,9 @@ import {
   PencilIcon
 } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
+
+import { logger, parseJSON } from '@/core/helper.js'
+import { FILTER_POST_BY } from "@/config/const";
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
 import { IPost, PIN_STATUS } from "@/types/post";
@@ -209,6 +228,8 @@ const emit = defineEmits<{
   (e: 'onPinPost'): void
 }>()
 
+const showReplyPostDialog = ref(false);
+const keyReplyPostDialog = ref(0);
 const guid = ref('')
 const isLike = ref(false)
 const isHover = ref(false)
@@ -217,7 +238,7 @@ const isOpenPopover = ref(false)
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
 const keyOptionsPost = ref(0)
-const redirecting = ref('')
+const action = ref('')
 const openMenu = ref(false)
 
 const currentRouteName = route.name
@@ -322,26 +343,34 @@ const toggleLikePost = async () => {
   const { status } = await postAPI.like(dataPost.id)
 
   if (status === 200) {
-    redirecting.value = ''
+    action.value = ''
   } else {
     isLike.value = !isLike.value
   }
 }
 
-const clickDetailPost = (type = '') => {
+const clickPost = (type = '') => {
   if (readonly) return
 
   switch (type) {
     case 'options':
-      redirecting.value = type
+      action.value = type
+      break
+    case 'commentPost':
+      if (!dataPost.is_current_user_can_comment) {
+        return;
+      }
+      action.value = type
+      showReplyPostDialog.value = true;
+      keyReplyPostDialog.value++
       break
     case 'toggleLikePost':
-      redirecting.value = type
+      action.value = type
       toggleLikePost()
       break
   }
 
-  if (!redirecting.value && type === 'post') {
+  if (!action.value && type === 'post') {
     router.push('/posts/' + dataPost.id)
   }
 }
@@ -421,6 +450,10 @@ const redirectProfile = () => {
   to {
     background-position: right;
   }
+}
+
+.icon-action {
+  @apply text-zinc-500 h-5 w-5 cursor-pointer;
 }
 
 

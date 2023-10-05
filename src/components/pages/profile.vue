@@ -12,18 +12,18 @@
     />
 
     <!--    Background-->
-    <div class="bg-zinc-300 h-[198px]">
+    <div class="bg-zinc-300 h-32 md:h-[198px]">
       <input
           type="file"
           name="file"
           id="file"
-          class="invisible h-[198px]"
+          class="invisible h-32 md:h-[198px]"
       />
       <!--          @change="set"-->
     </div>
 
     <!--    User Info-->
-    <div class="px-4 -mt-16">
+    <div class="px-4 -mt-10 md:-mt-16">
 
       <!--      Avatar, Edit user-->
       <div class="flex justify-between items-center">
@@ -34,13 +34,13 @@
               v-if="user?.avatar_url"
               alt="avatar"
               :src="user?.avatar_url"
-              class="rounded-full h-[133.5px] w-[133.5px]"
+              class="avatar"
           />
           <img
               v-else
               alt="avatar"
               src="@/assets/default-avatar.png"
-              class="rounded-full h-[133.5px] w-[133.5px]]"
+              class="avatar"
           />
         </div>
 
@@ -56,7 +56,7 @@
 
       <div class="sm:px-0 flex justify-between items-center mb-4">
 
-        <div class="space-y-3  w-full">
+        <div class="space-y-3 w-full">
 
           <!--        Name, Username, Follow - Message btn   -->
           <div class="flex justify-between">
@@ -170,9 +170,12 @@
     <!--    Tabs-->
     <div v-if="!isUserNotExist" class="grid grid-cols-4 border-b bg-white z-10">
       <div v-for="(tab, index) of tabs">
-        <div @click="changeTab(index)" class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer">
+        <div
+            @click="changeTab(index)"
+            class="flex-center py-4 hover:bg-[#e7e7e8] relative cursor-pointer"
+        >
           <div
-              class="font-semibold"
+              class="font-semibold text-[15px]"
               :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
           >{{ tab.name }}
           </div>
@@ -202,6 +205,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
 import { CakeIcon, CalendarDaysIcon, EnvelopeIcon, LinkIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 
@@ -209,7 +213,6 @@ import Loading from "@/core/components/Loading.vue";
 import Posts from "@/components/Posts.vue";
 import UpdateUserDialog from "@/components/dialog/UpdateUserDialog.vue";
 import { userAPI } from "@/apis/user";
-import { useRoute, useRouter } from "vue-router";
 import { mapGetters } from "@/lib/map-state";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
@@ -312,4 +315,10 @@ function onClickMessage() {
 </script>
 
 
-<style scoped></style>
+<style scoped>
+
+.avatar {
+  @apply rounded-full h-[81.5px] w-[81.5px] md:h-[133.5px] md:w-[133.5px];
+}
+
+</style>

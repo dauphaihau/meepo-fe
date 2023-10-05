@@ -31,46 +31,45 @@
       </div>
 
       <!--        Input -->
-      <div class="w-full max-h-[81vh] h-fit overflow-y-scroll">
-        <div
-            class="flex flex-col gap-1 bg-white col-span-10 h-full"
-            :class="currentRouteName === 'home' && isFocus && 'border-b'"
-        >
-          <div>
-            <div class="mt-2 flex ">
-              <!--                <span class="flex select-none items-center pl-3 text-zinc-500 sm:text-sm"></span>-->
-              <!--                    @focusout="onFocusOut"-->
-              <textarea
-                  @focus="onFocus"
-                  v-model="content"
-                  id="content"
-                  ref="textareaRef"
-                  name="content"
-                  :rows="isFocus ? 2 : 0"
-                  class="textarea-input "
-                  placeholder="Write your content"
-              />
-              <!--                    :class="isFocus ? 'h-auto': 'h-[28px] overscroll-y-none'"-->
+      <div class="w-full">
+        <div class="w-full max-h-[81vh] h-fit overflow-y-scroll">
+          <div class="flex flex-col gap-1 bg-white col-span-10 h-full">
+            <div>
+              <div class="mt-2 flex ">
+                <!--                    @focusout="onFocusOut"-->
+                <textarea
+                    @focus="onFocus"
+                    v-model="content"
+                    id="content"
+                    ref="textareaRef"
+                    name="content"
+                    :rows="isFocus ? 2 : 0"
+                    class="textarea-input "
+                    :placeholder="currentRouteName === 'home' ?  'Write your content' : 'Post your reply'"
+                />
+                <!--                    :class="isFocus ? 'h-auto': 'h-[28px] overscroll-y-none'"-->
 
 
-              <div v-if="!isFocus && currentRouteName === 'post'">
-                <Button classes="px-6" disabledClick @click.prevent="createPost">Post</Button>
+                <div v-if="!isFocus && currentRouteName === 'post'">
+                  <Button classes="px-6" disabledClick @click.prevent="createPost">Post</Button>
+                </div>
+
               </div>
-
-            </div>
-            <div class="relative mt-3" v-if="urlImage">
-              <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
-              <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
-                <XMarkIcon @click="deleteImage" class="h-5 w-5 cursor-pointer text-white"/>
+              <div class="relative mt-3" v-if="urlImage">
+                <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
+                <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute top-2 right-2 hover:opacity-50 transition ease-out duration-300">
+                  <XMarkIcon @click="deleteImage" class="h-5 w-5 cursor-pointer text-white"/>
+                </div>
               </div>
             </div>
           </div>
-          <SelectWhoCanComment
-              class="relative z-[2]"
-              @update:modelValue="onChangeSelect"
-              v-if="currentRouteName === 'home' && isFocus"
-          />
         </div>
+        <SelectWhoCanComment
+            class="relative z-[2]"
+            @update:modelValue="onChangeSelect"
+            v-if="currentRouteName === 'home' && isFocus"
+        />
+        <div :class="currentRouteName === 'home' && isFocus && 'border-b'"/>
       </div>
 
     </div>

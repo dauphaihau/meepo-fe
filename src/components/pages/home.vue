@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import { watch, ref } from "vue";
+
+import Posts from "@/components/Posts.vue";
+import { FILTER_POST_BY } from "@/config/const";
+import { mapGetters } from "@/lib/map-state";
+import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
+
+const { isLoggedIn, getKeyMutatePosts } = mapGetters()
+const tabs = [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }]
+const currentTab = ref(0)
+const keyPostsComp = ref(0)
+
+function changeTab(index) {
+  if (index === currentTab.value) return
+  keyPostsComp.value += 1
+  currentTab.value = index
+}
+
+watch(getKeyMutatePosts, () => {
+  keyPostsComp.value++
+})
+
+</script>
+
 <template>
   <div>
 
@@ -25,36 +50,10 @@
     <Posts
         :by="currentTab"
         :key="keyPostsComp"
-        :class="isLoggedIn ? 'pt-[45px] lg:pt-16': 'pt-[15px]'"
+        :class="isLoggedIn ? 'pt-[54px] md:pt-[45px] lg:pt-16': 'pt-[15px]'"
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { watch, ref } from "vue";
-
-import Posts from "@/components/Posts.vue";
-import { FILTER_POST_BY } from "@/config/const";
-import { mapGetters } from "@/lib/map-state";
-import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
-
-const { isLoggedIn, getKeyMutatePosts } = mapGetters()
-const tabs = [{ name: 'For you', id: FILTER_POST_BY.DEFAULT }, { name: 'Following', id: FILTER_POST_BY.FOLLOWING }]
-const currentTab = ref(0)
-const keyPostsComp = ref(0)
-
-function changeTab(index) {
-  if (index === currentTab.value) return
-  keyPostsComp.value += 1
-  currentTab.value = index
-}
-
-watch(getKeyMutatePosts, () => {
-  keyPostsComp.value++
-})
-
-
-</script>
 
 <style scoped>
 </style>

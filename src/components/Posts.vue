@@ -2,21 +2,23 @@
   <div class="flex flex-col">
 
     <CreatePostForm
+        class="hidden md:block"
         v-if="isLoggedIn && !hideInput && !disabledComment"
         @onCreatePost="onGetPosts('create')"
     />
 
-    <div v-if="disabledComment" class="flex gap-4 m-5 px-3 py-3 bg-zinc-100 rounded-lg">
-      <UserGroupIcon class="h-9 w-9 rounded-full bg-zinc-200 p-2 text-black"/>
-      <div>
-        <div class="font-bold">
-          Who can comment?
-        </div>
-        <div class="text-sm font-normal">
-          People @{{ author?.username }} follows can comments
+    <div v-if="disabledComment" class="border-zinc-300 md:border-t border-b">
+      <div class="flex gap-4 m-5 px-3 py-3 bg-zinc-100 rounded-lg">
+        <UserGroupIcon class="h-9 w-9 rounded-full bg-zinc-200 p-2 text-black"/>
+        <div>
+          <div class="font-bold">
+            Who can comment?
+          </div>
+          <div class="text-sm font-normal">
+            People @{{ author?.username }} follows can comments
+          </div>
         </div>
       </div>
-
     </div>
 
     <div v-if="isLoading && page_count === 1" class="flex-center min-h-[35vh]">
@@ -190,17 +192,4 @@ watch(getKeyMutatePosts, () => {
 </script>
 
 <style scoped>
-.textarea-input {
-  @apply resize-none block flex-1  bg-transparent py-1.5 pl-1 text-zinc-900 placeholder:text-zinc-500
-  focus:ring-0 focus:outline-none sm:text-sm lg:text-xl sm:leading-6;
-  max-height: 100%;
-  /*height: 52px;*/
-}
-
-
-.icon-btn {
-  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500 cursor-pointer
-}
-
-/*text-zinc-500 h-5 w-5 cursor-pointer*/
 </style>

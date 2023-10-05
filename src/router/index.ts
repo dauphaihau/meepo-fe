@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+
 import Home from "@/components/pages/home.vue";
 import Post from "@/components/pages/post.vue";
 import History from "@components/pages/history-edited-posts.vue";
@@ -6,6 +7,8 @@ import Profile from "@/components/pages/profile.vue";
 import Follow from "@/components/pages/follow.vue";
 import Search from "@/components/pages/search.vue";
 import Explore from "@/components/pages/explore.vue";
+import Room from "@components/pages/room.vue";
+import Messages from "@/components/pages/messages.vue";
 import NotFound from "@/components/pages/not-found.vue";
 import Test from "@/components/pages/test.vue";
 import { mapGetters } from "@/lib/map-state";
@@ -56,6 +59,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/explore',
     name: 'explore',
     component: Explore,
+  },
+  {
+    path: '/messages',
+    name: 'messages',
+    component: Messages,
+  },
+  {
+    path: '/room',
+    name: 'room',
+    component: Room,
   },
   {
     path: '/:pathMatch(.*)*',

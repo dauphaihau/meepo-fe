@@ -89,7 +89,7 @@ function openDialog() {
   <Dialog
       :show="isOpenDialog"
       :closeDialog="closeDialog"
-      classPanel="min-w-[465px] max-w-[465px]"
+      classPanel="md:min-w-[465px] md:max-w-[465px] md:mt-20"
   >
     <template
         v-if="!isLoggedIn"

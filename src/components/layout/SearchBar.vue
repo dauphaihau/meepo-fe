@@ -30,7 +30,7 @@
           <XCircleIcon
               v-if="query"
               @click.stop="query = ''"
-              class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute top-2 right-3 z-[2]"
+              class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute md:top-2 right-3 z-[2]"
           />
           <!--              @click.stop="query = ''; isFocus = true"-->
 
@@ -349,12 +349,14 @@ const removeSearch = (search) => {
 }
 
 .input {
-  /*w-full w-[200px] lg:w-[550px] border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black*/
-  /*w-full  border-0 border-none py-2.5 pl-3 pr-[38px] text-sm leading-5 placeholder:text-[#818182] text-black*/
   @apply
   h-9 lg:h-10
-  w-[92%]  border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black
-  focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white focus:pr-8
+  w-[88%] md:w-[92%]
+  border-0 border-none
+  py-2.5 pl-3 focus:pr-8
+  text-sm placeholder:text-[#818182] text-black leading-5
+  bg-zinc-100 hover:bg-white focus:bg-white
+  focus:outline-none
   ;
 }
 

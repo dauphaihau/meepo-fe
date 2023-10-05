@@ -1,183 +1,189 @@
 <template>
+  <div>
 
-  <!--  Header-->
-  <HeaderMainContent title="Post"/>
-  <div class="h-4"></div>
+    <ReplyPostDialog
+        :key="keyReplyPostDialog"
+        :showDialogFromProps="showReplyPostDialog"
+        :hideTrigger="true"
+        :postComment="post"
+        @onCreateSuccess="keyPostsComp++"
+    />
 
-  <div v-if="isLoading" class="flex-center min-h-[35vh]">
-    <Loading variant="secondary" classes="h-7 w-7"/>
-  </div>
+    <!--  Header-->
+    <HeaderMainContent title="Post"/>
+    <div class="h-4"></div>
 
-  <div v-else>
-
-    <!--    Response error 404 -->
-    <div v-if="isPostNotExist" class="max-w-[20rem] mx-auto mt-20">
-      <div class="space-y-2">
-        <div class="text-3xl font-bold">This post doesn’t exist</div>
-        <div class="text-zinc-500 font-semibold">Try searching for another.</div>
-        <Button @click="router.push({name: 'explore'})">Search</Button>
-      </div>
+    <div v-if="isLoading" class="flex-center min-h-[35vh]">
+      <Loading variant="secondary" classes="h-7 w-7"/>
     </div>
 
-    <!--    Parent post-->
-    <Post v-if="parentPost" :dataPost="parentPost" class="mb-2"/>
+    <div v-else>
 
-    <!-- Detail Post-->
-    <div class="px-4" v-if="!isPostNotExist">
-      <div class="flex justify-between items-center">
+      <!--    Response error 404 -->
+      <div v-if="isPostNotExist" class="max-w-[20rem] mx-auto mt-20">
+        <div class="space-y-2">
+          <div class="text-3xl font-bold">This post doesn’t exist</div>
+          <div class="text-zinc-500 font-semibold">Try searching for another.</div>
+          <Button @click="router.push({name: 'explore'})">Search</Button>
+        </div>
+      </div>
 
-        <div class="w-full">
+      <!--    Parent post-->
+      <Post v-if="parentPost" :dataPost="parentPost" class="mb-2"/>
 
-          <!--       Post's Author   -->
-          <div class="flex justify-between">
+      <!-- Detail Post-->
+      <div class="px-4" v-if="!isPostNotExist">
+        <div class="flex justify-between items-center">
 
-            <div class="flex gap-2.5 mb-4">
-              <UserPopper :username="author.username">
-                <img
-                    alt="avatar"
-                    v-if="author.avatar_url"
-                    @click="redirectProfile"
-                    v-bind:src="author.avatar_url"
-                    class="rounded-full h-10 w-10 bg-black cursor-pointer"
-                />
-                <img
-                    v-else
-                    alt="avatar"
-                    @click="redirectProfile"
-                    src="@/assets/default-avatar.png"
-                    class="rounded-full h-10 w-10 bg-black cursor-pointer"
-                />
-              </UserPopper>
-              <div>
-                <UserPopper :username="author.username" class="max-h-[18px]">
-                  <h3
-                      @click="redirectProfile"
-                      class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2"
-                  >
-                    {{ author?.name }}</h3>
-                </UserPopper>
+          <div class="w-full">
+
+            <!--       Post's Author   -->
+            <div class="flex justify-between">
+
+              <div class="flex gap-2.5 mb-4">
                 <UserPopper :username="author.username">
-                  <p
+                  <img
+                      alt="avatar"
+                      v-if="author.avatar_url"
                       @click="redirectProfile"
-                      class="max-w-2xl text-sm leading-3 text-zinc-500"
-                  >@{{ author?.username }}</p>
+                      v-bind:src="author.avatar_url"
+                      class="rounded-full h-10 w-10 bg-black cursor-pointer"
+                  />
+                  <img
+                      v-else
+                      alt="avatar"
+                      @click="redirectProfile"
+                      src="@/assets/default-avatar.png"
+                      class="rounded-full h-10 w-10 bg-black cursor-pointer"
+                  />
                 </UserPopper>
-              </div>
-            </div>
-
-            <OptionsPost
-                classDotIcon="h-7 w-7"
-                v-if="getUser.id === post.user_id"
-                @onDeletePostChildComp="router.back()"
-                :dataPost="post"
-            />
-          </div>
-
-          <!--         Content post-->
-          <div class="pb-4">
-            <!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
-            <p
-                class="whitespace-pre-line break-words"
-                v-html="formatTextWithHashTags(post.content)"
-            ></p>
-            <img
-                v-if="post.image_url"
-                v-bind:src="post.image_url"
-                alt=""
-                class="rounded-xl mt-4 w-full h-auto"
-            >
-
-            <div
-                v-if="post.edited_posts_count > 0"
-                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
-                :class="{'hover:underline hover:underline-offset-2 cursor-pointer': post.edited_posts_count > 0}"
-                @click="redirectHistory"
-            >
-              <PencilIcon v-if="post.edited_posts_count > 0" class="h-4 w-4 inline mr-1.5"/>
-              Last edited {{ post.time }} · {{ post.date }}
-            </div>
-
-            <div
-                v-else
-                class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
-            >{{ post.time }} · {{ post.date }}
-            </div>
-
-          </div>
-
-          <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
-
-          <div>
-            <!--      Statistics ..-->
-            <div class="flex gap-8 py-4" v-if="post.sub_posts_count > 0 || post.likes_count > 0">
-              <div class="flex items-center gap-1">
-                <span :class="animationComments" class="text-[14px] font-bold">{{ post.sub_posts_count ?? 0 }}</span>
-                <span class="text-[14px] text-zinc-500">Comments</span>
+                <div>
+                  <UserPopper :username="author.username" class="max-h-[18px] mb-1.5 md:mb-0 ">
+                    <h3
+                        @click="redirectProfile"
+                        class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2 cursor-pointer"
+                    >
+                      {{ author?.name }}</h3>
+                  </UserPopper>
+                  <UserPopper :username="author.username">
+                    <p
+                        @click="redirectProfile"
+                        class="max-w-2xl text-sm leading-3 text-zinc-500 cursor-pointer"
+                    >@{{ author?.username }}</p>
+                  </UserPopper>
+                </div>
               </div>
 
-              <div class="flex items-center gap-2">
-                <div class='flex items-center gap-1'>
-                  <span :class="animationLikes" class="text-[14px] font-bold">{{ post.likes_count ?? 0 }}</span>
-                  <span class="text-[14px] text-zinc-500">Likes</span>
+              <OptionsPost
+                  classDotIcon="h-7 w-7"
+                  v-if="getUser.id === post.user_id"
+                  @onDeletePostChildComp="router.back()"
+                  :dataPost="post"
+              />
+            </div>
+
+            <!--         Content post-->
+            <div class="pb-4">
+              <!--            <div class="whitespace-pre-line">{{ post.content }}</div>-->
+              <p
+                  class="whitespace-pre-line break-words"
+                  v-html="formatTextWithHashTags(post.content)"
+              ></p>
+              <img
+                  v-if="post.image_url"
+                  v-bind:src="post.image_url"
+                  alt=""
+                  class="rounded-xl mt-4 w-full h-auto"
+              >
+
+              <div
+                  v-if="post.edited_posts_count > 0"
+                  class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+                  :class="{'hover:underline hover:underline-offset-2 cursor-pointer': post.edited_posts_count > 0}"
+                  @click="redirectHistory"
+              >
+                <PencilIcon v-if="post.edited_posts_count > 0" class="h-4 w-4 inline mr-1.5"/>
+                Last edited {{ post.time }} · {{ post.date }}
+              </div>
+
+              <div
+                  v-else
+                  class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
+              >{{ post.time }} · {{ post.date }}
+              </div>
+
+            </div>
+
+            <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
+
+            <div>
+              <!--      Statistics ..-->
+              <div class="flex gap-8 py-4" v-if="post.sub_posts_count > 0 || post.likes_count > 0">
+                <div class="flex items-center gap-1">
+                  <span :class="animationComments" class="text-[14px] font-bold">{{ post.sub_posts_count ?? 0 }}</span>
+                  <span class="text-[14px] text-zinc-500">Comments</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <div class='flex items-center gap-1'>
+                    <span :class="animationLikes" class="text-[14px] font-bold">{{ post.likes_count ?? 0 }}</span>
+                    <span class="text-[14px] text-zinc-500">Likes</span>
+                  </div>
+                </div>
+              </div>
+
+              <!--            Icons Action -->
+              <div class="grid grid-cols-5 py-1.5 border-t">
+                <div
+                    class="icon-btn"
+                    v-tooltip="'Reply'"
+                    @click="replyPost"
+                    :class="{'opacity-40': !post.is_current_user_can_comment}"
+                >
+                  <ChatBubbleOvalLeftEllipsisIcon v-if="post.sub_posts_count > 0"/>
+                  <ChatBubbleOvalLeftIcon v-else/>
+                </div>
+
+                <!--              <ReceiptRefundIcon v-tooltip="'Repost'" class="icon-btn"/>-->
+                <ReceiptRefundIcon
+                    v-tooltip="'Not available'" class="icon-btn opacity-40"
+                />
+
+                <div class='icon-btn' @click="toggleLikePost" v-tooltip="'Like'">
+                  <HeartIconSolid v-if="isLike"/>
+                  <HeartIcon v-else/>
+                </div>
+
+                <BookmarkIcon
+                    v-tooltip="'Not available'" class="icon-btn opacity-40"
+                    :class="'text-zinc-500'"
+                />
+
+                <!--              <div class="icon-btn" v-tooltip="'Share'">-->
+                <div
+                    class="icon-btn opacity-40" v-tooltip="'Not available'"
+                >
+                  <ShareIcon/>
                 </div>
               </div>
             </div>
 
-            <!--            Icons Action -->
-            <div class="grid grid-cols-5 py-1.5 border-t">
-              <div
-                  class="icon-btn"
-                  v-tooltip="'Comment'"
-                  :class="!post.is_current_user_can_comment ? 'text-zinc-400': 'text-zinc-500'"
-              >
-                <ChatBubbleOvalLeftEllipsisIcon
-                    v-if="post.sub_posts_count > 0"
-                    @click="router.push('/posts/' + post.id)"
-                />
-                <ChatBubbleOvalLeftIcon v-else @click="router.push('/posts/' + post.id)"/>
-              </div>
-
-              <!--              <ReceiptRefundIcon v-tooltip="'Repost'" class="icon-btn"/>-->
-              <ReceiptRefundIcon
-                  v-tooltip="'Not available'" class="icon-btn"
-                  :class="'text-zinc-500'"
-              />
-
-              <div class='icon-btn' @click="toggleLikePost" v-tooltip="'Like'">
-                <HeartIconSolid v-if="isLike"/>
-                <HeartIcon v-else/>
-              </div>
-
-              <BookmarkIcon
-                  v-tooltip="'Not available'" class="icon-btn"
-                  :class="'text-zinc-500'"
-              />
-
-              <!--              <div class="icon-btn" v-tooltip="'Share'">-->
-              <div
-                  class="icon-btn" v-tooltip="'Not available'"
-                  :class="'text-zinc-500'"
-              >
-                <ShareIcon/>
-              </div>
-            </div>
+            <div class="border-b w-full md:hidden"/>
           </div>
 
-          <!--          <div class="border-b w-full"></div>-->
         </div>
-
       </div>
+
+      <!--  Sub Posts ( Comments )-->
+      <Posts
+          v-if="!isPostNotExist"
+          :key="keyPostsComp"
+          :author="author"
+          :disabledComment="!post?.is_current_user_can_comment"
+      />
     </div>
 
-    <!--  Sub Posts ( Comments )-->
-    <Posts
-        v-if="!isPostNotExist"
-        :key="keyPostsComp"
-        :author="author"
-        :disabledComment="!post?.is_current_user_can_comment"
-    />
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -212,7 +218,7 @@ import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
 import Button from "@/core/components/Button.vue";
 import { useWebSocket } from "@vueuse/core";
-import { IMessage } from "@/types/message";
+import ReplyPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -220,6 +226,8 @@ const store = useStore()
 
 type PostTypes = {time?: string, date?: string} & IPost
 
+const showReplyPostDialog = ref(false);
+const keyReplyPostDialog = ref(0);
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
 const post = ref<PostTypes | null>(null)
@@ -365,6 +373,15 @@ const redirectHistory = () => {
   }
 }
 
+const replyPost = () => {
+
+  if (!post.value.is_current_user_can_comment) {
+    return;
+  }
+  showReplyPostDialog.value = true;
+  keyReplyPostDialog.value++
+}
+
 </script>
 
 
@@ -412,6 +429,6 @@ const redirectHistory = () => {
 }
 
 .icon-btn {
-  @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-10 w-10  cursor-pointer transition transform duration-200 ease-in-out;
+  @apply text-zinc-500 flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-10 w-10  cursor-pointer transition transform duration-200 ease-in-out;
 }
 </style>

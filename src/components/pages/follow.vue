@@ -28,7 +28,7 @@
     </template>
   </HeaderMainContent>
 
-  <div class="h-16"></div>
+  <div class="h-[60px]"/>
 
   <!--  Users-->
   <div v-for="(user) of users">
@@ -93,11 +93,11 @@ const redirect = (name) => {
 <style scoped>
 
 .tabs {
-  @apply grid grid-cols-2 w-[599px] z-10;
+  @apply grid grid-cols-2;
 }
 
 .tab {
-  @apply flex-center py-4 hover:bg-[#e7e7e8] animate relative cursor-pointer;
+  @apply flex-center py-4 hover:bg-[#e7e7e8] animate relative cursor-pointer  text-[15px];
 }
 
 .tab .active-underline {
