@@ -10,17 +10,35 @@
               @click="back"
           />
 
-          <div>
-            <div class="font-bold text-lg leading-5">{{ room?.participant_name }}</div>
-            <p class="text-sm text-zinc-500">@{{ room?.participant_username }}</p>
+
+          <div class="flex items-center gap-2">
+            <div>
+              <img
+                  v-if="room?.participant_avatar_url"
+                  alt="avatar"
+                  v-bind:src="room?.participant_avatar_url"
+                  class="rounded-full h-8 w-8 bg-black "
+              />
+              <img
+                  v-else
+                  alt="avatar"
+                  src="@/assets/default-avatar.png"
+                  class="rounded-full h-8 w-8 bg-black "
+              />
+            </div>
+            <div>
+              <div class="font-bold text-[17px] leading-5">{{ room?.participant_name }}</div>
+              <!--              <p class="text-sm text-zinc-500">@{{ room?.participant_username }}</p>-->
+            </div>
           </div>
         </div>
       </template>
     </HeaderMainContent>
 
-
     <!-- Messages-->
-    <div class="px-4" id="messagesId">
+    <div class="px-3" id="messagesId">
+
+      <div class="h-[56px]"/>
       <div v-if="isLoading" class="flex-center min-h-[35vh]">
         <Loading variant="secondary" classes="h-6 w-6"/>
       </div>
@@ -28,12 +46,23 @@
         <div v-for="(message, index) of messages">
           <div
               class="whitespace-pre-wrap max-w-[20rem]"
-              :class="message.user_id === getUser.id ? 'me' : 'you' "
+              :class="[( message.user_id === getUser.id ? 'me' : 'you'  ),
+              message.user_id !== messages[index + 1]?.user_id && message.user_id !== messages[index - 1]?.user_id ? 'rounded-md' :
+              message.user_id === getUser.id  ? {
+                '!rounded-br-md': message.user_id !== messages[index - 1]?.user_id,
+                '!rounded-tr-md': message.user_id !== messages[index + 1]?.user_id,
+                '!rounded-tr-md !rounded-br-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id,
+              } : {
+                '!rounded-bl-md': message.user_id !== messages[index - 1]?.user_id,
+                '!rounded-tl-md': message.user_id !== messages[index + 1]?.user_id,
+                '!rounded-tl-md !rounded-bl-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id,
+              }
+              ]"
           >{{ message.text }}
           </div>
           <div
               v-if="message.user_id !== messages[index + 1]?.user_id"
-              class="text-zinc-500 text-sm mt-1"
+              class="text-zinc-500 text-sm mt-1 mb-4"
               :class="message.user_id === getUser.id ? 'text-right' : 'text-left' "
           >{{ parseMessageCreatedAt(message).time }}
           </div>
@@ -80,10 +109,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
-import { ArrowLeftIcon } from '@heroicons/vue/20/solid'
-import { PaperAirplaneIcon } from '@heroicons/vue/20/solid'
-import { PlusCircleIcon } from '@heroicons/vue/20/solid'
+import { onBeforeMount, onMounted, ref } from "vue";
+import { useWebSocket } from "@vueuse/core";
+import { useRoute, useRouter } from "vue-router";
+import { PlusCircleIcon, PaperAirplaneIcon, ArrowLeftIcon } from '@heroicons/vue/20/solid'
 
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import Input from "@/core/components/forms/Input.vue";
@@ -93,13 +122,12 @@ import Loading from "@/core/components/Loading.vue";
 import { logger, parseJSON } from "@/core/helper";
 import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
 import { useStore } from "@/store";
-import { useWebSocket } from "@vueuse/core";
-import { useRoute, useRouter } from "vue-router";
 import { IMessage } from "@/types/message";
+import { useMediaQuery } from "@vueuse/core";
 
-const { noLastMessages: noLastMessagesFromProp } = defineProps<{showFull?: boolean, noLastMessages: boolean}>();
+// const { noLastMessages: noLastMessagesFromProp } = defineProps<{showFull?: boolean, noLastMessages: boolean}>();
 
-const { getUser } = mapGetters()
+const { getUser, isLoggedIn } = mapGetters()
 
 const store = useStore()
 const router = useRouter()
@@ -108,21 +136,17 @@ const route = useRoute()
 const messages = ref([])
 const roomId = ref()
 const isLoading = ref(null)
-const noLastMessages = ref(noLastMessagesFromProp)
+// const noLastMessages = ref(noLastMessagesFromProp)
 const messageValue = ref('')
 const guid = ref('')
 const refBottom = ref(null)
 const refInput = ref(null)
 const room = ref<null | IMessage>(parseJSON(localStorage.getItem('room')))
 
-// const emit = defineEmits<{
-//   (e: 'onUpdateView', value: {showFull?: boolean, showViewChatPrivate?: boolean})
-// }>()
-
 const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
   autoReconnect: true,
   onConnected: () => {
-    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Room.vue')
     guid.value = Math.random().toString(36).substring(2, 15)
     send(
         JSON.stringify({
@@ -135,7 +159,7 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     );
   },
   onError: (e) => {
-    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Room.vue')
   },
   onMessage: () => {
     const parsed = parseJSON<{type: string, message: any}>(data.value)
@@ -143,28 +167,34 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     if (parsed.type === "welcome") return;
     if (parsed.type === "confirm_subscription") return;
     const message = parsed.message
-    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Chat.vue')
+    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Room.vue')
     setMessagesThenScrollToBottom([...messages.value, { ...message }]);
+  }
+})
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
+
+onBeforeMount(() => {
+  if (isTabletScreen.value) {
+    router.push({ name: 'home' })
   }
 })
 
 onMounted(async () => {
-  await fetchPrivateRoomByUser()
+  if (!isLoggedIn.value) {
+    await router.push({ name: 'explore' })
+    return
+  }
+  await fetchPrivateRoom()
   refBottom.value?.scrollIntoView();
   refInput.value?.focus()
 })
 
-onUnmounted(() => {
-  // store.commit(MutationEnums.MESSAGE_TO_USER, null)
-  // localStorage.removeItem('room')
-})
-
-async function fetchPrivateRoomByUser() {
-  // if (!getCurrentUserToMessage.value) {
-  //   logger.warn('execute fetchPrivateRoomByUser - getCurrentUserToMessage is null')
-  //   emit('onUpdateView', { showViewChatPrivate: false })
-  //   return
-  // }
+async function fetchPrivateRoom() {
+  if (!room.value || !room.value.participant_username) {
+    logger.error('execute fetchPrivateRoom - room is null', 'src/components/pages/room.vue')
+    await router.push({ name: 'messages' })
+    return
+  }
   isLoading.value = true
   const { data } = await chatAPI.getPrivateRoomByUser(room.value.participant_username);
   isLoading.value = false
@@ -198,9 +228,9 @@ async function sendMessage() {
     if (data.message) {
       roomId.value = data.message.room_id
     }
-    if (noLastMessages.value) {
-      noLastMessages.value = false
-    }
+    // if (noLastMessages.value) {
+    //   noLastMessages.value = false
+    // }
     messageValue.value = ''
   }
 }
@@ -222,12 +252,16 @@ const back = () => {
 
 <style scoped>
 
+.theme {
+  @apply rounded-[18px] px-[12px] py-[6px] mb-1 break-all
+}
+
 .me {
-  @apply w-fit ml-auto break-all mt-2 mb-1 px-[12px] py-[6px] bg-[#606060] rounded-2xl text-white text-right;
+  @apply theme w-fit ml-auto bg-[#606060] text-white;
 }
 
 .you {
-  @apply w-max break-all mt-2  float-none bg-[#e9ecef] rounded-2xl px-[12px] py-[6px] text-left;
+  @apply theme w-max float-none bg-[#e9ecef];
 }
 
 </style>

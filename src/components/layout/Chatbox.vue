@@ -77,9 +77,9 @@
 
     </div>
 
-    <Chat
+    <Room
         v-else
-        :key="keyChat"
+        :key="keyRoomComponent"
         :noLastMessages="lastMessages.length === 0"
         @onUpdateView="onUpdateView"
         :showFull="showFull"
@@ -92,7 +92,7 @@ import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/20/so
 import { onMounted, ref, watch } from "vue";
 
 import Loading from "@/core/components/Loading.vue";
-import Chat from "./Chat.vue";
+import Room from "./Room.vue";
 import { mapGetters } from "@/lib/map-state";
 import { chatAPI } from "@/apis/chat";
 import { MutationEnums } from "@/types/store/root";
@@ -110,7 +110,7 @@ const showViewChatPrivate = ref(false)
 const showFull = ref(false)
 const isLoading = ref(false)
 const refTop = ref<null | HTMLDivElement>(null)
-const keyChat = ref(0)
+const keyRoomComponent = ref(0)
 const guid = ref('')
 
 onMounted(() => {
@@ -198,7 +198,7 @@ watch(getCurrentUserToMessage, () => {
   if (getCurrentUserToMessage.value) {
     showViewChatPrivate.value = true
     showFull.value = true
-    keyChat.value++
+    keyRoomComponent.value++
   }
 }, { immediate: true })
 

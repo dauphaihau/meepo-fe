@@ -5,7 +5,7 @@
         :key="keyReplyPostDialog"
         :showDialogFromProps="showReplyPostDialog"
         :hideTrigger="true"
-        :postComment="dataPost"
+        :dataPostReply="dataPost"
         @onClose="() => action = ''"
     />
 
@@ -33,14 +33,14 @@
 
           <!--          Avatar-->
           <div
-              class="mr-3 basis-11 relative flex flex-col min-w-[40px]"
+              class="mr-3 basis-11 relative flex flex-col min-w-[40px] max-w-[40px]"
               :class="!isSubPost && 'pt-3'"
           >
             <div
                 v-if="isSubPost && currentRouteName !== 'search'"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
             />
-            <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
+            <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover" class="w-fit">
               <div class="before:absolute">
                 <img
                     v-if="dataPost.author_avatar_url"
@@ -60,11 +60,10 @@
             </UserPopper>
             <div
                 v-if="(dataPost.sub_posts_count > 0 && !isSubPost && currentRouteName === 'post') || by === FILTER_POST_BY.COMMENTS"
-                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto w-[2px]"
+                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto mt-1 md:mt-0"
             />
           </div>
 
-          <!--          <div class="w-full md:max-w-[80%] py-3">-->
           <div class="w-full max-w-[83%] md:max-w-[90%] py-3">
 
             <div class="flex justify-between">

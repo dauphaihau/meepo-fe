@@ -2,6 +2,7 @@
   <div>
     <!--    Header-->
     <HeaderMainContent title="Messages"/>
+    <div class="h-[53px]"/>
 
     <!--  Last messages / Rooms )-->
     <div>
@@ -15,7 +16,7 @@
         <div v-for="message of lastMessages">
           <div
               class="flex gap-2 items-center  px-4 h-[73px] hover:bg-zinc-50 cursor-pointer "
-              @click="clickRoom(message)"
+              @click="clickMessage(message)"
           >
             <img
                 v-if="message.participant_avatar_url"
@@ -48,11 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { useWebSocket } from "@vueuse/core";
+import { onBeforeMount, onMounted, ref } from "vue";
+import { useMediaQuery, useWebSocket } from "@vueuse/core";
 
 import Loading from "@/core/components/Loading.vue";
-import { mapGetters } from "@/lib/map-state";
 import { chatAPI } from "@/apis/chat";
 import { parseCreatedAts } from "@/lib/dayjs-parse";
 import { logger, parseJSON } from "@/core/helper";
@@ -61,19 +61,27 @@ import { IMessage } from "@/types/message";
 
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import router from "@/router";
+import { mapGetters } from "@/lib/map-state";
 
 const store = useStore()
-const { getCurrentUserToMessage, getUser } = mapGetters()
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
+const { isLoggedIn } = mapGetters()
 
 const lastMessages = ref<IMessage[] | []>([])
-const showViewChatPrivate = ref(false)
-const showFull = ref(false)
 const isLoading = ref(false)
-const refTop = ref<null | HTMLDivElement>(null)
-const keyChat = ref(0)
 const guid = ref('')
 
+onBeforeMount(() => {
+  if (isTabletScreen.value) {
+    router.push({ name: 'home' })
+  }
+})
+
 onMounted(() => {
+  if (!isLoggedIn.value) {
+    router.push({ name: 'explore' })
+    return
+  }
   fetchPrivateRooms()
 })
 
@@ -89,7 +97,7 @@ async function fetchPrivateRooms() {
 
 const messagesContainer = document.getElementById("rooms");
 
-const clickRoom = (room) => {
+const clickMessage = (room) => {
   localStorage.setItem('room', JSON.stringify(room))
   router.push('/room')
 }
@@ -138,14 +146,6 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     resetScroll();
   }
 })
-
-watch(getCurrentUserToMessage, () => {
-  if (getCurrentUserToMessage.value) {
-    showViewChatPrivate.value = true
-    showFull.value = true
-    keyChat.value++
-  }
-}, { immediate: true })
 
 const resetScroll = () => {
   if (!messagesContainer) return;

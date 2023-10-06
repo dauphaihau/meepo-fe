@@ -60,7 +60,6 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { ref, watch } from "vue";
 import { HomeIcon, UserIcon } from "@heroicons/vue/20/solid"
 import {
   HomeIcon as HomeIconOutline,

@@ -34,6 +34,7 @@ export enum MutationEnums {
   MUTATE_POSTS = 'MUTATE_POSTS',
   SET_STATE_ROUTER = 'SET_STATE_ROUTER',
   MESSAGE_TO_USER = 'MESSAGE_TO_USER',
+  SET_LOADING_AUTH = 'SET_LOADING_AUTH',
 }
 
 export enum ActionEnums {

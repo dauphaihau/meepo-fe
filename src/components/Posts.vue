@@ -7,7 +7,7 @@
         @onCreatePost="onGetPosts('create')"
     />
 
-    <div v-if="disabledComment" class="border-zinc-300 md:border-t border-b">
+    <div v-if="disabledComment" class="md:border-t border-b">
       <div class="flex gap-4 m-5 px-3 py-3 bg-zinc-100 rounded-lg">
         <UserGroupIcon class="h-9 w-9 rounded-full bg-zinc-200 p-2 text-black"/>
         <div>
@@ -82,7 +82,6 @@ const { isLoggedIn, getUser, getKeyMutatePosts } = mapGetters()
 
 const posts = ref([])
 const content = ref('')
-const isFocus = ref(false)
 const isLoading = ref(false)
 const reachEndPage = ref(false)
 const page_count = ref(1)

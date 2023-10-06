@@ -5,13 +5,13 @@
         :key="keyReplyPostDialog"
         :showDialogFromProps="showReplyPostDialog"
         :hideTrigger="true"
-        :postComment="post"
+        :dataPostReply="post"
         @onCreateSuccess="keyPostsComp++"
     />
 
     <!--  Header-->
     <HeaderMainContent title="Post"/>
-    <div class="h-4"></div>
+    <div class="h-4"/>
 
     <div v-if="isLoading" class="flex-center min-h-[35vh]">
       <Loading variant="secondary" classes="h-7 w-7"/>
@@ -114,7 +114,7 @@
 
             </div>
 
-            <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"></div>
+            <div v-if="post.sub_posts_count > 0 || post.likes_count > 0" class="border-b w-full"/>
 
             <div>
               <!--      Statistics ..-->

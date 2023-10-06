@@ -15,20 +15,23 @@ export interface IAxiosResponse<T = any> {
 }
 
 export interface ISessionState {
-  auth_token: string,
+  auth_token: string
   user?: Partial<IUser>
+  loadingAuth: boolean
 }
 
 export type SessionGetterTypes = {
   getUser(state: ISessionState): ISessionState['user'];
   isLoggedIn(state: ISessionState): boolean;
   getAuthToken(state: ISessionState): string;
+  getLoadingAuth(state: ISessionState): boolean;
 };
 
 // Mutation types
 export type SessionMutationTypes<S = IRootState> = {
   [MutationEnums.SET_USER_INFO]?(state: S, payload: ISessionState['user']): void;
   [MutationEnums.RESET_USER_INFO]?(state: S): void;
+  [MutationEnums.SET_LOADING_AUTH]?(state: S, payload: boolean): void;
 } & Partial<MutationTypes>;
 
 type AugmentedActionContext = {
