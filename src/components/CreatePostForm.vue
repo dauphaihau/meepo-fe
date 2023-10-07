@@ -46,6 +46,7 @@
                     :rows="isFocus ? 2 : 0"
                     class="textarea-input "
                     :placeholder="currentRouteName === 'home' ?  'Write your content' : 'Post your reply'"
+                    maxlength="1400"
                 />
                 <!--                    :class="isFocus ? 'h-auto': 'h-[28px] overscroll-y-none'"-->
 
@@ -117,7 +118,7 @@
 <script setup lang="tsx">
 import { nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
-import { PhotoIcon, XMarkIcon, GifIcon, CalendarIcon, FaceSmileIcon } from "@heroicons/vue/24/outline"
+import { CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon } from "@heroicons/vue/24/outline"
 
 import { postAPI } from '@/apis/post'
 import { mapGetters } from "@/lib/map-state";
@@ -128,7 +129,6 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { logger } from "@/core/helper";
 import { commonAPI } from "@/apis/common";
-import { customToast } from "@/lib/custom-toast";
 
 const store = useStore()
 const route = useRoute()
@@ -201,12 +201,12 @@ const createPost = async () => {
     if (!data.post || !data.post.id) {
       logger.error('response from postAPI.create, post id is null', 'src/components/CreatePostForm.vue')
     }
-    customToast(
-        `Your post was sent.${currentRouteName === 'home' ? ' You have 1 hour to make any edits.' : ''}`,
-        {
-          onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
-        }
-    )
+
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: `Your post was sent.${currentRouteName === 'home' ? ' You have 1 hour to make any edits.' : ''}`,
+      onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
+    })
+
     emit('onCreatePost')
     content.value = ''
     fileImage.value = null

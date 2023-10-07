@@ -1,9 +1,9 @@
 <template>
-  <Suspense>
-    <template #fallback class="flex-center min-h-[40vh]">
+  <div>
+    <div v-if="isLoading" class="flex-center min-h-[40vh]">
       <Loading variant="secondary" classes="h-7 w-7"/>
-    </template>
-    <template #default>
+    </div>
+    <div v-else>
       <div>
         <Header
             :title="!isUserNotExist ? user?.name : 'Profile' "
@@ -185,6 +185,7 @@
           </div>
         </div>
 
+
         <Posts
             v-if="!isUserNotExist"
             :author="user"
@@ -192,9 +193,10 @@
             :key="keyPostsComp"
             :hideInput="true"
         />
+
       </div>
-    </template>
-  </Suspense>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -226,6 +228,7 @@ const { getUser, isLoggedIn } = mapGetters()
 
 const isUserNotExist = ref(false)
 const isFollowing = ref(false)
+const isLoading = ref(false)
 const keyPostsComp = ref(0)
 const keyUpdateUserDialog = ref(0)
 
@@ -242,7 +245,9 @@ onMounted(() => {
 })
 
 async function getProfile() {
+  isLoading.value = true
   const { data, status } = await userAPI.getProfile(currentRouteUsername)
+  isLoading.value = false
 
   if (status === 404) {
     isUserNotExist.value = status === 404

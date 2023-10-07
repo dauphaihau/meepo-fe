@@ -16,8 +16,8 @@
     <div class="md:hidden">
       <div
           v-if="showCreatePostDialog"
-          class="fixed bottom-28 right-16 w-fit z-[3] transition-all duration-500"
-          :class="{'opacity-50': direction === 'down'}"
+          class="fixed right-16 z-[3] transition-all duration-500"
+          :class="[{'opacity-50': direction === 'down'}, dataToast ? dataToast.line === 2 ? 'bottom-44' : 'bottom-36' : 'bottom-28']"
       >
         <CreatePostDialog responsive v-if="isLoggedIn"/>
       </div>
@@ -41,7 +41,7 @@ import MenuUser from "@components/layout/SidebarLeft/MenuUser.vue";
 import NavigatePage from "@components/layout/SidebarLeft/NavigateMenu.vue";
 import NavigatePageMobile from "@components/layout/SidebarLeft/NavigateMenuMobile.vue";
 
-const { isLoggedIn } = mapGetters()
+const { isLoggedIn, getDataToast: dataToast } = mapGetters()
 
 const direction = useScrollDirection()
 const router = useRouter()

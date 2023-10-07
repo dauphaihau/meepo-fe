@@ -2,12 +2,20 @@ import { CommitOptions, DispatchOptions, Store as VuexStore, } from "vuex";
 import { ISessionAction, ISessionState, SessionGetterTypes } from "@/types/store/session";
 import { IUser } from "@/types/user";
 
+interface IDataToast {
+  message: string,
+  onClickBtn?: () => void,
+  labelBtn?: string
+  line?: number
+}
+
 // root state types
-export interface IRootState extends Partial<ISessionState>{
+export interface IRootState extends Partial<ISessionState> {
   openLoginDialog: boolean,
   openForgotPasswordDialog: boolean,
   openRegisterDialog: boolean,
   showChatbox: boolean,
+  dataToast: null | IDataToast,
   keyMutatePosts: number,
   stateRouter: any,
   currentUserToMessage: IUser,
@@ -22,10 +30,12 @@ export type GetterTypes = {
   getKeyMutatePosts(state: IRootState): number;
   getStateRouter(state: IRootState): any;
   getCurrentUserToMessage(state: IRootState): any;
+  getDataToast(state: IRootState): any;
 } & Partial<SessionGetterTypes>;
 
 // mutations and action enums
 export enum MutationEnums {
+  SHOW_TOAST = "SHOW_TOAST",
   SET_LOGIN_DIALOG = "SET_LOGIN_DIALOG",
   SET_REGISTER_DIALOG = "SET_REGISTER_DIALOG",
   SET_FORGOT_PASSWORD_DIALOG = "SET_FORGOT_PASSWORD_DIALOG",
@@ -46,16 +56,18 @@ export enum ActionEnums {
 
 // Mutation types
 export type MutationTypes<S = IRootState> = {
-  [MutationEnums.SET_LOGIN_DIALOG](state: S, payload: boolean): void;
+  [MutationEnums.SET_LOGIN_DIALOG](state: S, payload): void;
   [MutationEnums.SET_REGISTER_DIALOG](state: S, payload: boolean): void;
   [MutationEnums.MUTATE_POSTS](state: S): void;
   [MutationEnums.SET_STATE_ROUTER](state: S, payload: any): void;
   [MutationEnums.MESSAGE_TO_USER](state: S, payload: any): void;
   [MutationEnums.SET_FORGOT_PASSWORD_DIALOG](state: S, payload: boolean): void;
+  [MutationEnums.SHOW_TOAST](state: S, payload: IDataToast): void;
 };
 
 // actions interface
-export interface IAction extends Partial<ISessionAction> {}
+export interface IAction extends Partial<ISessionAction> {
+}
 
 // setup store types
 export type StoreTypes = Omit<VuexStore<IRootState>, "Store" | "getters" | "dispatch"> & {

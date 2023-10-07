@@ -44,7 +44,7 @@ const onSubmit = async () => {
   <div>
     <div class="mb-4">
       <h1 class="text-2xl text-black font-bold mb-2">Find your Meepo account</h1>
-      <h2 class="text-base text-zinc-600 leading-6">Enter the email or username associated with your account to change
+      <h2 class="text-sm md:text-base text-zinc-600 leading-6">Enter the email or username associated with your account to change
         your password.</h2>
     </div>
 

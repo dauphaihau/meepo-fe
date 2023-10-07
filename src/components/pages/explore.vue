@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-12 md:pb-0">
     <!--    Header-->
     <HeaderMainContent title="Explore"/>
 

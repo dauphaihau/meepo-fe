@@ -82,7 +82,8 @@ import { postAPI } from "@/apis/post";
 import EditPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
 import { IPost, PIN_STATUS } from "@/types/post";
 import { useRoute, useRouter } from "vue-router";
-import { customToast } from "@/lib/custom-toast";
+import { store } from "@/store";
+import { MutationEnums } from "@/types/store/root";
 
 const route = useRoute()
 const router = useRouter()
@@ -112,7 +113,9 @@ watch(menuItemsRef, () => {
 const onDelete = async () => {
   const { status } = await postAPI.delete(dataPost.id)
   if (status === 200) {
-    customToast('Your post was deleted')
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: 'Your post was deleted'
+    })
     emit('onDeletePostChildComp')
     if (currentRouteName === 'history') router.push('/')
   }
@@ -122,7 +125,9 @@ const onPin = async () => {
   const payload = { pin_status: dataPost.pin_status_int === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
   const { status } = await postAPI.update(dataPost.id, payload)
   if (status === 200) {
-    customToast(`Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,)
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: `Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,
+    })
     dataPost.pin_status_int = payload.pin_status
     emit('onPinPost')
   }

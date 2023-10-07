@@ -12,6 +12,10 @@
       >
         <Loading variant="secondary" classes="h-6 w-6"/>
       </div>
+      <div v-else-if="lastMessages.length === 0" class="px-10 mt-12">
+        <h3 class="font-extrabold text-3xl mb-2 pr-2">Welcome to your inbox! </h3>
+        <p class="text-zinc-500 text-sm">Drop a line, share posts and more with private conversations between  you and others on Meepo.</p>
+      </div>
       <div v-else class="pb-16">
         <div v-for="message of lastMessages">
           <div

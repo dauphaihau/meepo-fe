@@ -82,7 +82,7 @@ const openForgotPasswordDialog = () => {
   <Dialog
       :show="isOpenDialog"
       :closeDialog="closeDialog"
-      classPanel="md:min-w-[400px] max-w-sm md:mt-20 flex flex-col justify-center"
+      classPanel="min-w-[100vw] md:min-w-[400px] md:max-w-sm md:mt-20 flex flex-col justify-center"
   >
     <template
         v-if="!isLoggedIn"

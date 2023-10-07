@@ -5,7 +5,7 @@
       <template v-slot:tabs>
         <div class="grid grid-cols-4 relative z-[-1]">
           <div v-for="(tab, index) of tabs">
-            <div @click="changeTab(tab, index)" class="flex-center py-3.5 hover:bg-[#e7e7e8] relative cursor-pointer">
+            <div @click="changeTab(tab, index)" class="flex-center py-3.5 md:hover:bg-[#e7e7e8] relative cursor-pointer">
               <div
                   class="font-semibold text-[15px]"
                   :class="index === currentTab ? 'text-black' : 'text-zinc-500' "
@@ -17,7 +17,7 @@
         </div>
       </template>
     </HeaderMainContent>
-    <div class="h-[56px]"></div>
+    <div class="h-[56px]"/>
 
     <!--    Response error 404 -->
     <div v-if="!isLoading && isNotFound" class="max-w-[20rem] mx-auto mt-20">

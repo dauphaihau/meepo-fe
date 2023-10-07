@@ -68,19 +68,18 @@
 
             <div class="flex justify-between">
               <!--              info author-->
-              <div class="flex gap-2 text-[15px]">
+              <div class="flex gap-2 text-[15px] w-full max-w-[100vw]">
                 <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                   <div
                       @click="redirectProfile"
-                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
+                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[6rem] md:max-w-[11rem] truncate"
                   >
                     {{ dataPost.author_name ?? dataPost.author.name }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
-                    <!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
-                    <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">
+                    <div @click="redirectProfile" class="before:absolute max-w-[7rem] md:max-w-[11rem] truncate">
                       @{{ dataPost.author_username ?? dataPost.author.username }}
                     </div>
 
@@ -101,7 +100,6 @@
             <!--            <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line mt-1.5 mb-12">-->
             <!--              {{ dataPost.content }}-->
             <!--            </p>-->
-
             <p
                 class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line  mt-1.5 break-words"
                 v-html="formatTextWithHashTags(dataPost.content)"

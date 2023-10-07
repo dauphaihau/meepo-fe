@@ -6,7 +6,6 @@
     <div class="grid grid-cols-4 gap-4 bg-white h-[52px] w-full">
 
       <router-link
-          v-if="isLoggedIn"
           class="link" to="/home"
           v-slot="{ href, route, navigate, isActive, isExactActive }"
       >
@@ -29,9 +28,12 @@
         <UserIcon v-if="route.name === 'profile'"/>
         <UserIconOutline v-else/>
       </router-link>
+<!--      <div class="link opacity-30">-->
+<!--        <BellIcon v-if="route.name === 'notifications'"/>-->
+<!--        <BellIconOutline v-else/>-->
+<!--      </div>-->
 
       <router-link
-          v-if="isLoggedIn"
           class="link"
           to="/messages"
           v-slot="{ href,  navigate, isActive, isExactActive }"
@@ -47,12 +49,13 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { HomeIcon, UserIcon, EnvelopeIcon } from "@heroicons/vue/20/solid"
+import { HomeIcon, UserIcon, EnvelopeIcon, BellIcon } from "@heroicons/vue/20/solid"
 import {
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
   MagnifyingGlassIcon,
-  EnvelopeIcon as EnvelopeIconOutline
+  EnvelopeIcon as EnvelopeIconOutline,
+  BellIcon as BellIconOutline,
 } from "@heroicons/vue/24/outline"
 
 import { mapGetters } from "@/lib/map-state";
