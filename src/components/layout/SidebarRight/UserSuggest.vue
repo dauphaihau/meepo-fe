@@ -38,14 +38,14 @@
           <UserPopper :key="keyUserPopper" :userData="user" @onOpenPopover="onOpenPopover" classPopover="h-5">
             <div
                 @click="redirectProfile"
-                class="text-[15px] font-bold text-zinc-900 hover:underline hover:underline-offset-2 max-w-[11rem] truncate"
+                class="text-[15px] font-bold text-zinc-900 hover:underline hover:underline-offset-2"
             >
-              {{ user.name ?? '-' }}
+              {{ truncateText(user?.name, 17, '...') }}
             </div>
           </UserPopper>
           <UserPopper :key="keyUserPopper" :userData="user" @onOpenPopover="onOpenPopover">
-            <div @click="redirectProfile" class="text-[15px] font-normal text-zinc-500 max-w-[11rem] truncate -mt-3">
-              @{{ user.username ?? '-' }}
+            <div @click="redirectProfile" class="text-[15px] font-normal text-zinc-500 -mt-3">
+              @{{ truncateText(user?.username, 17, '...') }}
             </div>
           </UserPopper>
         </div>
@@ -77,7 +77,7 @@ import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import UserPopper from "@components/UserPopper.vue";
-import { logger } from "@/core/helper";
+import { logger, truncateText } from "@/core/helper";
 
 const store = useStore()
 const router = useRouter()

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-20 md:pb-0">
 
     <ReplyPostDialog
         :key="keyReplyPostDialog"
@@ -63,13 +63,14 @@
                         @click="redirectProfile"
                         class="text-base font-semibold  text-zinc-900 hover:underline hover:underline-offset-2 cursor-pointer"
                     >
-                      {{ author?.name }}</h3>
+                      {{ truncateText(author?.name, isTabletScreen ? 20 : 10, '...') }}
+                    </h3>
                   </UserPopper>
                   <UserPopper :username="author.username">
                     <p
                         @click="redirectProfile"
                         class="max-w-2xl text-sm leading-3 text-zinc-500 cursor-pointer"
-                    >@{{ author?.username }}</p>
+                    >@{{ truncateText(author?.username, isTabletScreen ? 20 : 10, '...') }}</p>
                   </UserPopper>
                 </div>
               </div>
@@ -213,16 +214,18 @@ import { useStore } from "@/store";
 import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
-import { formatTextWithHashTags, logger, parseJSON } from "@/core/helper";
+import { formatTextWithHashTags, logger, parseJSON, truncateText } from "@/core/helper";
 import { parseCreatedAt } from "@/lib/dayjs-parse";
 import UserPopper from "@components/UserPopper.vue";
 import Button from "@/core/components/Button.vue";
 import { useWebSocket } from "@vueuse/core";
 import ReplyPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
+import { useMediaQuery } from "@vueuse/core";
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
 
 type PostTypes = {time?: string, date?: string} & IPost
 

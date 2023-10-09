@@ -144,7 +144,7 @@ const hoverPopover = (e: any, open: boolean): void => {
       e.target.parentNode.click()
       getProfile()
     }
-  }, 300)
+  }, 500)
 }
 
 const closePopover = (close: any): void => {

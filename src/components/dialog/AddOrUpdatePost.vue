@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from 'vue'
+import { ref, watch, nextTick, onMounted, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute, useRouter } from "vue-router";
 import { CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon, } from "@heroicons/vue/24/outline"
 import { PencilIcon } from "@heroicons/vue/24/outline"
 
-import { formatTextWithHashTags } from "@/core/helper";
+import { formatTextWithHashTags, truncateText } from "@/core/helper";
 import Dialog from "@/core/components/Dialog.vue";
 import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
@@ -55,7 +55,6 @@ const currentRouteName = route.name
 // @ts-ignore
 watch(showDialogFromProps, () => {
   content.value = dataPost?.content
-
   if (showDialogFromProps) {
     if (dataPost) {
       urlImage.value = dataPost?.image_url
@@ -283,19 +282,17 @@ const handleDisabledUpdate = (): boolean => {
         <div class="mt-12">
 
 
-          <!--   Info post to comment      -->
+          <!--   Info post to reply      -->
           <div v-if="dataPostReply" class="mb-2">
 
             <div class="flex flex-row">
 
               <!--         Avatar-->
-              <!--            <div class="mr-3 basis-11 relative flex flex-col min-w-[40px]">-->
               <div class="mr-4 basis-11 pb-12 min-w-[40px]">
-
                 <div>
                   <img
-                      v-if="dataPostReply.author_avatar_url"
-                      v-bind:src="dataPostReply.author_avatar_url"
+                      v-if="dataPostReply?.author_avatar_url || dataPostReply?.author?.avatar_url"
+                      v-bind:src="dataPostReply?.author_avatar_url || dataPostReply?.author?.avatar_url"
                       class="rounded-full h-10 w-10 bg-black"
                       alt="avatar"
                   />
@@ -318,20 +315,17 @@ const handleDisabledUpdate = (): boolean => {
 
                 <div class="flex justify-between">
                   <!--              info author-->
-                  <div class="flex gap-2 text-[15px]">
-                    <div
-                        class="font-bold text-black before:absolute max-w-[11rem] truncate"
-                    >
-                      {{ dataPostReply.author_name ?? dataPostReply.author.name }}
+                  <div class="flex flex-shrink gap-2 text-[15px]">
+                    <div class="font-bold text-black before:absolute">
+                      {{ truncateText(dataPostReply.author_name ?? dataPostReply.author.name, isTabletScreen ? 20 : 10, '...') }}
                     </div>
                     <div class="text-zinc-500 inline-flex gap-1">
-                      <div class="before:absolute max-w-[11rem] truncate">
-                        @{{ dataPostReply.author_username ?? dataPostReply.author.username }}
+                      <div class="before:absolute">
+                        @{{ truncateText(dataPostReply.author_username ?? dataPostReply.author.username, isTabletScreen ? 20 : 10, '...') }}
                       </div>
-
-                      · {{ dataPostReply.time }}
+                      · {{ truncateText(dataPostReply?.time, 8) }}
                       <div
-                          v-if="dataPostReply.edited_posts_count > 0 && currentRouteName !== 'history'"
+                          v-if="dataPostReply?.edited_posts_count > 0 && currentRouteName !== 'history'"
                           class="inline flex gap-1"
                       >
                         ·
@@ -341,26 +335,14 @@ const handleDisabledUpdate = (): boolean => {
                   </div>
                 </div>
 
-                <div>
+                <div class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line  mt-1.5 break-words">
 
-                  <p
-                      class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] whitespace-pre-line  mt-1.5 break-words"
-                      v-html="formatTextWithHashTags(dataPostReply.content)"
-                  />
+                  <p v-html="formatTextWithHashTags(dataPostReply?.content)"/>
+                  <p>{{ dataPostReply?.image_url }}</p>
 
-                  <div
-                      v-if="urlImage"
-                      class="relative mt-3 mb-1"
-                  >
-                    <img alt="preview-img" :src="urlImage" class="h-auto w-full rounded-xl"/>
-                    <div class="rounded-full bg-black opacity-70 w-fit p-1 absolute z-[1] top-2 right-2 hover:opacity-60 transition ease-out duration-300">
-                      <XMarkIcon @click="deleteImage" class="text-white h-5 w-5 cursor-pointer text-white"/>
-                    </div>
-                  </div>
-
-                  <div class="text-zinc-500 text-sm mt-3 pb-5">
-                    Replying to @{{ dataPostReply.author_username }}
-                  </div>
+                  <!--                  <div class="text-zinc-500 text-sm mt-3 pb-5">-->
+                  <!--                    Replying to @{{ dataPostReply.author_username ?? dataPostReply.author.username }}-->
+                  <!--                  </div>-->
 
                 </div>
               </div>

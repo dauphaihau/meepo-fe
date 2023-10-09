@@ -37,13 +37,22 @@
 
             <div class="flex flex-col justify-center">
               <div class="flex gap-2 text-[15px] max-w-[80vw]">
-                <p class="font-semibold max-w-[40%] truncate">{{ message.participant_name }}</p>
-                <p class="text-zinc-500 max-w-[40%] truncate">@{{ message.participant_username }}</p>
+                <p class="font-semibold">
+                  {{ truncateText(message.participant_name, 10, '...') }}
+                </p>
+                <p class="text-zinc-500">
+                  @{{ truncateText(message.participant_username, 10, '...') }}
+                </p>
                 <span class="text-zinc-500">·</span>
-                <p class="text-zinc-500 max-w-[30%] truncate">{{ message.time }}</p>
+                <p class="text-zinc-500">
+                  {{ truncateText(message.time, 7, '...') }}
+                </p>
               </div>
-              <div class="text-zinc-500 h-5 truncate max-w-[80vw]">{{ message.text }}</div>
+              <div class="text-zinc-500 h-5">
+                {{ truncateText(message.text, 33, '...') }}
+              </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -59,14 +68,13 @@ import { useMediaQuery, useWebSocket } from "@vueuse/core";
 import Loading from "@/core/components/Loading.vue";
 import { chatAPI } from "@/apis/chat";
 import { parseCreatedAts } from "@/lib/dayjs-parse";
-import { logger, parseJSON } from "@/core/helper";
+import { logger, parseJSON, truncateText } from "@/core/helper";
 import { useStore } from "@/store";
 import { IMessage } from "@/types/message";
 
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import router from "@/router";
 import { mapGetters } from "@/lib/map-state";
-
 const store = useStore()
 const isTabletScreen = useMediaQuery('(min-width: 768px)')
 const { isLoggedIn } = mapGetters()

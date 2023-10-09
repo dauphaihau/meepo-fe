@@ -50,7 +50,7 @@ watch(getKeyMutatePosts, () => {
     <Posts
         :by="currentTab"
         :key="keyPostsComp"
-        :class="isLoggedIn ? 'pt-[54px] md:pt-[45px] lg:pt-16': 'pt-[15px]'"
+        :class="isLoggedIn ? 'pt-[54px] md:pt-[44px] lg:pt-16': 'pt-[15px]'"
     />
   </div>
 </template>

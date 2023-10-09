@@ -6,7 +6,7 @@
       :class="{'z-[1]': isHover}"
   >
     <div
-        class="block px-4 py-3 bg-white flex flex-col animate  hover:bg-zinc-100"
+        class="block px-4 py-3 bg-white flex flex-col animate hover:bg-zinc-100"
         :class="{'cursor-pointer': !isOpenPopover }"
         @click="!isOpenPopover && redirectProfile()"
     >
@@ -33,11 +33,15 @@
             <div
                 @click="redirectProfile"
                 class="font-bold text-black hover:underline hover:underline-offset-2 animate"
-            >{{ user.name }}
+            >
+
+              @{{ truncateText(user?.name, isTabletScreen ? 25 : 15, '...') }}
             </div>
           </UserPopper>
           <UserPopper :userData="user" class="h-5">
-            <div @click="redirectProfile" class="text-zinc-500">@{{ user.username }}</div>
+            <div @click="redirectProfile" class="text-zinc-500">
+              @{{ truncateText(user?.username, isTabletScreen ? 25 : 15, '...') }}
+            </div>
           </UserPopper>
         </div>
       </div>
@@ -64,19 +68,21 @@ import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import UserPopper from "@components/UserPopper.vue";
-import { logger } from "@/core/helper";
+import { logger, truncateText } from "@/core/helper";
+import { useMediaQuery } from "@vueuse/core";
 
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
+
 const isHover = ref(false)
 const isOpenPopover = ref(false)
 const keyUserPopper = ref(0)
 
-const { getUser, isLoggedIn, getStateRouter } = mapGetters()
+const { getUser, isLoggedIn } = mapGetters()
 const { user } = defineProps<{user: IUser}>()
 
-const currentRouteUsername = route.params.username
 const currentRouteName = route.name
 
 onMounted(() => {})

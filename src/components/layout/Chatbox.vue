@@ -59,16 +59,22 @@
                   class="rounded-full h-10 w-10 bg-black "
               />
 
-              <div
-                  class="flex flex-col justify-center"
-              >
-                <div class="flex gap-2 text-[15px]">
-                  <p class="font-semibold max-w-[7rem] truncate">{{ message.participant_name }}</p>
-                  <p class="text-zinc-500 max-w-[8rem] truncate">@{{ message.participant_username }}</p>
+              <div class="flex flex-col justify-center">
+                <div class="flex gap-2 text-[15px] max-w-[80vw]">
+                  <p class="font-semibold">
+                    {{ truncateText(message.participant_name, 12, '...') }}
+                  </p>
+                  <p class="text-zinc-500">
+                    @{{ truncateText(message.participant_username, 12, '...') }}
+                  </p>
                   <span class="text-zinc-500">·</span>
-                  <p class="text-zinc-500 max-w-[5rem] truncate">{{ message.time }}</p>
+                  <p class="text-zinc-500">
+                    {{ truncateText(message.time, 7, '...') }}
+                  </p>
                 </div>
-                <div class="text-zinc-500 h-5 truncate max-w-[20rem]">{{ message.text }}</div>
+                <div class="text-zinc-500 h-5">
+                  {{ truncateText(message.text, 37, '...') }}
+                </div>
               </div>
             </div>
           </div>
@@ -97,7 +103,7 @@ import { mapGetters } from "@/lib/map-state";
 import { chatAPI } from "@/apis/chat";
 import { MutationEnums } from "@/types/store/root";
 import { parseCreatedAts } from "@/lib/dayjs-parse";
-import { logger, parseJSON } from "@/core/helper";
+import { logger, parseJSON, truncateText } from "@/core/helper";
 import { useStore } from "@/store";
 import { IMessage } from "@/types/message";
 import { useWebSocket } from "@vueuse/core";

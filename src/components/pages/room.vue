@@ -27,8 +27,7 @@
               />
             </div>
             <div>
-              <div class="font-bold text-[17px] leading-5">{{ room?.participant_name }}</div>
-              <!--              <p class="text-sm text-zinc-500">@{{ room?.participant_username }}</p>-->
+              <div class="font-bold text-[17px] leading-5">{{ truncateText(room?.participant_name, 18, '...') }}</div>
             </div>
           </div>
         </div>
@@ -47,11 +46,13 @@
           <div
               class="whitespace-pre-wrap max-w-[20rem]"
               :class="[( message.user_id === getUser.id ? 'me' : 'you'  ),
-              message.user_id !== messages[index + 1]?.user_id && message.user_id !== messages[index - 1]?.user_id ? 'rounded-md' :
+
+              message.user_id !== messages[index + 1]?.user_id && message.user_id !== messages[index - 1]?.user_id ? '' :
+
               message.user_id === getUser.id  ? {
-                '!rounded-br-md': message.user_id !== messages[index - 1]?.user_id,
-                '!rounded-tr-md': message.user_id !== messages[index + 1]?.user_id,
-                '!rounded-tr-md !rounded-br-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id,
+                '!rounded-tr-md': message.user_id !== messages[index + 1]?.user_id ,
+                '!rounded-br-md': message.user_id !== messages[index - 1]?.user_id ,
+                '!rounded-tr-md !rounded-br-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id ,
               } : {
                 '!rounded-bl-md': message.user_id !== messages[index - 1]?.user_id,
                 '!rounded-tl-md': message.user_id !== messages[index + 1]?.user_id,
@@ -60,13 +61,21 @@
               ]"
           >{{ message.text }}
           </div>
+
           <div
-              v-if="message.user_id !== messages[index + 1]?.user_id"
-              class="text-zinc-500 text-sm mt-1 mb-4"
+              v-if="
+              message.user_id !== messages[index + 1]?.user_id ||
+                isLastMessage(
+                            message?.created_at,
+                            messages[index + 1]?.created_at,
+                )
+              "
+              class="text-zinc-500 text-sm mt-1 mb-5"
               :class="message.user_id === getUser.id ? 'text-right' : 'text-left' "
           >{{ parseMessageCreatedAt(message).time }}
           </div>
         </div>
+
       </div>
 
       <div ref="refBottom" class="h-16 mt-5"/>
@@ -119,8 +128,8 @@ import Input from "@/core/components/forms/Input.vue";
 import { chatAPI } from "@/apis/chat";
 import { mapGetters } from "@/lib/map-state";
 import Loading from "@/core/components/Loading.vue";
-import { logger, parseJSON } from "@/core/helper";
-import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
+import { logger, parseJSON, truncateText } from "@/core/helper";
+import { parseMessageCreatedAt, isLastMessage } from "@/lib/dayjs-parse";
 import { useStore } from "@/store";
 import { IMessage } from "@/types/message";
 import { useMediaQuery } from "@vueuse/core";
@@ -243,7 +252,7 @@ const setMessagesThenScrollToBottom = (data) => {
 }
 
 const back = () => {
-  router.back();
+  router.push('/messages');
   localStorage.removeItem('room')
 }
 

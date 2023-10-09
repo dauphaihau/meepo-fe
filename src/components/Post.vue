@@ -72,19 +72,24 @@
                 <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                   <div
                       @click="redirectProfile"
-                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[6rem] md:max-w-[11rem] truncate"
+                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
                   >
-                    {{ dataPost.author_name ?? dataPost.author.name }}
+                    {{ truncateText(dataPost.author_name ?? dataPost.author.name, isTabletScreen ? 20 : 7, '...') }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                     <div @click="redirectProfile" class="before:absolute max-w-[7rem] md:max-w-[11rem] truncate">
-                      @{{ dataPost.author_username ?? dataPost.author.username }}
+                      @{{ truncateText(
+                        dataPost.author_username ?? dataPost.author.username,
+                        isTabletScreen ? 20 : (dataPost.edited_posts_count > 0 && currentRouteName !== 'history' ? 4 : 8),
+                        '...')
+                      }}
                     </div>
 
                   </UserPopper>
-                  · {{ dataPost.time }}
+<!--                  · {{ truncateText('12:12 PM', 8) }}-->
+                  · {{ truncateText(dataPost?.time, 8) }}
                   <div
                       v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'"
                       class="inline flex gap-1"
@@ -194,7 +199,7 @@ import {
 } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
 
-import { logger, parseJSON } from '@/core/helper.js'
+import { logger, parseJSON, truncateText } from '@/core/helper.js'
 import { FILTER_POST_BY } from "@/config/const";
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
@@ -204,6 +209,7 @@ import { MutationEnums } from "@/types/store/root";
 import { postAPI } from "@/apis/post";
 import UserPopper from "@components/UserPopper.vue";
 import { formatTextWithHashTags } from "@/core/helper";
+import { useMediaQuery } from "@vueuse/core";
 
 interface Props {
   dataPost: IPost & {time?: string, sub_post?: IPost},
@@ -217,6 +223,7 @@ let { dataPost, isSubPost, by, readonly } = defineProps<Props>()
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
 
 const { isLoggedIn, getUser } = mapGetters()
 
@@ -330,7 +337,6 @@ const onPinPost = () => {
 }
 
 const toggleLikePost = async () => {
-
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
@@ -354,7 +360,7 @@ const clickPost = (type = '') => {
       action.value = type
       break
     case 'commentPost':
-      if (!dataPost.is_current_user_can_comment) {
+      if (!dataPost.is_current_user_can_comment || !isLoggedIn.value) {
         return;
       }
       action.value = type

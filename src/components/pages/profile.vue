@@ -78,9 +78,9 @@
               <!--        Name, Username, Follow - Message btn   -->
               <div class="flex justify-between">
                 <div>
-                  <h3 class="text-[20px] font-bold  text-zinc-900">{{ user?.name }}</h3>
-                  <p v-if="!isUserNotExist" class="max-w-2xl text-sm text-zinc-500">@{{ user?.username }}</p>
-                  <h3 v-else class="text-[20px] font-bold  text-zinc-900">@{{ route.params?.username }}</h3>
+                  <h3 class="text-[20px] font-bold  text-zinc-900">{{ truncateText(user?.name, 20, '...') }}</h3>
+                  <p v-if="!isUserNotExist" class="max-w-2xl text-sm text-zinc-500">@{{ truncateText(user?.username, 20, '...') }}</p>
+                  <h3 v-else class="text-[20px] font-bold  text-zinc-900">@{{  truncateText(route.params?.username.toString(), 20, '...')  }}</h3>
                 </div>
               </div>
 
@@ -217,7 +217,7 @@ import { useStore } from "@/store";
 import Link from "@/core/components/Link.vue";
 import ToggleFollowBtn from "@components/ToggleFollowBtn.vue";
 import Header from "@components/layout/HeaderMainContent.vue";
-import { formatTextWithHashTags } from "@/core/helper";
+import { formatTextWithHashTags, truncateText } from "@/core/helper";
 
 const route = useRoute()
 const router = useRouter()
