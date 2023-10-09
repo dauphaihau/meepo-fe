@@ -15,7 +15,6 @@ import { IUser } from "@/types/user";
 import { logger } from "@/core/helper";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
-import { customToast } from "@/lib/custom-toast";
 
 const emits = defineEmits<{(e: 'onUpdateProfile', value: Partial<IUser>)}>()
 const { user } = defineProps<{user: IUser}>()
@@ -72,7 +71,9 @@ const onSubmit = async () => {
   const { status, data } = await userAPI.updateProfile(getUser.value.id, payload)
   isLoading.value = false
   if (status === 200) {
-    customToast('Your profile was updated')
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: `Your profile was updated`,
+    })
     emits('onUpdateProfile', data.user)
     store.commit(MutationEnums.SET_USER_INFO, data.user);
     closeDialog()
@@ -94,9 +95,15 @@ function openDialog() {
   <Dialog
       :show="showDialog"
       :closeDialog="closeDialog"
-      classPanel="w-full min-w-[600px] min-h-[930px] max-h-[930px] relative px-0 py-0 mt-5 overflow-hidden"
       :hideCloseBtn="true"
+      classPanel="
+        md:min-w-[600px] md:max-w-[600px]
+        md:min-h-[930px] md:max-h-[930px]
+        relative overflow-hidden
+        p-0 mt-0 md:mt-5
+      "
   >
+    <!--    <div class="overscroll-y-none"></div>-->
     <template v-slot:trigger>
       <Button @click="openDialog" variant="secondary">Edit Profile</Button>
     </template>
@@ -111,8 +118,9 @@ function openDialog() {
               class="text-black h-9 w-9 cursor-pointer hover:bg-zinc-100 rounded-full p-2"
           />
         </div>
-        <h1 class="text-3xl text-black text-[20px] font-semibold flex-initial w-[29rem]">Edit Profile </h1>
+        <h1 class="text-[15px] md:text-[20px] text-black  font-semibold flex-initial w-[29rem]">Edit Profile </h1>
         <Button
+            classes="h-[32px]"
             :key="isLoading.toString()"
             :isLoading="isLoading"
             :disabledClick="!name"
@@ -124,13 +132,13 @@ function openDialog() {
       <div class="mx-auto flex flex-col mt-12 pb-8">
 
         <!--                Background-->
-        <div class="bg-zinc-300 h-[198px] mx-0.5 mt-1">
+        <div class="bg-zinc-300 h-32 md:h-[198px] mx-0.5 mt-1">
           <input
               type="file"
               name="file"
               id="file"
               accept="image/*"
-              class="invisible h-[198px]"
+              class="invisible md:h-[198px]"
           />
           <!--                      @change="set"-->
         </div>
@@ -138,18 +146,18 @@ function openDialog() {
           <div class="flex flex-col gap-5">
 
             <!--                    Avatar-->
-            <div class="mb-2 relative max-h-[112px] max-w-[112px] rounded-full ring-[5px] ring-white">
+            <div class="mb-2 relative max-h-[81.5px] max-w-[81.5px] md:max-h-[112px] md:max-w-[112px] rounded-full ring-[5px] ring-white">
               <img
                   v-if="urlImage"
                   alt="preview-img"
                   :src="urlImage"
-                  class='rounded-full h-[112px] w-[112px]'
+                  class='avatar'
               />
               <img
                   v-else
                   alt="preview-img"
                   src="@/assets/default-avatar.png"
-                  class='rounded-full h-[112px] w-[112px]'
+                  class='avatar'
               />
               <input
                   type="file"
@@ -169,7 +177,6 @@ function openDialog() {
                 <PhotoIcon class="h-5 w-5 text-white"/>
               </div>
             </div>
-
 
             <!--                    Info profile-->
             <form v-on:keyup.enter.prevent="onSubmit" class="space-y-5">
@@ -192,7 +199,7 @@ function openDialog() {
               <DateBirthInput
                   :disabled="isLoading"
                   :helperText="errorDate"
-                  classWrapper="mb-8"
+                  classWrapper="mb-8 md:w-[400px]"
                   label="Date of birth"
                   v-model="dob"
               />
@@ -217,3 +224,11 @@ function openDialog() {
   </Dialog>
 
 </template>
+
+<style scoped>
+
+.avatar {
+  @apply rounded-full h-[81.5px] w-[81.5px] md:h-[112px] md:w-[112px];
+}
+
+</style>

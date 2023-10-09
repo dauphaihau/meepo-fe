@@ -7,9 +7,8 @@ import Input from "@/core/components/forms/Input.vue";
 import Button from "@/core/components/Button.vue";
 import { useStore } from "@/store";
 import { userAPI } from "@/apis/user";
-import { ActionEnums } from "@/types/store/root";
+import { ActionEnums, MutationEnums } from "@/types/store/root";
 import { validationPasswordSchema } from "@/lib/validations/user";
-import { customToast } from "@/lib/custom-toast";
 
 const emit = defineEmits<{
   (e: 'changeStep')
@@ -45,7 +44,9 @@ const onSubmit = handleSubmit(async () => {
     password: password.value
   })
   if (status === 401) {
-    customToast('Invalid or expired code')
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: `Invalid or expired code`,
+    })
     isLoading.value = false
     return
   }

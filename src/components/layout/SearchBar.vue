@@ -30,7 +30,7 @@
           <XCircleIcon
               v-if="query"
               @click.stop="query = ''"
-              class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute top-2 right-3 z-[2]"
+              class="absolute text-zinc-500 hover:text-black animate h-6 w-6 cursor-pointer absolute md:top-2 right-3 z-[2]"
           />
           <!--              @click.stop="query = ''; isFocus = true"-->
 
@@ -190,12 +190,14 @@
                     />
                     <div>
                       <div
-                          class=" truncate text-[15px] max-h-[18px]"
+                          class="text-[15px] max-h-[18px]"
                           :class="{ 'font-medium': selected, 'font-semibold': !selected }"
                       >
-                        {{ person.name }}
+                        {{ truncateText(person.name, isTabletScreen ? 20 : 10, '...') }}
                       </div>
-                      <div class=" truncate text-zinc-500">@{{ person.username }}</div>
+                      <div class="text-zinc-500">
+                        @{{ truncateText(person.username, isTabletScreen ? 20 : 10, '...') }}
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -225,13 +227,15 @@ import { MagnifyingGlassIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 import { commonAPI } from "@/apis/common";
 import { IUser } from "@/types/user";
 import { IPost } from "@/types/post";
-import { debounce } from "@/core/helper";
+import { debounce, truncateText } from "@/core/helper";
+import { useMediaQuery } from "@vueuse/core";
 
 const { query: queryVal } = defineProps<{query: string}>()
 const emit = defineEmits<{
   (e: 'changeRoute', value?: string)
 }>()
 
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
 const router = useRouter()
 const route = useRoute()
 
@@ -349,12 +353,14 @@ const removeSearch = (search) => {
 }
 
 .input {
-  /*w-full w-[200px] lg:w-[550px] border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black*/
-  /*w-full  border-0 border-none py-2.5 pl-3 pr-[38px] text-sm leading-5 placeholder:text-[#818182] text-black*/
   @apply
   h-9 lg:h-10
-  w-[92%]  border-0 border-none py-2.5 pl-3 text-sm leading-5 placeholder:text-[#818182] text-black
-  focus:outline-none bg-zinc-100 hover:bg-white focus:bg-white focus:pr-8
+  w-[88%] md:w-[92%]
+  border-0 border-none
+  py-2.5 pl-3 focus:pr-8
+  text-sm placeholder:text-[#818182] text-black leading-5
+  bg-zinc-100 hover:bg-white focus:bg-white
+  focus:outline-none
   ;
 }
 

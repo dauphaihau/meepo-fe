@@ -56,6 +56,14 @@ export const mapKeyEnum = (enumObj) => {
   .filter((v) => isNaN(Number(v)))
 }
 
+export const truncateText = (text: string, limit: number, suffix = '') => {
+  if (typeof text !== 'string') return text
+  if (text.length > limit) {
+    return text.substring(0, limit) + suffix
+  }
+  return text
+}
+
 export const toUpperCaseFirstL = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 
 export const debounce = (fn, delay = 300) => {
@@ -71,7 +79,6 @@ export const debounce = (fn, delay = 300) => {
     }, delay)
   }
 }
-
 
 export function parseJSON<T>(value: string | null): T | undefined {
   try {

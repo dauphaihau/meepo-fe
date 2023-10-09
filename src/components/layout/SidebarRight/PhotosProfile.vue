@@ -20,10 +20,8 @@
             @click="router.push('/posts/' + post.id)"
             v-bind:src="post.image_url" alt="post" class=" cursor-pointer w-[170px]"
             :class="{
-                    // 'h-full': index === 0,
                     'h-[222px]': index === 0,
                     'h-[110px]': index >= 1,
-                    // 'h-[100px]': index >= 1,
             'rounded-tl-2xl rounded-bl-2xl': index === 0,
             'rounded-tr-2xl': index === 1,
             'rounded-br-2xl': index === 2,
@@ -96,7 +94,6 @@ const router = useRouter()
 const route = useRoute()
 
 const isLoading = ref(true)
-const showPhotoComp = ref(false)
 const posts = ref([])
 
 let currentRouteName

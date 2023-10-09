@@ -18,6 +18,7 @@ const state: ISessionState = {
     name: null,
     avatar_url: null,
   },
+  loadingAuth: false
 };
 
 const getters: GetterTree<ISessionState, IRootState> & SessionGetterTypes = {
@@ -27,6 +28,7 @@ const getters: GetterTree<ISessionState, IRootState> & SessionGetterTypes = {
     const loggedOut = state.auth_token === ''
     return !loggedOut;
   },
+  getLoadingAuth: state => state.loadingAuth,
 };
 
 const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
@@ -88,7 +90,10 @@ const actions: ActionTree<ISessionState, IRootState> & ISessionAction = {
   },
   async [ActionEnums.LOGIN_WITH_TOKEN]({ commit }) {
     try {
+      commit(MutationEnums.SET_LOADING_AUTH, true)
       const { data, status } = await userAPI.me('src/store/modules/session.ts')
+      commit(MutationEnums.SET_LOADING_AUTH, false)
+
       if (status === 401) {
         commit(MutationEnums.RESET_USER_INFO)
       }
@@ -119,6 +124,9 @@ const mutations: MutationTree<Partial<ISessionState>> & SessionMutationTypes = {
     state.showChatbox = false
     localStorage.removeItem("auth_token");
     apiHelper.defaults.headers.common["Authorization"] = '';
+  },
+  [MutationEnums.SET_LOADING_AUTH](state: IRootState, payload: boolean) {
+    state.loadingAuth = payload;
   },
 };
 

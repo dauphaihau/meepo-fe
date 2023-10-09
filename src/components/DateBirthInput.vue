@@ -1,31 +1,31 @@
 <template>
   <div :class="classWrapper">
     <label v-if="label" for="username" class="label">{{ label }}</label>
-    <div class="flex gap-2 w-full mb-1">
+    <div class="flex flex-wrap space-x-1.5 md:space-x-2 w-full mb-1">
       <Select
+          class="w-[40%]"
           :data="months"
           :disabled="disabled"
           @update:modelValue="onChangeSelect"
-          classWrapper="w-[145px]"
           placeholder="Month"
           name="month"
           v-model="dob.month"
       />
       <Select
+          class="w-[26%]"
           :data="days"
           :disabled="disabled"
           @update:modelValue="onChangeSelect"
           placeholder="Day"
-          classWrapper="w-[124px]"
           name="day"
           v-model="dob.day"
       />
       <Select
           :data="years"
+          class="w-[30%]"
           :disabled="disabled"
           @update:modelValue="onChangeSelect"
           placeholder="Year"
-          classWrapper="w-[115px]"
           name="year"
           v-model="dob.year"
       />

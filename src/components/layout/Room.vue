@@ -14,8 +14,8 @@
       />
 
       <div>
-        <div class="font-bold text-lg leading-5">{{ getCurrentUserToMessage?.name }}</div>
-        <p class="text-sm text-zinc-500">@{{ getCurrentUserToMessage?.username }}</p>
+        <p class="font-bold text-lg leading-5">{{ truncateText(getCurrentUserToMessage?.name, 20, '...') }}</p>
+        <p class="text-sm text-zinc-500">@{{ truncateText(getCurrentUserToMessage?.username, 20, '...') }}</p>
       </div>
     </div>
 
@@ -32,12 +32,28 @@
         <div v-for="(message, index) of messages">
           <div
               class="whitespace-pre-wrap max-w-[20rem]"
-              :class="message.user_id === getUser.id ? 'me' : 'you' "
+              :class="[( message.user_id === getUser.id ? 'me' : 'you'  ),
+              message.user_id !== messages[index + 1]?.user_id && message.user_id !== messages[index - 1]?.user_id ? 'rounded-md' :
+              message.user_id === getUser.id  ? {
+                '!rounded-br-md': message.user_id !== messages[index - 1]?.user_id,
+                '!rounded-tr-md': message.user_id !== messages[index + 1]?.user_id,
+                '!rounded-tr-md !rounded-br-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id,
+              } : {
+                '!rounded-bl-md': message.user_id !== messages[index - 1]?.user_id,
+                '!rounded-tl-md': message.user_id !== messages[index + 1]?.user_id,
+                '!rounded-tl-md !rounded-bl-md': message.user_id === messages[index + 1]?.user_id && message.user_id === messages[index - 1]?.user_id,
+              }
+              ]"
           >{{ message.text }}
           </div>
           <div
-              v-if="message.user_id !== messages[index + 1]?.user_id"
-              class="text-zinc-500 text-sm mt-1"
+              v-if="message.user_id !== messages[index + 1]?.user_id ||
+                isLastMessage(
+                            message?.created_at,
+                            messages[index + 1]?.created_at,
+                )
+"
+              class="text-zinc-500 text-sm mt-1 mb-4"
               :class="message.user_id === getUser.id ? 'text-right' : 'text-left' "
           >{{ parseMessageCreatedAt(message).time }}
           </div>
@@ -79,6 +95,7 @@
     </div>
 
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -91,8 +108,8 @@ import Input from "@/core/components/forms/Input.vue";
 import { chatAPI } from "@/apis/chat";
 import { mapGetters } from "@/lib/map-state";
 import Loading from "@/core/components/Loading.vue";
-import { logger, parseJSON } from "@/core/helper";
-import { parseMessageCreatedAt } from "@/lib/dayjs-parse";
+import { logger, parseJSON, truncateText } from "@/core/helper";
+import { parseMessageCreatedAt, isLastMessage } from "@/lib/dayjs-parse";
 import { MutationEnums } from "@/types/store/root";
 import { useStore } from "@/store";
 import { useWebSocket } from "@vueuse/core";
@@ -121,7 +138,7 @@ const emit = defineEmits<{
 const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
   autoReconnect: true,
   onConnected: () => {
-    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Room.vue')
     guid.value = Math.random().toString(36).substring(2, 15)
     send(
         JSON.stringify({
@@ -134,7 +151,7 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     );
   },
   onError: (e) => {
-    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Chat.vue')
+    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Room.vue')
   },
   onMessage: () => {
     const parsed = parseJSON<{type: string, message: any}>(data.value)
@@ -142,13 +159,13 @@ const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
     if (parsed.type === "welcome") return;
     if (parsed.type === "confirm_subscription") return;
     const message = parsed.message
-    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Chat.vue')
+    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Room.vue')
     setMessagesThenScrollToBottom([...messages.value, { ...message }]);
   }
 })
 
 onMounted(async () => {
-  await fetchPrivateRoomByUser()
+  await fetchPrivateRoom()
   refBottom.value?.scrollIntoView();
   refInput.value?.focus()
 })
@@ -157,9 +174,9 @@ onUnmounted(() => {
   store.commit(MutationEnums.MESSAGE_TO_USER, null)
 })
 
-async function fetchPrivateRoomByUser() {
+async function fetchPrivateRoom() {
   if (!getCurrentUserToMessage.value) {
-    logger.warn('execute fetchPrivateRoomByUser - getCurrentUserToMessage is null')
+    logger.warn('execute fetchPrivateRoom - getCurrentUserToMessage is null')
     emit('onUpdateView', { showViewChatPrivate: false })
     return
   }
@@ -214,12 +231,25 @@ const setMessagesThenScrollToBottom = (data) => {
 
 <style scoped>
 
+.theme {
+  @apply rounded-[18px] px-[12px] py-[6px] mb-1 break-all
+}
+
 .me {
-  @apply w-fit ml-auto break-all mt-2 mb-1 px-[12px] py-[6px] bg-[#606060] rounded-2xl text-white text-right;
+  @apply theme w-fit ml-auto bg-[#606060] text-white;
 }
 
 .you {
-  @apply w-max break-all mt-2  float-none bg-[#e9ecef] rounded-2xl px-[12px] py-[6px] text-left;
+  @apply theme w-max float-none bg-[#e9ecef];
 }
+
+
+/*.me {*/
+/*  @apply w-fit ml-auto break-all mt-2 mb-1 px-[12px] py-[6px] bg-[#606060] rounded-2xl text-white text-right;*/
+/*}*/
+
+/*.you {*/
+/*  @apply w-max break-all mt-2  float-none bg-[#e9ecef] rounded-2xl px-[12px] py-[6px] text-left;*/
+/*}*/
 
 </style>

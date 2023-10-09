@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-12 md:pb-0">
     <!--    Header-->
     <HeaderMainContent title="Explore"/>
 
@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
-import Trends from "@components/Trends.vue";
+import Trends from "@components/layout/SidebarRight/Trends.vue";
 
 </script>
 

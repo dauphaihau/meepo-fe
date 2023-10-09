@@ -1,44 +1,66 @@
 <template>
   <div
-      v-if="!hideToast"
-      class="flex gap-2 text-sm justify-center items-center bg-black text-white border-black py-2.5 px-5 rounded-lg"
+      :class="show ? 'bottom-5 md:-bottom-1' : '-bottom-32'"
+      class="
+      fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10]
+      min-w-[100vw] md:min-w-0 md:max-w-[400px]
+      transition-all duration-500
+"
   >
-    <div>{{ message }}</div>
     <div
-        v-if="onClickBtn"
-        @click="clickBtn"
-        class="font-bold cursor-pointer"
-    >{{ labelBtn }}
+        class="
+          bg-black text-white text-sm
+          flex items-center justify-between
+          md:rounded-lg py-2.5 px-4
+        "
+    >
+      <div
+          class="font-medium"
+          :class="{'max-w-[80%]': dataToast?.onClickBtn}"
+      >{{ dataToast?.message }}
+      </div>
+
+      <div
+          v-if="dataToast?.onClickBtn"
+          @click="() => {dataToast.onClickBtn(); show = false; clearDataToast()}"
+          class="font-bold cursor-pointer md:ml-12"
+      >{{ dataToast?.labelBtn ?? 'View' }}
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-// import { toast } from "vue-sonner";
-import { ref } from "vue";
+<script setup lang="ts">
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { mapGetters } from "@/lib/map-state";
+import { store } from "@/store";
+import { MutationEnums } from "@/types/store/root";
+
 const router = useRouter()
-const { message, onClickBtn, labelBtn } = defineProps({
-  message: { type: String },
-  labelBtn: { type: String, default: 'View' },
-  onClickBtn: { type: Function },
+
+const { getDataToast: dataToast } = mapGetters()
+
+const show = ref(false)
+
+watch(dataToast, () => {
+  if (dataToast.value) {
+    show.value = true
+    setTimeout(() => {
+      show.value = false
+      clearDataToast()
+    }, 3500)
+  }
 })
 
-const hideToast = ref(false)
-
-const clickBtn = () => {
-  onClickBtn()
-  hideToast.value = true
-
-  // error after build & production
-  //   toast.dismiss()
+const clearDataToast = () => {
+  setTimeout(() => {
+    store.commit(MutationEnums.SHOW_TOAST, null)
+  }, 200)
 }
 
 </script>
 
-<style>
-[data-sonner-toaster] {
-  @apply flex-center
-}
+<style scoped>
 </style>

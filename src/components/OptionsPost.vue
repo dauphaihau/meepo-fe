@@ -1,5 +1,5 @@
 <template>
-  <AddOrUpdatePost
+  <EditPostDialog
       :key="keyAddPostDialog"
       :showDialogFromProps="showAddOrUpdatePost"
       :hideTrigger="true"
@@ -24,19 +24,19 @@
         leave-from-class="transform opacity-100 scale-100"
         leave-to-class="transform opacity-0 scale-95"
     >
-      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
         <div ref="menuItemsRef">
           <span
               v-if="!confirmDelete"
               @click="confirmDelete = true"
-              class="menu-item text-zinc-900 hover:bg-zinc-100 rounded-tl-2xl rounded-tr-2xl"
+              class="menu-item text-zinc-900 hover:bg-zinc-100 rounded-tl-xl rounded-tr-xl"
           >
             <TrashIcon class="icon"/>
             Delete</span>
           <MenuItem v-else v-slot="{ active }">
             <span
                 @click="onDelete"
-                :class="[active ? 'active text-red-400 rounded-tl-2xl rounded-tr-2xl' : 'text-red-400', 'menu-item']"
+                :class="[active ? 'active text-red-400 rounded-tl-xl rounded-tr-xl' : 'text-red-400', 'menu-item']"
             >
               <CheckIcon class="icon"/>
               Confirm</span>
@@ -53,7 +53,7 @@
           <MenuItem v-slot="{ active }">
             <span
                 @click="onPin"
-                :class="[active ? 'active rounded-bl-2xl rounded-br-2xl' : 'inactive', 'menu-item']"
+                :class="[active ? 'active rounded-bl-xl rounded-br-xl' : 'inactive', 'menu-item']"
             >
               <SolidStarIcon v-if="dataPost.pin_status_int === PIN_STATUS.PIN" class="icon"/>
               <StarIcon v-else class="icon"/>
@@ -79,10 +79,11 @@ import { EllipsisHorizontalIcon, TrashIcon, CheckIcon, PencilIcon, StarIcon } fr
 import { StarIcon as SolidStarIcon } from '@heroicons/vue/20/solid'
 
 import { postAPI } from "@/apis/post";
-import AddOrUpdatePost from "@/components/dialog/AddOrUpdatePost.vue";
+import EditPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
 import { IPost, PIN_STATUS } from "@/types/post";
 import { useRoute, useRouter } from "vue-router";
-import { customToast } from "@/lib/custom-toast";
+import { store } from "@/store";
+import { MutationEnums } from "@/types/store/root";
 
 const route = useRoute()
 const router = useRouter()
@@ -99,7 +100,7 @@ const emit = defineEmits<{
   (e: 'onPinPost'): void
 }>()
 
-const showAddOrUpdatePost = ref<boolean>(false);
+const showAddOrUpdatePost = ref(false);
 const keyAddPostDialog = ref(0);
 const menuItemsRef = ref(null)
 const confirmDelete = ref(false)
@@ -112,7 +113,9 @@ watch(menuItemsRef, () => {
 const onDelete = async () => {
   const { status } = await postAPI.delete(dataPost.id)
   if (status === 200) {
-    customToast('Your post was deleted')
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: 'Your post was deleted'
+    })
     emit('onDeletePostChildComp')
     if (currentRouteName === 'history') router.push('/')
   }
@@ -122,7 +125,9 @@ const onPin = async () => {
   const payload = { pin_status: dataPost.pin_status_int === PIN_STATUS.PIN ? PIN_STATUS.UNPIN : PIN_STATUS.PIN }
   const { status } = await postAPI.update(dataPost.id, payload)
   if (status === 200) {
-    customToast(`Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,)
+    store.commit(MutationEnums.SHOW_TOAST, {
+      message: `Your post was ${payload.pin_status === PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,
+    })
     dataPost.pin_status_int = payload.pin_status
     emit('onPinPost')
   }

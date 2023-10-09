@@ -14,6 +14,7 @@ const state: IRootState = {
   openRegisterDialog: false,
   openForgotPasswordDialog: false,
   showChatbox: false,
+  dataToast: null,
   keyMutatePosts: 0,
   stateRouter: null,
   currentUserToMessage: null,
@@ -21,19 +22,22 @@ const state: IRootState = {
 
 // mutations
 const mutations: MutationTree<IRootState> & MutationTypes = {
-  [MutationEnums.SET_LOGIN_DIALOG](state: IRootState, payload: boolean) {
+  [MutationEnums.SHOW_TOAST](state: IRootState, payload) {
+    state.dataToast = payload;
+  },
+  [MutationEnums.SET_LOGIN_DIALOG](state: IRootState, payload) {
     state.openLoginDialog = payload;
   },
-  [MutationEnums.SET_REGISTER_DIALOG](state: IRootState, payload: boolean) {
+  [MutationEnums.SET_REGISTER_DIALOG](state: IRootState, payload) {
     state.openRegisterDialog = payload;
   },
-  [MutationEnums.SET_FORGOT_PASSWORD_DIALOG](state: IRootState, payload: boolean) {
+  [MutationEnums.SET_FORGOT_PASSWORD_DIALOG](state: IRootState, payload) {
     state.openForgotPasswordDialog = payload;
   },
   [MutationEnums.MUTATE_POSTS](state: IRootState) {
     state.keyMutatePosts++
   },
-  [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload: any) {
+  [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload) {
     state.stateRouter = payload;
   },
   [MutationEnums.MESSAGE_TO_USER](state: IRootState, newState) {
@@ -52,6 +56,7 @@ const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
   getShowChatbox: state => state.showChatbox,
   getStateRouter: state => state.stateRouter,
   getCurrentUserToMessage: state => state.currentUserToMessage,
+  getDataToast: state => state.dataToast,
 };
 
 // actions

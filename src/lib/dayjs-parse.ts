@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import isToday from "dayjs/plugin/isToday";
+import isBetween from "dayjs/plugin/isBetween";
+import weekdays from "dayjs/plugin/weekday";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import { IPost } from "@/types/post";
@@ -9,6 +11,8 @@ dayjs.extend(utc)
 dayjs.extend(isToday)
 dayjs.extend(relativeTime)
 dayjs.extend(updateLocale)
+dayjs.extend(weekdays)
+dayjs.extend(isBetween)
 
 // Unresolved function or method updateLocale()
 // @ts-ignore
@@ -33,6 +37,13 @@ dayjs.updateLocale('en', {
 
 interface Post extends IPost {
   sub_post?: IPost
+}
+
+export function isLastMessage(current_created_at, next_created_at) {
+  if (!current_created_at || !next_created_at) {
+    return false
+  }
+  return dayjs(current_created_at).add(2, 'm').isBefore(dayjs(next_created_at))
 }
 
 // export function parseCreatedAts(arr: Post[]) {
@@ -62,6 +73,9 @@ export const parseMessageCreatedAt = <T extends {created_at: Date}>(obj: T) => {
   if (dayjs(obj.created_at).isToday()) {
     return { ...obj, time: dayjs(obj.created_at).format('hh:mm A') }
   } else {
-    return { ...obj, time: dayjs(obj.created_at).format('MMM D, YYYY, hh:mm A') }
+    if (dayjs(obj.created_at).isBetween(dayjs().subtract(1, 'w'), dayjs().subtract(1, 'm'))) {
+      return { ...obj, time: dayjs(obj.created_at).format('dddd hh:mm A') }
+    }
+    return { ...obj, time: dayjs(obj.created_at).format('D MMM YYYY, hh:mm A') }
   }
 }

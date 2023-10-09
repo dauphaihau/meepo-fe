@@ -1,95 +1,102 @@
 <template>
-  <Popover v-slot="{ open, close }" class="relative" :class="classPopover">
-
-    <PopoverButton
-        :class="open ? '' : 'text-opacity-90'"
-        class="focus:outline-none inline-flex items-center"
-        @mouseover="(e) => hoverPopover(e, open)"
-        @mouseleave="closePopover(close)"
-    >
+  <div>
+    <div class="md:hidden">
       <slot/>
-    </PopoverButton>
-    <!--    <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
-    <!--    <PopoverOverlay :class="open && 'fixed inset-0'" />-->
+    </div>
+    <div class="hidden md:block">
+      <Popover v-slot="{ open, close }" class="relative" :class="classPopover">
 
-    <transition
-        enter-active-class="transition duration-500 ease-out"
-        enter-from-class="translate-y-1 opacity-0"
-        enter-to-class="translate-y-0 opacity-100"
-        leave-active-class="transition duration-350 ease-in"
-        leave-from-class="translate-y-0 opacity-100"
-        leave-to-class="translate-y-1 opacity-0"
-    >
-      <PopoverPanel
-          @mouseover.prevent="popoverHover = true"
-          @mouseleave.prevent="closePopover(close)"
-          class="absolute z-[3] bg-white rounded-xl mt-0.5 w-10 -translate-x-28 transform px-4 sm:px-0 lg:max-w-3xl"
-      >
+        <PopoverButton
+            :class="open ? '' : 'text-opacity-90'"
+            class="focus:outline-none inline-flex items-center"
+            @mouseover="(e) => hoverPopover(e, open)"
+            @mouseleave="closePopover(close)"
+        >
+          <slot/>
+        </PopoverButton>
+        <!--    <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
+        <!--    <PopoverOverlay :class="open && 'fixed inset-0'" />-->
 
-        <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl popper-shadow ring-1 ring-black ring-opacity-5">
-          <div v-if="isLoading" class="flex-center h-32">
-            <Loading variant="secondary" classes="h-5 w-5"/>
-          </div>
-          <div v-else>
-            <div class="flex justify-between mb-2">
-              <img
-                  @click="redirectProfilePage(close)"
-                  v-if="user?.avatar_url"
-                  alt="avatar"
-                  v-bind:src="user.avatar_url"
-                  class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
-              />
-              <img
-                  v-else
-                  @click="redirectProfilePage(close)"
-                  alt="avatar"
-                  src="@/assets/default-avatar.png"
-                  class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
-              />
+        <transition
+            enter-active-class="transition duration-500 ease-out"
+            enter-from-class="translate-y-1 opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="transition duration-350 ease-in"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="translate-y-1 opacity-0"
+        >
+          <PopoverPanel
+              @mouseover.prevent="popoverHover = true"
+              @mouseleave.prevent="closePopover(close)"
+              class="absolute z-[3] bg-white rounded-xl mt-0.5 w-10 -translate-x-28 transform px-4 sm:px-0 lg:max-w-3xl"
+          >
 
-              <ToggleFollowBtn
-                  v-if="getUser.id !== user?.id"
-                  :show="true"
-                  @click="unOrFollow"
-                  :isFollowing="user?.is_current_user_following"
-              />
-            </div>
-            <div
-                @click="redirectProfilePage(close)"
-                class="text-[15px] font-bold text-black hover:underline hover:underline-offset-2 animate cursor-pointer"
-            >
-              {{ user?.name }}
-            </div>
-            <div @click="redirectProfilePage(close)" class="text-[15px] text-zinc-500 mb-2 cursor-pointer w-fit">@{{
-                user?.username
-              }}
-            </div>
-            <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">{{ user?.bio }}</p>
-            <div>
-              <div class="flex gap-4">
-                <div
-                    @click="redirectFollowPage('followers')"
-                    class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
-                >
-                  <span class="font-bold text-[14px] text-black">{{ user?.followers_count ?? 0 }}</span>
-                  <span class="text-zinc-500 text-[14px]">Follower</span>
+            <div class="overflow-hidden bg-white w-[300px] max-w-[300px] p-4 rounded-xl popper-shadow ring-1 ring-black ring-opacity-5">
+              <div v-if="isLoading" class="flex-center h-32">
+                <Loading variant="secondary" classes="h-5 w-5"/>
+              </div>
+              <div v-else>
+                <div class="flex justify-between mb-2">
+                  <img
+                      @click="redirectProfilePage(close)"
+                      v-if="user?.avatar_url"
+                      alt="avatar"
+                      v-bind:src="user.avatar_url"
+                      class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
+                  />
+                  <img
+                      v-else
+                      @click="redirectProfilePage(close)"
+                      alt="avatar"
+                      src="@/assets/default-avatar.png"
+                      class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
+                  />
+
+                  <ToggleFollowBtn
+                      v-if="getUser.id !== user?.id"
+                      :show="true"
+                      @click="unOrFollow"
+                      :isFollowing="user?.is_current_user_following"
+                  />
                 </div>
-
                 <div
-                    @click="redirectFollowPage('following')"
-                    class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
+                    @click="redirectProfilePage(close)"
+                    class="text-[15px] font-bold text-black hover:underline hover:underline-offset-2 animate cursor-pointer"
                 >
-                  <span class="font-bold text-[14px] text-black">{{ user?.followed_count ?? 0 }}</span>
-                  <span class="text-zinc-500 text-[14px]">Following</span>
+                  {{ user?.name }}
+                </div>
+                <div @click="redirectProfilePage(close)" class="text-[15px] text-zinc-500 mb-2 cursor-pointer w-fit">@{{
+                    user?.username
+                  }}
+                </div>
+                <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">{{ user?.bio }}</p>
+                <div>
+                  <div class="flex gap-4">
+                    <div
+                        @click="redirectFollowPage('followers')"
+                        class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
+                    >
+                      <span class="font-bold text-[14px] text-black">{{ user?.followers_count ?? 0 }}</span>
+                      <span class="text-zinc-500 text-[14px]">Follower</span>
+                    </div>
+
+                    <div
+                        @click="redirectFollowPage('following')"
+                        class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
+                    >
+                      <span class="font-bold text-[14px] text-black">{{ user?.followed_count ?? 0 }}</span>
+                      <span class="text-zinc-500 text-[14px]">Following</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </PopoverPanel>
-    </transition>
+          </PopoverPanel>
+        </transition>
 
-  </Popover>
+      </Popover>
+    </div>
+  </div>
 </template>
 
 
@@ -137,7 +144,7 @@ const hoverPopover = (e: any, open: boolean): void => {
       e.target.parentNode.click()
       getProfile()
     }
-  }, 300)
+  }, 500)
 }
 
 const closePopover = (close: any): void => {

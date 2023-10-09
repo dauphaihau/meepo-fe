@@ -44,7 +44,7 @@ watch(isOpenDialog, (value) => {
   <Dialog
       :show="isOpenDialog"
       :closeDialog="closeDialog"
-      classPanel="max-w-[480px] transform rounded-2xl bg-white py-6 px-10"
+      classPanel="md:max-w-[480px] md:mt-20 transform bg-white py-6 px-10 flex flex-col justify-center"
   >
     <template v-slot:panel>
       <div class="flex flex-col bg-white">

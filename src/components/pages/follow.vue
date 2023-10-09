@@ -28,11 +28,17 @@
     </template>
   </HeaderMainContent>
 
-  <div class="h-16"></div>
+  <div class="h-[60px]"/>
 
   <!--  Users-->
-  <div v-for="(user) of users">
-    <User :user="user"/>
+
+  <div>
+    <div v-if="isLoading" class="flex-center min-h-[40vh]">
+      <Loading variant="secondary" classes="h-7 w-7"/>
+    </div>
+    <div v-for="(user) of users">
+      <User :user="user"/>
+    </div>
   </div>
 </template>
 
@@ -48,6 +54,7 @@ import { MutationEnums } from "@/types/store/root";
 import { IUser } from "@/types/user";
 import HeaderMainContent from "@components/layout/HeaderMainContent.vue";
 import User from "@components/User.vue";
+import Loading from "@/core/components/Loading.vue";
 
 const store = useStore()
 const router = useRouter()
@@ -56,6 +63,7 @@ const { getUser, isLoggedIn, getStateRouter } = mapGetters()
 
 const user = ref<IUser>(null)
 const triggerRef = ref(null)
+const isLoading = ref(false)
 const users = ref<IUser[] | []>([])
 const currentRouteUsername = route.params.username
 const currentRouteName = route.name
@@ -71,11 +79,13 @@ onBeforeMount(() => {
 })
 
 const getUsers = async () => {
+
+  isLoading.value = true
   const { data } =
       currentRouteName === 'following' ?
           await userAPI.followingByUser(currentRouteUsername)
           : await userAPI.followersByUser(currentRouteUsername);
-
+  isLoading.value = false
   users.value = data.users
   user.value = data.by_user
   store.commit(MutationEnums.SET_STATE_ROUTER, data.by_user)
@@ -93,11 +103,11 @@ const redirect = (name) => {
 <style scoped>
 
 .tabs {
-  @apply grid grid-cols-2 w-[599px] z-10;
+  @apply grid grid-cols-2;
 }
 
 .tab {
-  @apply flex-center py-4 hover:bg-[#e7e7e8] animate relative cursor-pointer;
+  @apply flex-center py-4 hover:bg-[#e7e7e8] animate relative cursor-pointer  text-[15px];
 }
 
 .tab .active-underline {

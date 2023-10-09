@@ -42,11 +42,11 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import About from "@components/About.vue";
-import PhotosProfile from "@/components/PhotosProfile.vue";
-import UsersSuggest from "@components/UsersSuggest.vue";
-import Trends from "@components/Trends.vue";
+import PhotosProfile from "@components/layout/SidebarRight/PhotosProfile.vue";
+import UsersSuggest from "@components/layout/SidebarRight/UsersSuggest.vue";
+import Trends from "@components/layout/SidebarRight/Trends.vue";
 import SearchBar from "@components/layout/SearchBar.vue";
-import Auth from "@components/layout/Auth.vue";
+import Auth from "@components/layout/SidebarRight/Auth.vue";
 import { mapGetters } from "@/lib/map-state";
 
 const router = useRouter()

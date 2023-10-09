@@ -1,6 +1,6 @@
 <template>
   <div
-      class="fixed bottom-0 right-3 z-[4]
+      class="hidden md:block fixed bottom-0 right-3 z-[4]
       flex flex-col
       max-w-[400px] bg-white rounded-t-2xl  w-full
       border border-zinc-50
@@ -59,26 +59,33 @@
                   class="rounded-full h-10 w-10 bg-black "
               />
 
-              <div
-                  class="flex flex-col justify-center"
-              >
-                <div class="flex gap-2 text-[15px]">
-                  <p class="font-semibold max-w-[7rem] truncate">{{ message.participant_name }}</p>
-                  <p class="text-zinc-500 max-w-[8rem] truncate">@{{ message.participant_username }}</p>
+              <div class="flex flex-col justify-center">
+                <div class="flex gap-2 text-[15px] max-w-[80vw]">
+                  <p class="font-semibold">
+                    {{ truncateText(message.participant_name, 12, '...') }}
+                  </p>
+                  <p class="text-zinc-500">
+                    @{{ truncateText(message.participant_username, 12, '...') }}
+                  </p>
                   <span class="text-zinc-500">·</span>
-                  <p class="text-zinc-500 max-w-[5rem] truncate">{{ message.time }}</p>
+                  <p class="text-zinc-500">
+                    {{ truncateText(message.time, 7, '...') }}
+                  </p>
                 </div>
-                <div class="text-zinc-500 h-5 truncate max-w-[20rem]">{{ message.text }}</div>
+                <div class="text-zinc-500 h-5">
+                  {{ truncateText(message.text, 37, '...') }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
 
-    <Chat
+    <Room
         v-else
-        :key="keyChat"
+        :key="keyRoomComponent"
         :noLastMessages="lastMessages.length === 0"
         @onUpdateView="onUpdateView"
         :showFull="showFull"
@@ -91,12 +98,12 @@ import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/20/so
 import { onMounted, ref, watch } from "vue";
 
 import Loading from "@/core/components/Loading.vue";
-import Chat from "./Chat.vue";
+import Room from "./Room.vue";
 import { mapGetters } from "@/lib/map-state";
 import { chatAPI } from "@/apis/chat";
 import { MutationEnums } from "@/types/store/root";
 import { parseCreatedAts } from "@/lib/dayjs-parse";
-import { logger, parseJSON } from "@/core/helper";
+import { logger, parseJSON, truncateText } from "@/core/helper";
 import { useStore } from "@/store";
 import { IMessage } from "@/types/message";
 import { useWebSocket } from "@vueuse/core";
@@ -109,7 +116,7 @@ const showViewChatPrivate = ref(false)
 const showFull = ref(false)
 const isLoading = ref(false)
 const refTop = ref<null | HTMLDivElement>(null)
-const keyChat = ref(0)
+const keyRoomComponent = ref(0)
 const guid = ref('')
 
 onMounted(() => {
@@ -197,7 +204,7 @@ watch(getCurrentUserToMessage, () => {
   if (getCurrentUserToMessage.value) {
     showViewChatPrivate.value = true
     showFull.value = true
-    keyChat.value++
+    keyRoomComponent.value++
   }
 }, { immediate: true })
 

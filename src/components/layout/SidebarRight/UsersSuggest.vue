@@ -22,7 +22,7 @@ import { userAPI } from "@/apis/user";
 import { mapGetters } from "@/lib/map-state";
 import { useStore } from "@/store";
 import { IUser } from "@/types/user";
-import UserSuggest from "@components/UserSuggest.vue";
+import UserSuggest from "@components/layout/SidebarRight/UserSuggest.vue";
 import Loading from "@/core/components/Loading.vue";
 
 const store = useStore()

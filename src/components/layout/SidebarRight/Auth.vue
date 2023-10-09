@@ -73,8 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import LoginDialog from "@/components/dialog/LoginDialog.vue";
-import RegisterDialog from "@/components/dialog/RegisterDialog.vue";
+import LoginDialog from "@components/dialog/LoginDialog.vue";
+import RegisterDialog from "@components/dialog/RegisterDialog.vue";
 import ForgotPasswordDialog from "@components/dialog/ForgetPasswordDialog/index.vue";
 import Button from "@/core/components/Button.vue";
 import { useMediaQuery } from "@vueuse/core";

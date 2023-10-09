@@ -1,5 +1,14 @@
 <template>
   <div>
+
+    <ReplyPostDialog
+        :key="keyReplyPostDialog"
+        :showDialogFromProps="showReplyPostDialog"
+        :hideTrigger="true"
+        :dataPostReply="dataPost"
+        @onClose="() => action = ''"
+    />
+
     <div
         class="flex flex-col relative"
         @mouseover="isHover = true"
@@ -9,7 +18,7 @@
       <div
           class="px-4 bg-white flex flex-col animate hover:bg-zinc-100"
           :class="{'cursor-pointer': !isOpenPopover, }"
-          @click="!isOpenPopover && clickDetailPost('post')"
+          @click="!isOpenPopover && clickPost('post')"
       >
         <!--         Pin Post-->
         <div
@@ -24,14 +33,14 @@
 
           <!--          Avatar-->
           <div
-              class="mr-3 basis-11 relative flex flex-col min-w-[40px]"
+              class="mr-3 basis-11 relative flex flex-col min-w-[40px] max-w-[40px]"
               :class="!isSubPost && 'pt-3'"
           >
             <div
                 v-if="isSubPost && currentRouteName !== 'search'"
                 class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 h-2 mx-auto w-[2px] mb-0.5"
             />
-            <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
+            <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover" class="w-fit">
               <div class="before:absolute">
                 <img
                     v-if="dataPost.author_avatar_url"
@@ -51,32 +60,36 @@
             </UserPopper>
             <div
                 v-if="(dataPost.sub_posts_count > 0 && !isSubPost && currentRouteName === 'post') || by === FILTER_POST_BY.COMMENTS"
-                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto w-[2px]"
+                class="items-stretch flex-shrink-0 border basis-auto min-h-0 min-w-0 flex-grow mx-auto mt-1 md:mt-0"
             />
           </div>
 
-          <div class="w-full  max-w-[90%] py-3">
-<!--          <div class="py-3">-->
+          <div class="w-full max-w-[83%] md:max-w-[90%] py-3">
+
             <div class="flex justify-between">
               <!--              info author-->
-              <div class="flex gap-2 text-[15px]">
+              <div class="flex gap-2 text-[15px] w-full max-w-[100vw]">
                 <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
                   <div
                       @click="redirectProfile"
-                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute max-w-[11rem] truncate"
+                      class="font-bold text-black hover:underline hover:underline-offset-2 before:absolute"
                   >
-                    {{ dataPost.author_name ?? dataPost.author.name }}
+                    {{ truncateText(dataPost.author_name ?? dataPost.author.name, isTabletScreen ? 20 : 7, '...') }}
                   </div>
                 </UserPopper>
                 <div class="text-zinc-500 inline-flex gap-1">
                   <UserPopper :username="dataPost.author_username" @onOpenPopover="onOpenPopover">
-                    <!--                    <div @click="redirectProfile" class="before:absolute">@{{ dataPost.author_username }}</div>-->
-                    <div @click="redirectProfile" class="before:absolute max-w-[11rem] truncate">
-                      @{{ dataPost.author_username ?? dataPost.author.username }}
+                    <div @click="redirectProfile" class="before:absolute max-w-[7rem] md:max-w-[11rem] truncate">
+                      @{{ truncateText(
+                        dataPost.author_username ?? dataPost.author.username,
+                        isTabletScreen ? 20 : (dataPost.edited_posts_count > 0 && currentRouteName !== 'history' ? 4 : 8),
+                        '...')
+                      }}
                     </div>
 
                   </UserPopper>
-                  · {{ dataPost.time }}
+<!--                  · {{ truncateText('12:12 PM', 8) }}-->
+                  · {{ truncateText(dataPost?.time, 8) }}
                   <div
                       v-if="dataPost.edited_posts_count > 0 && currentRouteName !== 'history'"
                       class="inline flex gap-1"
@@ -104,37 +117,43 @@
                 class="rounded-xl my-4 w-full h-auto"
             >
 
-            <!--              Statistic post ( likes, comment, .. ) -->
+            <!--              Statistic post ( comment, likes, .. ) -->
             <div class="flex gap-8 -ml-[9px]">
 
-              <!--              Comments-->
+              <!-- Reply -->
               <div class="flex items-center gap-1 group">
-                <div class="p-2 group-hover:bg-zinc-200 animate rounded-full">
+                <div
+                    class="p-2 group-hover:bg-zinc-200 animate rounded-full"
+                    @click="clickPost('commentPost')"
+                >
                   <ChatBubbleOvalLeftEllipsisIcon
+                      v-tooltip="'Reply'"
                       v-if="dataPost.sub_posts_count > 0"
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-zinc-500 h-5 w-5 cursor-pointer"
+                      class="icon-action"
+                      :class="{'opacity-50': !dataPost.is_current_user_can_comment}"
                   />
                   <ChatBubbleOvalLeftIcon
+                      v-tooltip="'Reply'"
                       v-else
-                      :class="{'opacity-50': readonly}"
-                      @click="router.push('/posts/' + dataPost.id)"
-                      class="text-zinc-500 h-5 w-5 cursor-pointer"
+                      :class="{'opacity-50': readonly || !dataPost.is_current_user_can_comment}"
+                      class="icon-action"
                   />
+
                 </div>
                 <span v-if="!readonly" :class="animationComments">{{ dataPost.sub_posts_count ?? 0 }}</span>
               </div>
 
-              <!--              Likes -->
+              <!-- Like -->
               <div class="flex items-center gap-2 group">
-                <div class='cursor-pointer flex items-center gap-1' @click="clickDetailPost('toggleLikePost')">
+                <div class='cursor-pointer flex items-center gap-1' @click="clickPost('toggleLikePost')">
 
                   <div v-if="isLike" class="p-2 group-hover:bg-zinc-200 animate rounded-full">
-                    <HeartIconSolid class="text-zinc-500 h-5 w-5 cursor-pointer"/>
+                    <HeartIconSolid v-tooltip="'Like'" class="icon-action"/>
                   </div>
                   <div v-else class="p-2 group-hover:bg-zinc-200 animate rounded-full">
                     <HeartIcon
-                        class="text-zinc-500 h-5 w-5 cursor-pointer"
+                        v-tooltip="'Like'"
+                        class="icon-action"
                         :class="{'opacity-50': readonly}"
                     />
                   </div>
@@ -170,9 +189,8 @@
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { useWebSocket } from "@vueuse/core";
+import ReplyPostDialog from "@/components/dialog/AddOrUpdatePost.vue";
 
-import { logger, parseJSON } from '@/core/helper.js'
-import { FILTER_POST_BY } from "@/config/const";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   ChatBubbleOvalLeftIcon,
@@ -180,6 +198,9 @@ import {
   PencilIcon
 } from "@heroicons/vue/24/outline"
 import { HeartIcon as HeartIconSolid, StarIcon } from "@heroicons/vue/24/solid"
+
+import { logger, parseJSON, truncateText } from '@/core/helper.js'
+import { FILTER_POST_BY } from "@/config/const";
 import OptionsPost from "@/components/OptionsPost.vue";
 import { mapGetters } from '@/lib/map-state';
 import { IPost, PIN_STATUS } from "@/types/post";
@@ -188,6 +209,7 @@ import { MutationEnums } from "@/types/store/root";
 import { postAPI } from "@/apis/post";
 import UserPopper from "@components/UserPopper.vue";
 import { formatTextWithHashTags } from "@/core/helper";
+import { useMediaQuery } from "@vueuse/core";
 
 interface Props {
   dataPost: IPost & {time?: string, sub_post?: IPost},
@@ -201,6 +223,7 @@ let { dataPost, isSubPost, by, readonly } = defineProps<Props>()
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
+const isTabletScreen = useMediaQuery('(min-width: 768px)')
 
 const { isLoggedIn, getUser } = mapGetters()
 
@@ -209,6 +232,8 @@ const emit = defineEmits<{
   (e: 'onPinPost'): void
 }>()
 
+const showReplyPostDialog = ref(false);
+const keyReplyPostDialog = ref(0);
 const guid = ref('')
 const isLike = ref(false)
 const isHover = ref(false)
@@ -217,7 +242,7 @@ const isOpenPopover = ref(false)
 const animationLikes = ref('initial')
 const animationComments = ref('initial')
 const keyOptionsPost = ref(0)
-const redirecting = ref('')
+const action = ref('')
 const openMenu = ref(false)
 
 const currentRouteName = route.name
@@ -312,7 +337,6 @@ const onPinPost = () => {
 }
 
 const toggleLikePost = async () => {
-
   if (!isLoggedIn.value) {
     store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
     return
@@ -322,26 +346,34 @@ const toggleLikePost = async () => {
   const { status } = await postAPI.like(dataPost.id)
 
   if (status === 200) {
-    redirecting.value = ''
+    action.value = ''
   } else {
     isLike.value = !isLike.value
   }
 }
 
-const clickDetailPost = (type = '') => {
+const clickPost = (type = '') => {
   if (readonly) return
 
   switch (type) {
     case 'options':
-      redirecting.value = type
+      action.value = type
+      break
+    case 'commentPost':
+      if (!dataPost.is_current_user_can_comment || !isLoggedIn.value) {
+        return;
+      }
+      action.value = type
+      showReplyPostDialog.value = true;
+      keyReplyPostDialog.value++
       break
     case 'toggleLikePost':
-      redirecting.value = type
+      action.value = type
       toggleLikePost()
       break
   }
 
-  if (!redirecting.value && type === 'post') {
+  if (!action.value && type === 'post') {
     router.push('/posts/' + dataPost.id)
   }
 }
@@ -421,6 +453,10 @@ const redirectProfile = () => {
   to {
     background-position: right;
   }
+}
+
+.icon-action {
+  @apply text-zinc-500 h-5 w-5 cursor-pointer;
 }
 
 

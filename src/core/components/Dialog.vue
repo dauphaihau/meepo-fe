@@ -42,6 +42,7 @@ const { show, closeDialog, classPanel, hideCloseBtn, title } = defineProps<Props
       <div class="fixed inset-0 overflow-y-auto flex justify-center text-center">
         <!--                        as="template"-->
         <TransitionChild
+            class="w-full md:w-auto"
             enter="duration-300 ease-out"
             enter-from="opacity-0 scale-95"
             enter-to="opacity-100 scale-100"
@@ -49,25 +50,31 @@ const { show, closeDialog, classPanel, hideCloseBtn, title } = defineProps<Props
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
         >
+
           <DialogPanel
               :class="cn(
-                    'w-full mt-20 transform rounded-2xl bg-white py-6 px-8 text-left shadow-xl transition-all',
+                    'transform transition-all md:rounded-2xl bg-white py-6 px-8 text-left shadow-xl',
+                    'w-full min-h-screen md:min-h-0',
+                    // 'overflow-hidden',
                     classPanel
                  )"
           >
-            <!--                overflow-hidden-->
-            <slot name="panel"/>
-            <div
-                v-if="title"
-                class="absolute top-3 left-4 text-xl text-black max-w-sm truncate font-medium"
-            >
-              {{title}}
+            <div>
+
+              <div
+                  v-if="title"
+                  class="absolute top-3 left-4 text-xl text-black max-w-sm truncate font-medium"
+              >
+                {{ title }}
+              </div>
+              <XMarkIcon
+                  v-if="!hideCloseBtn"
+                  class="absolute top-2 right-2 text-black h-9 w-9 cursor-pointer hover:bg-zinc-100 rounded-full p-2 animate"
+                  @click="closeDialog"
+              />
             </div>
-            <XMarkIcon
-                v-if="!hideCloseBtn"
-                class="absolute top-2 right-2 text-black h-9 w-9 cursor-pointer hover:bg-zinc-100 rounded-full p-2 animate"
-                @click="closeDialog"
-            />
+
+            <slot name="panel"/>
           </DialogPanel>
         </TransitionChild>
       </div>
@@ -76,4 +83,5 @@ const { show, closeDialog, classPanel, hideCloseBtn, title } = defineProps<Props
 </template>
 
 <style scoped>
+
 </style>

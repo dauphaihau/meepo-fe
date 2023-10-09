@@ -1,6 +1,5 @@
 <template>
   <Popover v-slot="{ open }" class="relative">
-    <!--        :class="open ? '' : 'text-opacity-90'"-->
     <PopoverButton
         class="focus:outline-none w-fit text-zinc-500 text-sm hover:underline hover:underline-offset-2"
     >
@@ -16,8 +15,8 @@
         leave-from-class="translate-y-0 opacity-100"
         leave-to-class="translate-y-1 opacity-0"
     >
-      <PopoverPanel class="absolute z-[1] right-0 bottom-8 translate-x-36 transform ">
-        <div class="group relative flex rounded-2xl bg-zinc-50 transition-shadow shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 w-[350px]">
+      <PopoverPanel class="absolute z-[1] right-0 bottom-8 translate-x-44 transform ">
+        <div class="group relative flex rounded-2xl bg-zinc-50 transition-shadow shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 w-[390px]">
           <div class="pointer-events-none">
             <div class="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
               <svg
@@ -92,7 +91,7 @@
               </p>
             </h3>
             <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              This simplified Twitter clone is built with Vue.js, Tailwind, Typescript, Ruby on Rails, Postgresql
+              This simplified Twitter clone is built with Vue.js, Tailwind, Typescript, Ruby on Rails, Redis, Postgresql
             </p>
             <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Reach me out via <a
