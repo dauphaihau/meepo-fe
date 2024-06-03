@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useField, useForm } from "vee-validate";
-import { useRouter } from "vue-router";
+import { ref } from 'vue';
+import { useField, useForm } from 'vee-validate';
+import { useRouter } from 'vue-router';
 
-import Dialog from "@/core/components/Dialog.vue";
-import Input from "@/core/components/forms/Input.vue";
-import Button from "@/core/components/Button.vue";
-import DateBirthInput from "@/components/DateBirthInput.vue";
-import { useStore } from "@/store";
-import { ActionEnums, MutationEnums } from "@/types/store/root";
-import { logger } from "@/core/helper";
-import { validationRegisterSchema } from "@/lib/validations/user";
-import { mapGetters } from "@/lib/map-state";
+import Dialog from '@/core/components/Dialog.vue';
+import Input from '@/core/components/forms/Input.vue';
+import Button from '@/core/components/Button.vue';
+import DateBirthInput from '@/components/DateBirthInput.vue';
+import { useStore } from '@/store';
+import { ActionEnums, MutationEnums } from '@/types/store/root';
+import { logger } from '@/core/helper';
+import { validationRegisterSchema } from '@/validations/user';
+import { mapGetters } from '@/lib/map-state';
 
-const store = useStore()
-const router = useRouter()
-const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters()
+const store = useStore();
+const router = useRouter();
+const { getOpenRegisterDialog: isOpenDialog, isLoggedIn } = mapGetters();
 
-const { handleSubmit, errors, resetForm, setFieldError, values } = useForm({
+const {
+  handleSubmit, errors, resetForm, setFieldError,
+} = useForm({
   validationSchema: validationRegisterSchema,
   validateOnMount: false,
 });
@@ -33,128 +35,131 @@ const { value: password } = useField<string>('password');
 const { value: dob } = useField<string>('dob');
 
 const validate = (e: Event) => {
-  isSubmitted.value = true
-  logger.debug('execute validate: errors', errors.value, 'src/components/dialog/RegisterDialog.vue')
+  isSubmitted.value = true;
+  logger.debug('execute validate: errors', errors.value, 'src/components/dialog/RegisterDialog.vue');
   if (Object.keys(errors.value).length === 0) {
-    onSubmit(e)
+    onSubmit(e);
   }
-}
+};
 
 const onSubmit = handleSubmit(async (values) => {
   const data = { user: values };
-  isLoading.value = true
-  const message = await store.dispatch(ActionEnums.REGISTER, data)
-  isLoading.value = false
+  isLoading.value = true;
+  const message = await store.dispatch(ActionEnums.REGISTER, data);
+  isLoading.value = false;
   if (message) {
     if (message.includes('username') && message.includes('email')) {
-      setFieldError('username', 'Duplicate username')
-      setFieldError('email', 'Duplicate email')
-      return
+      setFieldError('username', 'Duplicate username');
+      setFieldError('email', 'Duplicate email');
+      return;
     }
 
     if (message.includes('username')) {
-      setFieldError('username', message)
+      setFieldError('username', message);
     }
 
     if (message.includes('email')) {
-      setFieldError('email', message)
+      setFieldError('email', message);
     }
-    return
+    return;
   }
-  router.push({ name: 'home' })
-  resetForm()
+  router.push({ name: 'home' });
+  resetForm();
 });
 
 const openLoginDialog = () => {
-  if (isLoading.value) return
-  store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
-  closeDialog()
-}
+  if (isLoading.value) return;
+  store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+  closeDialog();
+};
 
 function closeDialog() {
-  if (isLoading.value) return
-  store.commit(MutationEnums.SET_REGISTER_DIALOG, false)
-  errorDate.value = ''
-  resetForm()
-  isSubmitted.value = false
+  if (isLoading.value) return;
+  store.commit(MutationEnums.SET_REGISTER_DIALOG, false);
+  errorDate.value = '';
+  resetForm();
+  isSubmitted.value = false;
 }
 
 function openDialog() {
-  store.commit(MutationEnums.SET_REGISTER_DIALOG, true)
+  store.commit(MutationEnums.SET_REGISTER_DIALOG, true);
 }
 
 </script>
 
 <template>
   <Dialog
-      :show="isOpenDialog"
-      :closeDialog="closeDialog"
-      classPanel="md:min-w-[465px] md:max-w-[465px] md:mt-20"
+    :show="isOpenDialog"
+    :close-dialog="closeDialog"
+    class-panel="md:min-w-[465px] md:max-w-[465px] md:mt-20"
   >
     <template
-        v-if="!isLoggedIn"
-        v-slot:trigger
+      v-if="!isLoggedIn"
+      #trigger
     >
       <Button
-          class="w-full"
-          variant="secondary"
-          @click="openDialog"
-      >Sign Up
+        class="w-full"
+        variant="secondary"
+        @click="openDialog"
+      >
+        Sign Up
       </Button>
     </template>
 
-    <template v-slot:panel>
+    <template #panel>
       <div class="mx-auto flex flex-col gap-8">
         <div class="flex flex-col">
-          <h1 class="text-2xl mb-4 text-black text-center">Create account</h1>
+          <h1 class="text-2xl mb-4 text-black text-center">
+            Create account
+          </h1>
           <div class="flex flex-col gap-5">
             <form @submit.prevent="validate">
               <Input
-                  :disabled="isLoading"
-                  :helperText="isSubmitted ? errors.name : '' "
-                  classWrapper="mb-4"
-                  size="md"
-                  label="Name"
-                  v-model="name"
+                v-model="name"
+                :disabled="isLoading"
+                :helper-text="isSubmitted ? errors.name : '' "
+                class-wrapper="mb-4"
+                size="md"
+                label="Name"
               />
               <Input
-                  :disabled="isLoading"
-                  :helperText="isSubmitted ? errors.username : '' "
-                  classWrapper="mb-4"
-                  size="md"
-                  label="Username"
-                  v-model="username"
+                v-model="username"
+                :disabled="isLoading"
+                :helper-text="isSubmitted ? errors.username : '' "
+                class-wrapper="mb-4"
+                size="md"
+                label="Username"
               />
               <Input
-                  :disabled="isLoading"
-                  :helperText="isSubmitted ? errors.email : '' "
-                  classWrapper="mb-4"
-                  size="md"
-                  label="Email"
-                  v-model="email"
+                v-model="email"
+                :disabled="isLoading"
+                :helper-text="isSubmitted ? errors.email : '' "
+                class-wrapper="mb-4"
+                size="md"
+                label="Email"
               />
               <Input
-                  :disabled="isLoading"
-                  :helperText="isSubmitted ? errors.password : '' "
-                  type="password"
-                  classWrapper="mb-4"
-                  size="md"
-                  label="Password"
-                  v-model="password"
+                v-model="password"
+                :disabled="isLoading"
+                :helper-text="isSubmitted ? errors.password : '' "
+                type="password"
+                class-wrapper="mb-4"
+                size="md"
+                label="Password"
               />
               <DateBirthInput
-                  v-model="dob"
-                  label="Date of birth"
-                  classWrapper="mb-8"
-                  :helperText="isSubmitted ? errors.dob : '' "
-                  :disabled="isLoading"
+                v-model="dob"
+                label="Date of birth"
+                class-wrapper="mb-8"
+                :helper-text="isSubmitted ? errors.dob : '' "
+                :disabled="isLoading"
               />
               <Button
-                  :isLoading="isLoading"
-                  v-on:submit.prevent="validate"
-                  radius="lg"
-                  class="w-full"
-                  size="md"
+                :is-loading="isLoading"
+                radius="lg"
+                class="w-full"
+                size="md"
+                @submit.prevent="validate"
               >
                 Sign Up
               </Button>
@@ -162,7 +167,10 @@ function openDialog() {
 
             <div class="text-center">
               <span class="text-zinc-500 mr-1">Already have an account?</span>
-              <span @click="openLoginDialog" class="text-link">Login</span>
+              <span
+                class="text-link"
+                @click="openLoginDialog"
+              >Login</span>
             </div>
           </div>
         </div>

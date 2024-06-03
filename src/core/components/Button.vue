@@ -1,48 +1,48 @@
 <template>
   <button
-      :disabled="disabledClick || isLoading"
-      v-bind="$attrs"
-      :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
-        {
-         'opacity-50 hover:opacity-50 cursor-default': isLoading,
-         'bg-zinc-200/80 text-zinc-400/50 cursor-default hover:opacity-100 ring-1 ring-inset ring-zinc-300': disabledClick
-         },
-        classes
-      )"
+    :disabled="disabledClick || isLoading"
+    v-bind="$attrs"
+    :class="cn('button', SIZE_MAPS[size], VARIANT_MAPS[variant], RADIUS_MAPS[radius],
+               {
+                 'opacity-50 hover:opacity-50 cursor-default': isLoading,
+                 'bg-zinc-200/80 text-zinc-400/50 cursor-default hover:opacity-100 ring-1 ring-inset ring-zinc-300': disabledClick
+               },
+               classes
+    )"
   >
     <Loading
-        v-if="isLoading"
-        :variant="variant"
-        classes="mr-2"
+      v-if="isLoading"
+      :variant="variant"
+      classes="mr-2"
     />
     <span v-if="isLoading">Processing...</span>
-    <slot v-else/>
+    <slot v-else />
   </button>
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/core/helper.js'
-import Loading from "@/core/components/Loading.vue";
+import { cn } from '@/core/helper.js';
+import Loading from '@/core/components/Loading.vue';
 
 const RADIUS_MAPS = {
   sm: 'rounded-sm',
   md: 'rounded-md',
   lg: 'rounded-lg',
   xl: 'rounded-full',
-}
+};
 
 const VARIANT_MAPS = {
   primary: 'bg-black hover:opacity-80 font-semibold text-white',
   outline: 'bg-black hover:opacity-80 font-semibold text-white ring-1 ring-inset ring-zinc-300',
   secondary: 'bg-white text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-100 font-semibold',
-}
+};
 
 const SIZE_MAPS = {
   sm: 'px-4 h-9 leading-7 text-sm',
   md: 'px-7 h-[42px] text-md',
   lg: 'px-9 h-12 text-lg',
   xl: 'p-11 h-14 text-xl',
-}
+};
 
 // interface Props {
 //   size?: keyof typeof SIZE_MAPS
@@ -61,7 +61,9 @@ const SIZE_MAPS = {
 // })
 
 
-const { size, variant, radius, isLoading, classes, disabledClick } = defineProps({
+const {
+  size, variant, radius, isLoading, classes, disabledClick, 
+} = defineProps({
   disabledClick: { type: Boolean, default: false },
   classes: { type: String },
   size: {
@@ -88,7 +90,7 @@ const { size, variant, radius, isLoading, classes, disabledClick } = defineProps
     // }
   },
   isLoading: { type: Boolean, default: false },
-})
+});
 
 </script>
 

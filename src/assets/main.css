@@ -14,8 +14,8 @@
     src: local("Alphabets4"), url(@/assets/fonts/special-alphabets-4.otf) format("truetype");
   }
 
-  path, circle, ellipse, line, polygon, polyline, rect {
-    stroke-width: inherit;
+  svg path {
+    stroke-width: 2;
   }
 
 }
@@ -30,10 +30,40 @@
   }
 
   .text-link {
-    @apply text-zinc-500 hover:text-black underline underline-offset-2 cursor-pointer hover:text-black animate
+    @apply text-zinc-500 hover:text-black underline underline-offset-2 cursor-pointer animate
   }
 }
 
+/** ================== Animations ================== **/
+.counter-number-initial {
+  display: inline-flex;
+  opacity: 1;
+  transform: translate3d(0, 0px, 0);
+  transition: 0.1s ease-in-out;
+}
 
+.counter-number-goUp {
+  display: inline-flex;
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+  transition: 0.1s ease-in-out;
+}
 
+.counter-number-waitUp {
+  display: inline-flex;
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
 
+.counter-number-goDown {
+  display: inline-flex;
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: 0.1s ease-in-out;
+}
+
+.counter-number-waitDown {
+  display: inline-flex;
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+}

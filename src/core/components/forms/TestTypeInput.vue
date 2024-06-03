@@ -1,38 +1,46 @@
 <template>
-
   <div :class="classWrapper">
-    <label v-if="label" for="username" class="label">{{ label }}</label>
+    <label
+      v-if="label"
+      for="username"
+      class="label"
+    >{{ label }}</label>
     <div class="my-1">
       <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
         <textarea
-            v-if="shape === 'textarea'"
-            type="text"
-            class="input resize-none py-2"
-            rows="4"
-            :value="modelValue"
-            v-bind="$attrs"
-            @input="onChangeInput"
+          v-if="shape === 'textarea'"
+          type="text"
+          class="input resize-none py-2"
+          rows="4"
+          :value="modelValue"
+          v-bind="$attrs"
+          @input="onChangeInput"
         />
         <!--            @input="$emit('update:modelValue', handleInputChange($event))"-->
 
         <!--            v-if="shape === 'input'"-->
         <input
-            :value="modelValue"
-            class="input"
-            :class="cn('input', SIZE_MAPS[size])"
-            v-bind="$attrs"
-            @input="onChangeInput"
-        />
+          :value="modelValue"
+          class="input"
+          :class="cn('input', SIZE_MAPS[size])"
+          v-bind="$attrs"
+          @input="onChangeInput"
+        >
         <!--            @input="$emit('update:modelValue', handleInputChange($event))"-->
       </div>
     </div>
-    <p v-if="helperText" :class="classHelperText" class='text-red-500 text-[0.75rem]'>{{ helperText }}</p>
+    <p
+      v-if="helperText"
+      :class="classHelperText"
+      class="text-red-500 text-[0.75rem]"
+    >
+      {{ helperText }}
+    </p>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/core/helper.js'
+import { cn } from '@/core/helper.js';
 
 interface Props {
   modelValue?: string | number
@@ -50,20 +58,20 @@ const {
   classHelperText,
   label,
   helperText,
-  shape
+  shape,
 // } = defineProps<Props>()
 // use withDefaults doesn't update component when props change
 } = withDefaults(defineProps<Props>(), {
-  size: 'sm', shape: 'input', helperText: ''
-})
+  size: 'sm', shape: 'input', helperText: '',
+});
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void
-}>()
+}>();
 
 const onChangeInput = (event) => {
-  emit('update:modelValue', event.target.value)
-}
+  emit('update:modelValue', event.target.value);
+};
 
 // const handleInputChange = (event: Event) => {
 //   return (event.target as HTMLInputElement).value
@@ -72,7 +80,7 @@ const onChangeInput = (event) => {
 const SIZE_MAPS = {
   sm: 'h-9',
   md: 'h-[42px]',
-}
+};
 </script>
 
 

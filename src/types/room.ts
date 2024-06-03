@@ -7,4 +7,3 @@ export interface IRoom {
   last_message?: string
   time?: string
 }
-

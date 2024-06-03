@@ -1,55 +1,58 @@
 <template>
   <div>
     <Listbox
-        @update:modelValue="onChangeSelect"
-        v-model="selectedOption"
-        v-slot="{open}"
+      v-slot="{open}"
+      v-model="selectedOption"
+      @update:model-value="onChangeSelect"
     >
       <div class="relative mt-1">
         <ListboxButton
-            class="list-button"
-            :class="cn(classWrapper,
-             disabled ? 'bg-[#f7f8f9] text-[#c2c3c4] ring-1 ring-inset ring-zinc-300' : 'bg-white'
-           )"
+          class="list-button"
+          :class="cn(classWrapper,
+                     disabled ? 'bg-[#f7f8f9] text-[#c2c3c4] ring-1 ring-inset ring-zinc-300' : 'bg-white'
+          )"
         >
           <span class="block truncate">{{ selectedOption.name }}</span>
           <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronDownIcon
-                class="h-5 w-5 text-zinc-400"
-                aria-hidden="true"
+              class="h-5 w-5 text-zinc-400"
+              aria-hidden="true"
             />
           </span>
         </ListboxButton>
 
-        <div v-if="open" class="fixed inset-0"/>
+        <div
+          v-if="open"
+          class="fixed inset-0"
+        />
         <!--      <div v-if="open" class="fixed inset-0 bg-black opacity-30" />-->
 
         <transition
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-            v-if="!disabled"
+          v-if="!disabled"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
         >
           <ListboxOptions
-              class="list-options"
-              :class="classWrapper"
+            class="list-options"
+            :class="classWrapper"
           >
             <ListboxOption
-                v-slot="{ active, selected }"
-                v-for="(option, index) in data"
-                :key="option.name"
-                :value="option"
-                as="div"
+              v-for="(option, index) in data"
+              v-slot="{ active, selected }"
+              :key="option.name"
+              :value="option"
+              as="div"
             >
               <li
-                  v-if="placeholder && index > 0 "
-                  :class="[
+                v-if="placeholder && index > 0 "
+                :class="[
                   active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-900',
                   'relative cursor-pointer select-none py-2 pl-3 pr-4',
                 ]"
               >
                 <span
-                    :class="[
+                  :class="[
                     selected ? 'font-medium' : 'font-normal',
                     'block truncate',
                   ]"
@@ -60,7 +63,6 @@
         </transition>
       </div>
     </Listbox>
-
   </div>
 </template>
 
@@ -68,17 +70,17 @@
 <script setup lang="ts">
 // @ts-nocheck
 
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue';
 import {
   Listbox,
   ListboxButton,
   ListboxOptions,
-  ListboxOption,
-} from '@headlessui/vue'
+  ListboxOption
+} from '@headlessui/vue';
 
-import { cn, toUpperCaseFirstL } from '@/core/helper.js'
-import { ChevronDownIcon } from '@heroicons/vue/20/solid'
-import { logger } from "@/core/helper";
+import { cn, toUpperCaseFirstL } from '@/core/helper.js';
+import { ChevronDownIcon } from '@heroicons/vue/20/solid';
+import { logger } from '@/core/helper';
 
 interface Props {
   modelValue: string
@@ -125,7 +127,7 @@ let {
   label,
   helperText,
   modelValue,
-  disabled
+  disabled,
 } = defineProps({
   data: {
     type: Array,
@@ -138,8 +140,8 @@ let {
   name: { type: String },
   modelValue: { type: String },
   classWrapper: { type: String, default: '' },
-  size: { type: String, default: 'sm', },
-  label: { type: String, },
+  size: { type: String, default: 'sm' },
+  label: { type: String },
   helperText: { type: String, default: '' },
   classHelperText: { type: String, default: '' },
   placeholder: { type: String },
@@ -148,31 +150,31 @@ let {
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: {name: string, value: string}): void
-}>()
+}>();
 
-const selectedOption = ref(data[0])
+const selectedOption = ref(data[0]);
 
 onBeforeMount(() => {
   if (modelValue) {
-    let option = data.find(d => d.name === modelValue)
+    let option = data.find(d => d.name === modelValue);
     if (!option) {
-      logger.error(`Select input execute onBeforeMount: not found option at select input with name ${name}`, 'src/core/components/forms/Select.vue')
-      option = { name: toUpperCaseFirstL(name) }
+      logger.error(`Select input execute onBeforeMount: not found option at select input with name ${name}`, 'src/core/components/forms/Select.vue');
+      option = { name: toUpperCaseFirstL(name) };
     }
-    data.unshift(option)
-    selectedOption.value = data[0]
-    return
+    data.unshift(option);
+    selectedOption.value = data[0];
+    return;
   }
 
   if (placeholder) {
-    data.unshift({ name: placeholder })
-    selectedOption.value = data[0]
+    data.unshift({ name: placeholder });
+    selectedOption.value = data[0];
   }
-})
+});
 
 const onChangeSelect = (val) => {
-  emit('update:modelValue', { name, value: val.name })
-}
+  emit('update:modelValue', { name, value: val.name });
+};
 
 </script>
 

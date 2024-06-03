@@ -8,4 +8,3 @@ export interface IMessage {
   created_at: string
   time?: string
 }
-

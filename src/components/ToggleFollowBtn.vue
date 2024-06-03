@@ -1,14 +1,13 @@
 <template>
-
   <Button
-      v-if="show && isFollowing"
-      variant="secondary"
-      class="h-[32px]"
-      :class="show && isFollowing ? 'btn-following' : `after:content-['Follow']`"
+    v-if="show && isFollowing"
+    variant="secondary"
+    class="h-[32px]"
+    :class="show && isFollowing ? 'btn-following' : `after:content-['Follow']`"
   />
   <Button
-      v-else
-      class="h-[32px]"
+    v-else
+    class="h-[32px]"
   >
     {{ show && isFollowing ? 'Following' : 'Follow' }}
   </Button>
@@ -16,7 +15,7 @@
 
 <script setup lang="ts">
 
-import Button from "@/core/components/Button.vue";
+import Button from '@/core/components/Button.vue';
 
 interface Props {
   show?: boolean
@@ -27,7 +26,7 @@ interface Props {
 //   show: true
 // })
 
-const { show, isFollowing } = defineProps<Props>()
+const { show, isFollowing } = defineProps<Props>();
 
 </script>
 

@@ -1,83 +1,93 @@
 <template>
   <nav>
     <router-link
-        :to="isLoggedIn ? '/home' : '/explore' "
-        class="font-black text-black font-[Alphabets4] py-2 px-3 lg:px-4 text-4xl "
-    >m
+      :to="isLoggedIn ? '/home' : '/explore' "
+      class="font-black text-black font-[Alphabets4] py-2 px-3 lg:px-4 text-4xl "
+    >
+      m
     </router-link>
 
     <router-link
-        v-if="isLoggedIn"
-        class="link" to="/home"
-        v-slot="{ href, route, navigate, isActive, isExactActive }"
+      v-if="isLoggedIn"
+      v-slot="{ href, route, navigate, isActive, isExactActive }"
+      class="link"
+      to="/home"
     >
-      <HomeIcon v-if="isActive"/>
-      <HomeIconOutline v-else/>
-      <p :class="isActive && 'active'">Home</p>
+      <HomeIcon v-if="isActive" />
+      <HomeIconOutline v-else />
+      <p :class="isActive && 'active'">
+        Home
+      </p>
     </router-link>
 
     <router-link
-        class="link" to="/explore"
-        v-slot="{ href, navigate, isActive, isExactActive }"
+      v-slot="{ href, navigate, isActive, isExactActive }"
+      class="link"
+      to="/explore"
     >
-      <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'"/>
-      <p :class="( route.name === 'search' || isActive ) && 'active'">Explore</p>
+      <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'" />
+      <p :class="( route.name === 'search' || isActive ) && 'active'">
+        Explore
+      </p>
     </router-link>
 
     <router-link
-        v-if="isLoggedIn" class="link" :to="'/user/' + getUser.username"
-        v-slot="{ href,  navigate, isActive, isExactActive }"
-        active-class="active"
+      v-if="isLoggedIn"
+      v-slot="{ href, navigate, isActive, isExactActive }"
+      class="link"
+      :to="'/user/' + getUser.username"
+      active-class="active"
     >
-      <UserIcon v-if="route.name === 'profile'"/>
-      <UserIconOutline v-else/>
-      <p :class="route.name === 'profile' && 'active'">Profile</p>
+      <UserIcon v-if="route.name === 'profile'" />
+      <UserIconOutline v-else />
+      <p :class="route.name === 'profile' && 'active'">
+        Profile
+      </p>
     </router-link>
 
     <div
-        v-if="isLoggedIn"
-        class="link opacity-50"
+      v-if="isLoggedIn"
+      class="link opacity-50"
     >
-      <BellIconOutline/>
+      <BellIconOutline />
       <p>Notifications</p>
     </div>
 
     <div
-        v-if="isLoggedIn"
-        class="link opacity-50"
+      v-if="isLoggedIn"
+      class="link opacity-50"
     >
-      <BookmarkIconOutline/>
+      <BookmarkIconOutline />
       <p>Bookmarks</p>
     </div>
 
     <div class="link opacity-50">
-      <SettingIconOutline/>
+      <SettingIconOutline />
       <p>Settings</p>
     </div>
-
   </nav>
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { HomeIcon, UserIcon } from "@heroicons/vue/20/solid"
+import { useRoute, useRouter } from 'vue-router';
+import { HomeIcon, UserIcon } from '@heroicons/vue/20/solid';
 import {
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
   BookmarkIcon as BookmarkIconOutline,
   Cog8ToothIcon as SettingIconOutline,
   BellIcon as BellIconOutline,
-  MagnifyingGlassIcon,
-} from "@heroicons/vue/24/outline"
+  MagnifyingGlassIcon
+} from '@heroicons/vue/24/outline';
 
-import { mapGetters } from "@/lib/map-state";
-import { useScrollDirection } from "@/core/hooks/useScrollDirection";
+import { mapGetters } from '@/lib/map-state';
+import { useScrollDirection } from '@/core/hooks/useScrollDirection';
 
-const { getUser, isLoggedIn } = mapGetters()
+const { getUser, isLoggedIn } = mapGetters();
 
-const direction = useScrollDirection()
-const route = useRoute()
-const router = useRouter()
+const direction = useScrollDirection();
+const route = useRoute();
+const router = useRouter();
 
 </script>
 

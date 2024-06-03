@@ -2,12 +2,14 @@ import {
   ActionTree,
   createStore, GetterTree,
   MutationTree,
-  Module,
-} from "vuex";
+  Module
+} from 'vuex';
 
-import sessionManager from "./modules/session";
-import { IAction, GetterTypes, IRootState, MutationTypes, MutationEnums, StoreTypes } from "@/types/store/root";
-import { ISessionState } from "@/types/store/session";
+import authManager from './modules/auth.ts';
+import {
+  IAction, GetterTypes, IRootState, MutationTypes, MutationEnums, StoreTypes
+} from '@/types/store/root';
+import { IAuthState } from '@/types/store/auth.ts';
 
 const state: IRootState = {
   openLoginDialog: false,
@@ -35,16 +37,15 @@ const mutations: MutationTree<IRootState> & MutationTypes = {
     state.openForgotPasswordDialog = payload;
   },
   [MutationEnums.MUTATE_POSTS](state: IRootState) {
-    state.keyMutatePosts++
+    state.keyMutatePosts++;
   },
   [MutationEnums.SET_STATE_ROUTER](state: IRootState, payload) {
     state.stateRouter = payload;
   },
   [MutationEnums.MESSAGE_TO_USER](state: IRootState, newState) {
-    state.showChatbox = true
-    // state.showChatbox = !state.showChatbox
-    state.currentUserToMessage = newState
-  }
+    state.showChatbox = true;
+    state.currentUserToMessage = newState;
+  },
 };
 
 // getters
@@ -62,7 +63,7 @@ const getters: GetterTree<IRootState, IRootState> & GetterTypes = {
 // actions
 const actions: ActionTree<IRootState, IRootState> & IAction = {};
 
-const session: Module<ISessionState, IRootState> = sessionManager
+const session: Module<IAuthState, IRootState> = authManager;
 
 export const store = createStore({
   state,
@@ -70,7 +71,7 @@ export const store = createStore({
   actions,
   getters,
   modules: {
-    session
+    session,
   },
 });
 

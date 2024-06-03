@@ -1,148 +1,163 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
-import { Form } from 'vee-validate';
-import { useRouter } from "vue-router";
-import { useMediaQuery } from "@vueuse/core";
+import { useRouter } from 'vue-router';
+import { useMediaQuery } from '@vueuse/core';
 
-import { useStore } from "@/store";
-import { ActionEnums, MutationEnums } from "@/types/store/root";
-import Input from "@/core/components/forms/Input.vue";
-import Button from "@/core/components/Button.vue";
-import { logger } from "@/core/helper";
-import { validationLoginSchema } from "@/lib/validations/user";
-import { mapGetters } from "@/lib/map-state";
-import Dialog from "@/core/components/Dialog.vue";
+import { useStore } from '@/store';
+import { ActionEnums, MutationEnums } from '@/types/store/root';
+import Input from '@/core/components/forms/Input.vue';
+import Button from '@/core/components/Button.vue';
+import { logger } from '@/core/helper';
+import { validationLoginSchema } from '@/validations/user';
+import { mapGetters } from '@/lib/map-state';
+import Dialog from '@/core/components/Dialog.vue';
 
-const isLargeScreen = useMediaQuery('(min-width: 1024px)')
+const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
-const store = useStore()
-const router = useRouter()
+const store = useStore();
+const router = useRouter();
 const { getOpenLoginDialog: isOpenDialog, isLoggedIn, getUser } = mapGetters();
 
 const isSubmitted = ref(false);
 const isLoading = ref(false);
 
-const { handleSubmit, errors, resetForm, setErrors, setFieldError } = useForm({
+const {
+  handleSubmit, errors, resetForm, setFieldError,
+} = useForm({
   validationSchema: validationLoginSchema,
-  validateOnMount: false
+  validateOnMount: false,
 });
 
 const { value: email } = useField<string>('email');
 const { value: password } = useField<string>('password');
 
 const validate = (e: Event) => {
-  isSubmitted.value = true
+  isSubmitted.value = true;
   if (Object.keys(errors.value).length === 0) {
-    onSubmit(e)
+    onSubmit(e);
   }
-}
+};
 
 const onSubmit = handleSubmit(async (vals) => {
   const data = { user: vals };
-  isLoading.value = true
-  logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue')
-  const message = await store.dispatch(ActionEnums.LOGIN, data)
-  isLoading.value = false
+  isLoading.value = true;
+  logger.debug('Login Dialog execute onSubmit', data, 'src/components/dialog/LoginDialog.vue');
+  const message = await store.dispatch(ActionEnums.LOGIN, data);
+  isLoading.value = false;
   if (message) {
-    setFieldError('email', message)
-    return
+    setFieldError('email', message);
+    return;
   }
-  router.push({ name: 'home' })
-  closeDialog()
-  resetForm()
-})
+  router.push({ name: 'home' });
+  closeDialog();
+  resetForm();
+});
 
 function closeDialog() {
-  if (isLoading.value) return
-  store.commit(MutationEnums.SET_LOGIN_DIALOG, false)
-  isSubmitted.value = false
-  resetForm()
+  if (isLoading.value) return;
+  store.commit(MutationEnums.SET_LOGIN_DIALOG, false);
+  isSubmitted.value = false;
+  resetForm();
 }
 
 function openDialog() {
-  store.commit(MutationEnums.SET_LOGIN_DIALOG, true)
+  store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
 }
 
 const openRegisterDialog = () => {
-  if (isLoading.value) return
-  store.commit(MutationEnums.SET_REGISTER_DIALOG, true)
-  closeDialog()
-}
+  if (isLoading.value) return;
+  store.commit(MutationEnums.SET_REGISTER_DIALOG, true);
+  closeDialog();
+};
 
 const openForgotPasswordDialog = () => {
-  if (isLoading.value) return
-  store.commit(MutationEnums.SET_FORGOT_PASSWORD_DIALOG, true)
-  closeDialog()
-}
+  if (isLoading.value) return;
+  store.commit(MutationEnums.SET_FORGOT_PASSWORD_DIALOG, true);
+  closeDialog();
+};
 
 </script>
 
 <template>
   <Dialog
-      :show="isOpenDialog"
-      :closeDialog="closeDialog"
-      classPanel="min-w-[100vw] md:min-w-[400px] md:max-w-sm md:mt-20 flex flex-col justify-center"
+    :show="isOpenDialog"
+    :close-dialog="closeDialog"
+    class-panel="min-w-[100vw] md:min-w-[400px] md:max-w-sm md:mt-20 flex flex-col justify-center"
   >
     <template
-        v-if="!isLoggedIn"
-        v-slot:trigger
+      v-if="!isLoggedIn"
+      #trigger
     >
       <Button
-          :variant="isLargeScreen ? 'primary' : 'outline'"
-          @click="openDialog"
-          class="w-full"
-      >Log In
+        :variant="isLargeScreen ? 'primary' : 'outline'"
+        class="w-full"
+        @click="openDialog"
+      >
+        Log In
       </Button>
     </template>
 
-    <template v-slot:panel>
+    <template #panel>
       <div class="flex flex-col gap-5">
         <div class="text-center">
-          <h1 class="text-2xl mb-1 text-black">Welcome Back</h1>
-          <p class="text-sm text-zinc-700 font-light">We're so excited to see you again!</p>
+          <h1 class="text-2xl mb-1 text-black">
+            Welcome Back
+          </h1>
+          <p class="text-sm text-zinc-700 font-light">
+            We're so excited to see you again!
+          </p>
         </div>
         <div class="flex flex-col gap-5 ">
-          <form @submit.prevent="validate" class="login-form">
+          <form
+            class="login-form"
+            @submit.prevent="validate"
+          >
             <Input
-                :disabled="isLoading"
-                classWrapper="mb-4"
-                size="md"
-                label="Email"
-                v-model="email"
-                :helper-text="isSubmitted ? errors.email : '' "
+              v-model="email"
+              :disabled="isLoading"
+              class-wrapper="mb-4"
+              size="md"
+              label="Email"
+              :helper-text="isSubmitted ? errors.email : '' "
             />
             <Input
-                :disabled="isLoading"
-                classWrapper="mb-4"
-                size="md"
-                label="Password"
-                v-model="password"
-                type="password"
-                :helper-text="isSubmitted ? errors.password : '' "
+              v-model="password"
+              :disabled="isLoading"
+              class-wrapper="mb-4"
+              size="md"
+              label="Password"
+              type="password"
+              :helper-text="isSubmitted ? errors.password : '' "
             />
             <div class=" flex justify-end">
               <p
-                  @click="openForgotPasswordDialog"
-                  class="text-sm mb-4 text-link"
-              >Forgot password?</p>
+                class="text-sm mb-4 text-link"
+                @click="openForgotPasswordDialog"
+              >
+                Forgot password?
+              </p>
             </div>
             <Button
-                :isLoading="isLoading"
-                radius="lg"
-                class="w-full"
-                size="md"
-                v-on:submit.prevent="onSubmit"
+              :is-loading="isLoading"
+              radius="lg"
+              class="w-full"
+              size="md"
+              @submit.prevent="onSubmit"
             >
               Log in
             </Button>
           </form>
           <div class="flex justify-center text-sm">
-            <p class="text-zinc-500 mr-1">New to Meepo?</p>
+            <p class="text-zinc-500 mr-1">
+              New to Meepo?
+            </p>
             <p
-                @click="openRegisterDialog"
-                class="text-link"
-            >Sign up </p>
+              class="text-link"
+              @click="openRegisterDialog"
+            >
+              Sign up
+            </p>
           </div>
         </div>
       </div>

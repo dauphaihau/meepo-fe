@@ -1,10 +1,10 @@
-import { computed } from 'vue'
-import { useStore } from "@/store";
-import { GetterTypes } from "@/types/store/root";
+import { computed } from 'vue';
+import { useStore } from '@/store';
+import { GetterTypes } from '@/types/store/root';
 
 // export const mapState = () => {
 //   const store = useStore()
-//   console.log('dauphaihau debug: store-', store.state.openLoginDialog)
+//   // console.log('store-state-open-login-dialog', store.state.openLoginDialog);
 //   return Object.fromEntries(
 //     Object.keys(store.state).map(
 //       key => [key, computed(() => store.state[key])]
@@ -13,13 +13,13 @@ import { GetterTypes } from "@/types/store/root";
 // }
 
 export const mapGetters = () => {
-  const store = useStore()
+  const store = useStore();
   return Object.fromEntries(
     Object.keys(store.getters).map(
       getter => [getter, computed(() => store.getters[getter])]
     )
-  ) as { [K in keyof GetterTypes]: any }
-}
+  ) as { [K in keyof GetterTypes]: any };
+};
 
 // export const mapMutations = () => {
 //   const store = useStore()

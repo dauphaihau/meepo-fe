@@ -1,21 +1,17 @@
 import { IUser } from './user';
+import { POST_FILTER_BY } from '@/config/const.ts';
+import { z } from 'zod';
+import { postSchema } from '@/validations/post.ts';
+import { POST_PIN_STATUS } from '@config/post.ts';
 
-export enum WHO_CAN_COMMENT {
-  EVERYONE,
-  FOLLOWED
-}
+type IPost = z.infer<typeof postSchema>
 
-export enum PIN_STATUS {
-  UNPIN,
-  PIN,
-}
-
-export interface IPost {
+export interface IPostTemp {
   id: number,
   content: string,
   likes_count: number,
   sub_posts_count: number,
-  pin_status: PIN_STATUS,
+  pin_status: POST_PIN_STATUS,
   user_id: number,
   parent_id: number,
   image_url: string,
@@ -39,8 +35,34 @@ export interface IPost {
   edited_posts_count: number
   edited_parent_id?: number
   author?: IUser
-  isExpiresEdit?: boolean
 }
+
+interface IBaseParamsGetPostList {
+  by: POST_FILTER_BY
+  limit: number
+}
+
+export type IParamsGetPosts = IBaseParamsGetPostList & {
+  username?: IPostTemp['author_username']
+  page: number
+} & Partial<Pick<IPostTemp, 'parent_id' | 'pin_status' | 'user_id' | 'edited_parent_id'>>
+
+export type ICreatePost =
+  Pick<IPostTemp, 'parent_id' | 'content'> &
+  Partial<Pick<IPostTemp, 'pin_status' | 'image_url' | 'who_can_comment'>> & {
+  hashtags?: string[]
+}
+
+export type IUpdatePost =
+  Pick<IPostTemp, 'id' > &
+  Partial<Pick<IPostTemp, 'content' |'parent_id' | 'pin_status' | 'image_url' | 'who_can_comment'>> & {
+  hashtags?: string[]
+}
+
+export type IResponseGetDetailPost = {
+  post: IPostTemp & { parent_post?: IPostTemp }
+}
+
 
 export interface IHashtag {
   name: string,
