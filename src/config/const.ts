@@ -1,4 +1,16 @@
-export enum FILTER_POST_BY {
+export enum PAGE_PATHS {
+  HOME = '/home',
+  FOLLOWERS = '/followers',
+  FOLLOWING = '/following',
+  MESSAGES = '/messages',
+  POSTS = '/posts',
+  USER = '/user',
+  SEARCH = '/search',
+  ROOMS = '/rooms',
+  EXPLORE = '/explore',
+}
+
+export enum POST_FILTER_BY {
   DEFAULT,
   COMMENTS,
   LIKES,
@@ -6,14 +18,14 @@ export enum FILTER_POST_BY {
   FOLLOWING,
 }
 
-export enum FILTER_SEARCH {
-  TOP,
-  LATEST,
-  PEOPLE,
-  MEDIA,
+export enum FILTER_SEARCH_ALL {
+  TOP = 'top',
+  LATEST = 'latest',
+  PEOPLE = 'people',
+  MEDIA = 'media',
 }
 
-export enum FILTER_USER_BY {
+export enum USER_FILTER_BY {
   DEFAULT,
   UNFOLLOW_CURRENT_USER,
   FOLLOWERS_BY_USERNAME,

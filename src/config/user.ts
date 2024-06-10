@@ -1,0 +1,6 @@
+
+export const USER_CONFIG = {
+  HOUR_EXPIRES_EDIT: 1,
+  MIN_YEAR_BIRTH: 1980,
+  MAX_CHAR_BIO: 160,
+};

@@ -1,18 +1,23 @@
-import { createApp } from 'vue'
-import { store as VuexStore } from '@/store'
-import axios from 'axios';
-import FloatingVue from 'floating-vue'
+import { createApp } from 'vue';
+import FloatingVue from 'floating-vue';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
+import { VueQueryPlugin } from '@tanstack/vue-query';
+import { createPinia } from 'pinia';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
 
-import '@/assets/main.css'
-import '@/assets/tooltip.css'
+import '@/assets/main.css';
+import '@/assets/tooltip.css';
 
-const app = createApp(App)
-app.use(FloatingVue)
-app.use(VuexStore)
-// @ts-ignore: error TS2345: Argument of type 'AxiosStatic' is not assignable to parameter of type '[]'
-app.use(router, axios)
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
-app.mount('#app')
+const app = createApp(App);
+
+app.use(pinia);
+app.use(FloatingVue);
+app.use(VueQueryPlugin);
+
+app.use(router);
+app.mount('#app');

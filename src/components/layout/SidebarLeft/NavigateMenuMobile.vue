@@ -1,73 +1,84 @@
-<template>
-  <nav
-      class="fixed bottom-0 w-full z-[3] transition-all duration-500  border-t"
-      :class="{'opacity-50': direction === 'down'}"
-  >
-    <div class="grid grid-cols-4 gap-4 bg-white h-[52px] w-full">
-
-      <router-link
-          class="link" to="/home"
-          v-slot="{ href, route, navigate, isActive, isExactActive }"
-      >
-        <HomeIcon v-if="isActive"/>
-        <HomeIconOutline v-else/>
-      </router-link>
-
-      <router-link
-          class="link" to="/explore"
-          v-slot="{ href, navigate, isActive, isExactActive }"
-      >
-        <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'"/>
-      </router-link>
-
-      <router-link
-          v-if="isLoggedIn" class="link" :to="'/user/' + getUser.username"
-          v-slot="{ href,  navigate, isActive, isExactActive }"
-          active-class="active"
-      >
-        <UserIcon v-if="route.name === 'profile'"/>
-        <UserIconOutline v-else/>
-      </router-link>
-<!--      <div class="link opacity-30">-->
-<!--        <BellIcon v-if="route.name === 'notifications'"/>-->
-<!--        <BellIconOutline v-else/>-->
-<!--      </div>-->
-
-      <router-link
-          class="link"
-          to="/messages"
-          v-slot="{ href,  navigate, isActive, isExactActive }"
-          active-class="active"
-      >
-        <EnvelopeIcon v-if="route.name === 'messages'"/>
-        <EnvelopeIconOutline v-else/>
-      </router-link>
-    </div>
-  </nav>
-
-</template>
-
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { HomeIcon, UserIcon, EnvelopeIcon, BellIcon } from "@heroicons/vue/20/solid"
+import { useRoute } from 'vue-router';
 import {
+  HomeIcon, UserIcon, EnvelopeIcon
+} from '@heroicons/vue/20/solid';
+import {
+  BellIcon as BellIconOutline,
   HomeIcon as HomeIconOutline,
   UserIcon as UserIconOutline,
   MagnifyingGlassIcon,
-  EnvelopeIcon as EnvelopeIconOutline,
-  BellIcon as BellIconOutline,
-} from "@heroicons/vue/24/outline"
+  EnvelopeIcon as EnvelopeIconOutline
+} from '@heroicons/vue/24/outline';
 
-import { mapGetters } from "@/lib/map-state";
-import { useScrollDirection } from "@/core/hooks/useScrollDirection";
+import { useScrollDirection } from '@/core/hooks/useScrollDirection';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@stores/auth.ts';
+import { PAGE_PATHS } from '@config/const.ts';
 
-const { getUser, isLoggedIn } = mapGetters()
+const { isLoggedIn, user } = storeToRefs(useAuthStore());
 
-const direction = useScrollDirection()
-const route = useRoute()
-const router = useRouter()
+const direction = useScrollDirection();
+const route = useRoute();
 
 </script>
+
+
+<template>
+  <nav
+    class="md:hidden fixed bottom-0 w-full z-[3] transition-all duration-500  border-t"
+    :class="{'opacity-50': direction === 'down'}"
+  >
+    <div class="grid grid-cols-5 gap-4 bg-white h-[52px] w-full">
+      <router-link
+        v-slot="{ isActive }"
+        class="link"
+        to="/home"
+      >
+        <HomeIcon v-if="isActive" />
+        <HomeIconOutline v-else />
+      </router-link>
+
+      <router-link
+        v-slot="{ isActive }"
+        class="link"
+        to="/explore"
+      >
+        <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'" />
+      </router-link>
+
+      <router-link
+        v-if="isLoggedIn"
+        class="link"
+        :to="`${PAGE_PATHS.USER}/${user.username}`"
+        active-class="active"
+      >
+        <UserIcon v-if="route.name === 'profile'" />
+        <UserIconOutline v-else />
+      </router-link>
+
+      <router-link
+        v-if="isLoggedIn"
+        class="link opacity-50 pointer-events-none"
+        to="/"
+        active-class="active"
+      >
+        <BellIconOutline />
+      </router-link>
+
+      <router-link
+        v-if="isLoggedIn"
+        class="link"
+        to="/messages"
+        active-class="active"
+      >
+        <EnvelopeIcon v-if="route.name === 'messages'" />
+        <EnvelopeIconOutline v-else />
+      </router-link>
+    </div>
+  </nav>
+</template>
+
 
 <style scoped>
 

@@ -1,85 +1,94 @@
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+import { HomeIcon, UserIcon } from '@heroicons/vue/20/solid';
+import {
+  BellIcon as BellIconOutline,
+  BookmarkIcon as BookmarkIconOutline,
+  Cog8ToothIcon as SettingIconOutline,
+  HomeIcon as HomeIconOutline,
+  MagnifyingGlassIcon,
+  UserIcon as UserIconOutline
+} from '@heroicons/vue/24/outline';
+
+import { PAGE_PATHS } from '@config/const.ts';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@stores/auth.ts';
+
+const route = useRoute();
+
+const { isLoggedIn, user } = storeToRefs(useAuthStore());
+
+</script>
+
+
 <template>
   <nav>
     <router-link
-        :to="isLoggedIn ? '/home' : '/explore' "
-        class="font-black text-black font-[Alphabets4] py-2 px-3 lg:px-4 text-4xl "
-    >m
+      :to="isLoggedIn ? PAGE_PATHS.HOME : PAGE_PATHS.EXPLORE "
+      class="font-black text-black font-[Alphabets4] py-2 px-3 lg:px-4 text-4xl "
+    >
+      m
     </router-link>
 
     <router-link
-        v-if="isLoggedIn"
-        class="link" to="/home"
-        v-slot="{ href, route, navigate, isActive, isExactActive }"
+      v-if="isLoggedIn"
+      v-slot="{ isActive }"
+      class="link"
+      :to="PAGE_PATHS.HOME"
     >
-      <HomeIcon v-if="isActive"/>
-      <HomeIconOutline v-else/>
-      <p :class="isActive && 'active'">Home</p>
+      <HomeIcon v-if="isActive" />
+      <HomeIconOutline v-else />
+      <p :class="isActive && 'active'">
+        Home
+      </p>
     </router-link>
 
     <router-link
-        class="link" to="/explore"
-        v-slot="{ href, navigate, isActive, isExactActive }"
+      v-slot="{ isActive }"
+      class="link"
+      :to="PAGE_PATHS.EXPLORE"
     >
-      <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'"/>
-      <p :class="( route.name === 'search' || isActive ) && 'active'">Explore</p>
+      <MagnifyingGlassIcon :class="( route.name === 'search' || isActive ) && 'active' && 'stroke-[3]'" />
+      <p :class="( route.name === 'search' || isActive ) && 'active'">
+        Explore
+      </p>
     </router-link>
 
     <router-link
-        v-if="isLoggedIn" class="link" :to="'/user/' + getUser.username"
-        v-slot="{ href,  navigate, isActive, isExactActive }"
-        active-class="active"
+      v-if="isLoggedIn"
+      class="link"
+      :to="`${PAGE_PATHS.USER}/${user.username}`"
+      active-class="active"
     >
-      <UserIcon v-if="route.name === 'profile'"/>
-      <UserIconOutline v-else/>
-      <p :class="route.name === 'profile' && 'active'">Profile</p>
+      <UserIcon v-if="route.name === 'profile'" />
+      <UserIconOutline v-else />
+      <p :class="route.name === 'profile' && 'active'">
+        Profile
+      </p>
     </router-link>
 
     <div
-        v-if="isLoggedIn"
-        class="link opacity-50"
+      v-if="isLoggedIn"
+      class="link opacity-50"
     >
-      <BellIconOutline/>
+      <BellIconOutline />
       <p>Notifications</p>
     </div>
 
     <div
-        v-if="isLoggedIn"
-        class="link opacity-50"
+      v-if="isLoggedIn"
+      class="link opacity-50"
     >
-      <BookmarkIconOutline/>
+      <BookmarkIconOutline />
       <p>Bookmarks</p>
     </div>
 
     <div class="link opacity-50">
-      <SettingIconOutline/>
+      <SettingIconOutline />
       <p>Settings</p>
     </div>
-
   </nav>
 </template>
-
-<script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { HomeIcon, UserIcon } from "@heroicons/vue/20/solid"
-import {
-  HomeIcon as HomeIconOutline,
-  UserIcon as UserIconOutline,
-  BookmarkIcon as BookmarkIconOutline,
-  Cog8ToothIcon as SettingIconOutline,
-  BellIcon as BellIconOutline,
-  MagnifyingGlassIcon,
-} from "@heroicons/vue/24/outline"
-
-import { mapGetters } from "@/lib/map-state";
-import { useScrollDirection } from "@/core/hooks/useScrollDirection";
-
-const { getUser, isLoggedIn } = mapGetters()
-
-const direction = useScrollDirection()
-const route = useRoute()
-const router = useRouter()
-
-</script>
 
 
 <style scoped>

@@ -7,30 +7,29 @@ Meepo is a free social networking site where people converse with each other in 
 ## Stack
 - [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
 - [Vue](https://vuejs.org/) - The Progressive JavaScript Framework
-- [Vuex](https://vuex.vuejs.org/) - State management library for Vue
+- [Vue Query](https://vuejs.org/) - Managing and caching asynchronous data
+- [Pinia](https://pinia.vuejs.org/) - State management library for Vue
 - [Typescript](https://www.typescriptlang.org/) - Static Type Checking
 - [Ruby on Rails](https://www.typescriptlang.org/) - Full-stack Framework, use to build server-side
 - [Postgresql](https://www.postgresql.org/) - Relational Database
 - [Redis](https://redis.io/) - In-memory data structure store, use to cache data
 
-## Work In Progress
-The app is being under maintenance, as more work needs to be done.
-
-Current functionality includes:
-- Log in, sign up, sign out, forgot password, update profile
-- Follow/unfollow user
-- Chat
-- CURD, like, comment, pin, filters, limit edit post
-- Search posts/users based on followers, likes, image, where user comment 
+## Features
+- Log in, sign up, sign out, forgot password
+- User can update profile
+- User can create, delete, update, like, reply, pin post
+- Users can see their and other followers and the following list
+- Users can follow/unfollow other user
+- Realtime update likes, reply
+- Search posts/users based on followers, likes, image, where user reply 
 - Search trends based on hashtags 
+- Chat
+- Limit edit post
+- Responsive design for mobile, tablet, and desktop
 
 ## Known Bugs
 Feel free to email me at dauphaihau@gmail.com if you run into any issues or have questions, ideas or concerns. Please enjoy
 and feel free to share your opinion, constructive criticism, or comments about my work. Thank you! 🙂
-
-## Future Updates
-- Improve overall UX/UI and fix bugs
-- Realtime notifications
 
 And More ! There's always room for improvement!
 

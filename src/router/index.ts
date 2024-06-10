@@ -1,86 +1,68 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-
-import Home from "@/components/pages/home.vue";
-import Post from "@/components/pages/post.vue";
-import History from "@components/pages/history-edited-posts.vue";
-import Profile from "@/components/pages/profile.vue";
-import Follow from "@/components/pages/follow.vue";
-import Search from "@/components/pages/search.vue";
-import Explore from "@/components/pages/explore.vue";
-import Room from "@components/pages/room.vue";
-import Messages from "@/components/pages/messages.vue";
-import NotFound from "@/components/pages/not-found.vue";
-import Test from "@/components/pages/test.vue";
-import { mapGetters } from "@/lib/map-state";
-import { ActionEnums } from "@/types/store/root";
-import { store } from "@/store";
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { PAGE_PATHS } from '@config/const.ts';
+import { useAuthStore } from '@stores/auth.ts';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/home',
+    path: PAGE_PATHS.HOME,
     name: 'home',
-    component: Home,
-    meta: { requiresAuth: true }
+    component: () => import('@pages/home.vue'),
+    meta: { requiresAuth: true },
   },
   {
-    path: '/posts/:id',
+    path: `${PAGE_PATHS.POSTS}/:id`,
     name: 'post',
-    component: Post
+    component: () => import('@pages/post.vue'),
   },
   {
-    path: '/posts/:id/history',
+    path: `${PAGE_PATHS.POSTS}/:id/history`,
     name: 'history',
-    component: History
+    component: () => import('@pages/history-edited-posts.vue'),
   },
   {
-    path: '/user/:username',
+    path: `${PAGE_PATHS.USER}/:username`,
     name: 'profile',
-    component: Profile
+    component: () => import('@pages/profile.vue'),
   },
   {
-    path: '/user/:username/following',
+    path: `${PAGE_PATHS.USER}/:username/following`,
     name: 'following',
-    component: Follow,
-    props: true
+    component: () => import('@pages/follow.vue'),
+    props: true,
   },
   {
-    path: '/user/:username/followers',
+    path: `${PAGE_PATHS.USER}/:username/followers`,
     name: 'followers',
-    component: Follow,
-    props: true
+    component: () => import('@pages/follow.vue'),
+    props: true,
   },
   {
-    path: '/search',
+    path: PAGE_PATHS.SEARCH,
     name: 'search',
-    component: Search,
-    props: true
+    component: () => import('@pages/search.vue'),
+    props: true,
   },
   {
-    path: '/explore',
+    path: PAGE_PATHS.EXPLORE,
     name: 'explore',
-    component: Explore,
+    component: () => import('@pages/explore.vue'),
   },
   {
-    path: '/messages',
+    path: PAGE_PATHS.MESSAGES,
     name: 'messages',
-    component: Messages,
+    component: () => import('@pages/messages.vue'),
   },
   {
-    path: '/room',
-    name: 'room',
-    component: Room,
+    path: PAGE_PATHS.ROOMS,
+    name: 'rooms',
+    component: () => import('@pages/rooms.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: NotFound,
+    component: () => import('@pages/not-found.vue'),
   },
-  // {
-  //   path: '/test',
-  //   name: 'test',
-  //   component: Test
-  // },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -88,40 +70,40 @@ const router = createRouter({
   scrollBehavior: function (to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition;
-    } else {
-      return { top: 0 }
+    }
+    else {
+      return { top: 0 };
     }
   },
 });
 
 router.beforeResolve(async (to, from, next) => {
-  const { isLoggedIn } = mapGetters()
+  const authStore = useAuthStore();
 
-  if (!isLoggedIn.value) {
-    let localAuthToken = localStorage.auth_token;
-    let tokenExists = localAuthToken !== "undefined" && localAuthToken !== null;
+  if (!authStore.isLoggedIn) {
+    const tokenExists = sessionStorage.getItem('auth_token');
     if (tokenExists) {
-      const auth_token = localStorage.getItem("auth_token");
-      const authTokenExists = auth_token !== "undefined" && auth_token !== null;
-      if (authTokenExists) {
-        await store.dispatch(ActionEnums.LOGIN_WITH_TOKEN);
-      }
+      await authStore.me();
+    }
+    else {
+      authStore.loadingAuth = false;
     }
   }
 
-  if (to.meta.requiresAuth && !isLoggedIn.value) {
-    return next('/explore')
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    return next(PAGE_PATHS.EXPLORE);
   }
 
   if (to.path === '/') {
-    if (isLoggedIn.value) {
-      return next('/home')
-    } else {
-      return next('/explore')
+    if (authStore.isLoggedIn) {
+      return next(PAGE_PATHS.HOME);
+    }
+    else {
+      return next(PAGE_PATHS.EXPLORE);
     }
   }
 
-  next()
-})
+  next();
+});
 
-export default router
+export default router;

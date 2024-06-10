@@ -1,34 +1,17 @@
 import { IUser } from './user';
+import { POST_FILTER_BY } from '@/config/const.ts';
+import { z } from 'zod';
+import { postSchema } from '@/schemas/post.ts';
+import { IBaseParamsGetList } from '@/types/common.ts';
 
-export enum WHO_CAN_COMMENT {
-  EVERYONE,
-  FOLLOWED
-}
+export type IPost = z.infer<typeof postSchema>
 
-export enum PIN_STATUS {
-  UNPIN,
-  PIN,
-}
+export type IParamsGetPosts = IBaseParamsGetList & {
+  by: POST_FILTER_BY
+  username?: IUser['username']
+} & Partial<Pick<IPost, 'parent_id' | 'pin_status' | 'user_id' | 'edited_parent_id'>>
 
-export interface IPost {
-  id: number,
-  content: string,
-  likes_count: number,
-  sub_posts_count: number,
-  pin_status: PIN_STATUS,
-  user_id: number,
-  parent_id: number,
-  image_url: string,
-  // who_can_comment: `${WHO_CAN_COMMENT}` extends `${infer T extends number}` ? T : never
-  // who_can_comment: typeof WHO_CAN_COMMENT,
-  // who_can_comment: WHO_CAN_COMMENT.EVERYONE | WHO_CAN_COMMENT.FOLLOWED,
-  // who_can_comment: keyof typeof WHO_CAN_COMMENT,
-  // who_can_comment: typeof WHO_CAN_COMMENT,
-  // who_can_comment: typeof IUser['email'],
-  // who_can_comment: 0 | 1
-  who_can_comment: number
-  created_at: Date
-  updated_at: Date
+export type IResponseGetPost = IPost & {
   is_current_user_like?: boolean
   author_avatar_url?: string
   author_name?: string
@@ -36,11 +19,43 @@ export interface IPost {
   is_current_user_can_comment?: boolean
   who_can_comment_int?: number
   pin_status_int?: number
-  edited_posts_count: number
-  edited_parent_id?: number
   author?: IUser
-  isExpiresEdit?: boolean
+  sub_post?: IResponseGetPost
 }
+
+export type IResponseGetPosts = {
+  total_posts: number
+  posts?: IResponseGetPost[]
+}
+
+export type ICreatePost =
+  Pick<IPost, 'content' | 'parent_id'> &
+  Partial<Pick<IPost, 'pin_status' | 'image_url' | 'who_can_comment'>> & {
+  hashtags?: string[]
+}
+
+export type ICreateSubPost =
+  Pick<IPost, 'parent_id' | 'content'> &
+  Partial<Pick<IPost, 'pin_status' | 'image_url' | 'who_can_comment'>> & {
+  hashtags?: string[]
+}
+
+export type IUpdatePost =
+  Pick<IPost, 'id' > &
+  Partial<Pick<IPost, 'content' |'parent_id' | 'pin_status' | 'image_url' | 'who_can_comment'>> & {
+  hashtags?: string[]
+}
+
+export type IResponseGetDetailPost = {
+  post: IPost & {
+    parent_post?: Exclude<IResponseGetDetailPost['post'], 'parent_post'>
+    sub_posts_count: number,
+    is_current_user_can_comment?: boolean
+    is_current_user_like?: boolean
+    author: IUser
+  }
+}
+
 
 export interface IHashtag {
   name: string,
