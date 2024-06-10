@@ -3,8 +3,8 @@ import { defineConfig, loadEnv } from 'vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
-import * as VueMacros from 'unplugin-vue-macros/vite';
-import * as ReactivityTransform from '@vue-macros/reactivity-transform/vite';
+import VueMacros from 'unplugin-vue-macros/vite';
+import ReactivityTransform from '@vue-macros/reactivity-transform/vite';
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -39,15 +39,6 @@ export default ({ mode }) => {
               // alias
               ['useFetch', 'useMyFetch'], // import { useFetch as useMyFetch } from '@vueuse/core',
             ],
-            axios: [
-              // default imports
-              ['default', 'axios'], // import { default as axios } from 'axios',
-            ],
-            '[package-name]': [
-              '[import-names]',
-              // alias
-              ['[from]', '[alias]'],
-            ],
           },
           // example type import
           {
@@ -58,7 +49,7 @@ export default ({ mode }) => {
         ],
         // Enable auto import by filename for default module exports under directories
         defaultExportByFilename: false,
-        dts: './auto-imports.d.ts',
+        dts: 'src/auto-imports.d.ts',
         // Generate corresponding .eslintrc-auto-import.json file.
         // eslint globals Docs - https://eslint.org/docs/user-guide/configuring/language-options#specifying-globals
         eslintrc: {

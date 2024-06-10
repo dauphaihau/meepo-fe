@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { cn } from '@core/helpers/common.js';
 
+const VARIANT_MAPS = {
+  primary: 'fill-black text-white',
+  outline: 'fill-black text-white',
+  secondary: 'fill-white text-black',
+};
+
 interface IProps {
   classes?: string
-  variant?: 'primary' | 'secondary'
+  variant?: keyof typeof VARIANT_MAPS
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   variant: 'primary',
   classes: '',
 });
-
-const VARIANT_MAPS = {
-  primary: 'fill-black text-white',
-  secondary: 'fill-white text-black',
-};
 
 </script>
 

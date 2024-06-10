@@ -53,39 +53,9 @@
   "references": [{ "path": "./tsconfig.node.json" }],
   "exclude": [
     "node_modules",
-//    "src/auto-import.d.ts"
+    "src/auto-import.d.ts",
     "auto-import.d.ts"
   ],
   "types": ["@vue-macros/reactivity-transform/macros-global"],
   "files": ["node_modules/@vue/runtime-core/dist/runtime-core.d.ts"],
-  "vueCompilerOptions": {
-    "plugins": [
-      "@vue-macros/volar/define-options",
-      "@vue-macros/volar/define-models",
-      "@vue-macros/volar/define-prop",
-      "@vue-macros/volar/define-props",
-      "@vue-macros/volar/define-props-refs",
-      "@vue-macros/volar/short-vmodel",
-      "@vue-macros/volar/define-slots",
-      "@vue-macros/volar/jsx-directive",
-      "@vue-macros/volar/setup-jsdoc",
-      "@vue-macros/volar/boolean-prop",
-
-      // Choose only one of the following
-      // "@vue-macros/volar/export-expose",
-      // "@vue-macros/volar/export-props",
-      // "@vue-macros/volar/export-render",
-    ],
-    "vueMacros": {
-      "exportExpose": {
-        "include": ["**/export-expose/**"],
-      },
-      "exportProps": {
-        "include": ["**/export-props/**"],
-      },
-      "exportRender": {
-        "include": ["**/export-render/**"],
-      },
-    },
-  }
 }

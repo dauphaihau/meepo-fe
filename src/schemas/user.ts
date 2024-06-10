@@ -19,7 +19,7 @@ export const userSchema = z.object({
   website: z.string(),
   location: z.string(),
   posts_count: z.number(),
-  dob: z.date(),
+  dob: z.string().datetime(),
   created_at: z.date(),
   updated_at: z.date(),
 });

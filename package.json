@@ -36,7 +36,6 @@
     "vee-validate": "^4.11.1",
     "vue": "3.4.27",
     "vue-router": "4.2.2",
-    "vuex": "4.0.0-beta.4",
     "zod": "^3.21.4"
   },
   "devDependencies": {

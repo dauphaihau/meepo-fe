@@ -8,8 +8,6 @@ import { useGetPosts } from '@services/post';
 import { POST_FILTER_BY } from '@config/const';
 import { IParamsGetPosts } from '@/types/post';
 import HomePost from '@components/pages/home/HomePost.vue';
-import useRealtimePost from '@composables/useRealtimePost.ts';
-import useRealtimePosts from '@composables/useRealtimePosts.ts';
 
 interface IProps {
   by?: POST_FILTER_BY.DEFAULT | POST_FILTER_BY.FOLLOWING,

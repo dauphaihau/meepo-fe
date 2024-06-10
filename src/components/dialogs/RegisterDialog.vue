@@ -155,10 +155,11 @@ function closeDialog() {
                 class="mb-6"
                 :error="isSubmitted ? errors.dob : '' "
                 label="Date of birth"
+                description="Month, Day and Year"
               >
                 <DateBirthInput
                   v-model="dob"
-                  default-value="null"
+                  :default-value="null"
                   :disabled="isLoading"
                 />
               </FormGroup>

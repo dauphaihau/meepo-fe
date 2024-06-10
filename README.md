@@ -8,7 +8,7 @@ Meepo is a free social networking site where people converse with each other in 
 - [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
 - [Vue](https://vuejs.org/) - The Progressive JavaScript Framework
 - [Vue Query](https://vuejs.org/) - Managing and caching asynchronous data
-- [Vuex](https://vuex.vuejs.org/) - State management library for Vue
+- [Pinia](https://pinia.vuejs.org/) - State management library for Vue
 - [Typescript](https://www.typescriptlang.org/) - Static Type Checking
 - [Ruby on Rails](https://www.typescriptlang.org/) - Full-stack Framework, use to build server-side
 - [Postgresql](https://www.postgresql.org/) - Relational Database
@@ -17,11 +17,11 @@ Meepo is a free social networking site where people converse with each other in 
 ## Features
 - Log in, sign up, sign out, forgot password
 - User can update profile
-- User can create, delete, update, like, comment, pin post
+- User can create, delete, update, like, reply, pin post
 - Users can see their and other followers and the following list
 - Users can follow/unfollow other user
-- Realtime update likes, comment
-- Search posts/users based on followers, likes, image, where user comment 
+- Realtime update likes, reply
+- Search posts/users based on followers, likes, image, where user reply 
 - Search trends based on hashtags 
 - Chat
 - Limit edit post

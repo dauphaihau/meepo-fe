@@ -3352,7 +3352,6 @@ __metadata:
     vue-eslint-parser: "npm:^9.4.2"
     vue-router: "npm:4.2.2"
     vue-tsc: "npm:^1.8.5"
-    vuex: "npm:4.0.0-beta.4"
     zod: "npm:^3.21.4"
   languageName: unknown
   linkType: soft
@@ -4911,15 +4910,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/73349e05cf554891d5e0076be10083150c92831c1cffdeee1e25c2222a8a4d8291630825a897049add753c4925e1c916c3614fe8d9c0392d9ff0186e553fe24b
-  languageName: node
-  linkType: hard
-
-"vuex@npm:4.0.0-beta.4":
-  version: 4.0.0-beta.4
-  resolution: "vuex@npm:4.0.0-beta.4"
-  peerDependencies:
-    vue: ^3.0.0-beta.10
-  checksum: 10c0/5fd0488fdff6538c4f1db3be0ddddf28c2215b70d6595c4619ee9b2caa0a1f025051f6b256d487f7525fd9e6f00f33c3fedabc28d968cdd981dc630f04fa0810
   languageName: node
   linkType: hard
 

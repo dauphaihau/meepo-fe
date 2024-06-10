@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   classWrapper : '',
   label : '',
   modelValue: '',
-  defaultValue: 0
+  defaultValue: 0,
 });
 
 const {
@@ -85,6 +85,7 @@ const numsDay = ref(31);
 
 const days = computed(() => {
   return new Array(numsDay.value).fill('').map((_, i) => ({
+    id: i,
     name: (i + 1).toString(),
   }));
 });
