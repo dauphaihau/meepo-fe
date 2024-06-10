@@ -1,39 +1,120 @@
+<script setup lang="ts">
+import {
+  computed, onBeforeMount, onBeforeUnmount, onMounted
+} from 'vue';
+import { useMediaQuery } from '@vueuse/core';
+
+import Loading from '@core/components/Loading.vue';
+import { useGetLastMessages } from '@services/chat.ts';
+import { parseTimeFromNow } from '@lib/dayjs-parse.ts';
+import { truncateText } from '@core/helpers/common.ts';
+import { ILastMessage, IMessage, IResponseGetLastMessages } from '@/types/chat.ts';
+
+import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
+import router from '@/router';
+import { useChatStore } from '@stores/chat.ts';
+import useRealtimeMessage from '@composables/useRealtimeMessage.ts';
+import { PAGE_PATHS } from '@config/const.ts';
+import { useAuthStore } from '@stores/auth.ts';
+
+const minTabletScreen = useMediaQuery('(min-width: 768px)');
+const authStore = useAuthStore();
+const chatStore = useChatStore();
+
+const limit = 20;
+
+const {
+  data: dataGetLastMessages,
+  fetchNextPage,
+  isFetchingNextPage,
+  refetch: refetchGetLastMessages, isPending: isPendingGetLastMessages,
+} = useGetLastMessages({
+  limit,
+  page: 1,
+});
+
+const maxRoomsPage = computed(() => Math.floor(dataGetLastMessages.value?.pages[0]?.total_messages / limit));
+
+const lastMessages = computed<IResponseGetLastMessages['messages']>(() => {
+  if (dataGetLastMessages.value?.pages && dataGetLastMessages.value.pages.length > 0) {
+    return dataGetLastMessages.value.pages.reduce((acc, next) => {
+      return [...acc, ...next.messages];
+    }, []);
+  }
+  return [];
+});
+
+useRealtimeMessage((messageRecord) => {
+  const idx = lastMessages.value.findIndex(
+    (item: ILastMessage) => item.participant_username === messageRecord.username
+  );
+  if (idx !== -1) {
+    refetchGetLastMessages();
+  }
+});
+
+onBeforeMount(() => {
+  if (minTabletScreen.value) {
+    router.push(PAGE_PATHS.HOME);
+  }
+});
+
+onMounted(() => {
+  if (!authStore.isLoggedIn) {
+    router.push({ name: 'explore' });
+  }
+  window.addEventListener('scroll', onScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll);
+});
+
+function onScroll() {
+  let { scrollTop, offsetHeight } = document.documentElement;
+  const offset = 300;
+
+  const isBottomOfWindow = scrollTop + window.innerHeight >= offsetHeight - offset;
+
+  if (
+    isBottomOfWindow &&
+      !isFetchingNextPage.value &&
+      dataGetLastMessages.value?.pageParams?.length <= maxRoomsPage.value
+  ) {
+    fetchNextPage();
+  }
+}
+
+const onClickMessage = (message: ILastMessage & Pick<IMessage, 'room_id'>) => {
+  router.push(PAGE_PATHS.ROOMS);
+  chatStore.messageToUser({
+    room_id: message.room_id,
+    name: message.participant_name,
+    username: message.participant_username,
+    avatar_url: message.participant_avatar_url,
+  });
+};
+
+</script>
+
 <template>
   <div>
-    <!--    Header-->
     <HeaderMainContent title="Messages" />
     <div class="h-[53px]" />
 
-    <!--  Last messages / Rooms )-->
+    <!-- Last messages -->
     <div>
       <div
-        v-if="isLoading"
-        class="flex-center min-h-[35vh]"
-      >
-        <Loading
-          variant="secondary"
-          classes="h-6 w-6"
-        />
-      </div>
-      <div
-        v-else-if="lastMessages.length === 0"
-        class="px-10 mt-12"
-      >
-        <h3 class="font-extrabold text-3xl mb-2 pr-2">
-          Welcome to your inbox!
-        </h3>
-        <p class="text-zinc-500 text-sm">
-          Drop a line, share posts and more with private conversations between  you and others on Meepo.
-        </p>
-      </div>
-      <div
-        v-else
+        v-if="lastMessages && lastMessages.length > 0"
         class="pb-16"
       >
-        <div v-for="message of lastMessages">
+        <div
+          v-for="message of lastMessages"
+          :key="message.id"
+        >
           <div
             class="flex gap-2 items-center  px-4 h-[73px] hover:bg-zinc-50 cursor-pointer "
-            @click="clickMessage(message)"
+            @click="onClickMessage(message)"
           >
             <img
               v-if="message.participant_avatar_url"
@@ -58,7 +139,7 @@
                 </p>
                 <span class="text-zinc-500">·</span>
                 <p class="text-zinc-500">
-                  {{ truncateText(message.time, 7, '...') }}
+                  {{ truncateText(parseTimeFromNow(message.created_at), 7, '...') }}
                 </p>
               </div>
               <div class="text-zinc-500 h-5">
@@ -68,113 +149,29 @@
           </div>
         </div>
       </div>
+      <div
+        v-else-if="!isPendingGetLastMessages"
+        class="px-10 mt-12"
+      >
+        <h3 class="font-extrabold text-3xl mb-2 pr-2">
+          Welcome to your inbox!
+        </h3>
+        <p class="text-zinc-500 text-sm">
+          Drop a line, share posts and more with private conversations between you and others on Meepo.
+        </p>
+      </div>
+
+      <div
+        v-if="isPendingGetLastMessages || isFetchingNextPage"
+        class="flex-center min-h-[35vh]"
+      >
+        <Loading
+          variant="secondary"
+          classes="h-6 w-6"
+        />
+      </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
-import { useMediaQuery, useWebSocket } from '@vueuse/core';
-
-import Loading from '@core/components/Loading.vue';
-import { chatService } from '@services/chat.ts';
-import { parseCreatedAts } from '@lib/dayjs-parse.ts';
-import { logger, parseJSON, truncateText } from '@core/helper.ts';
-import { useStore } from '@/store';
-import { IMessage } from '@/types/message.ts';
-
-import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
-import router from '@/router';
-import { mapGetters } from '@lib/map-state.ts';
-const store = useStore();
-const isTabletScreen = useMediaQuery('(min-width: 768px)');
-const { isLoggedIn } = mapGetters();
-
-const lastMessages = ref<IMessage[] | []>([]);
-const isLoading = ref(false);
-const guid = ref('');
-
-onBeforeMount(() => {
-  if (isTabletScreen.value) {
-    router.push({ name: 'home' });
-  }
-});
-
-onMounted(() => {
-  if (!isLoggedIn.value) {
-    router.push({ name: 'explore' });
-    return;
-  }
-  fetchPrivateRooms();
-});
-
-async function fetchPrivateRooms() {
-  isLoading.value = true;
-  const { data } = await chatService.getMessages();
-  isLoading.value = false;
-
-  if (data) {
-    lastMessages.value = parseCreatedAts(data.messages);
-  }
-}
-
-const messagesContainer = document.getElementById('rooms');
-
-const clickMessage = (room) => {
-  localStorage.setItem('room', JSON.stringify(room));
-  router.push('/room');
-};
-
-const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
-  autoReconnect: true,
-  onConnected: () => {
-    logger.info('Connected to websocket server - MessagesChannel', 'src/components/layout/Chatbox.vue');
-    guid.value = Math.random().toString(36).substring(2, 15);
-
-    send(
-      JSON.stringify({
-        command: 'subscribe',
-        identifier: JSON.stringify({
-          id: guid,
-          channel: 'MessagesChannel',
-        }),
-      })
-    );
-  },
-  onError: (e) => {
-    logger.error('Something error with websocket server - MessagesChannel', 'src/components/layout/Chatbox.vue');
-  },
-  onMessage: () => {
-    const parsed = parseJSON<{type: string, message: any}>(data.value);
-    if (!parsed) {
-      logger.error('parse data is null', 'src/components/layout/Chatbox.vue');
-      return;
-    }
-    if (parsed.type === 'ping') return;
-    if (parsed.type === 'welcome') return;
-    if (parsed.type === 'confirm_subscription') return;
-    const message = parsed.message;
-    logger.debug('Websocket server response message - MessagesChannel', message, 'src/components/layout/Chatbox.vue');
-
-    if (!message?.username) {
-      logger.error('undefine username', 'src/components/layout/Chatbox.vue');
-      return;
-    }
-
-    const idx = lastMessages.value.findIndex((item: IMessage) => item.participant_username === message.username);
-    if (idx !== -1) {
-      lastMessages.value[idx].text = message.text;
-    }
-
-    resetScroll();
-  },
-});
-
-const resetScroll = () => {
-  if (!messagesContainer) return;
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-};
-
-</script>
 
 <style scoped></style>

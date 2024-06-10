@@ -18,6 +18,23 @@
     stroke-width: 2;
   }
 
+  .input {
+    @apply  block w-full
+    border-0 border-none
+    rounded-md
+    bg-transparent
+    disabled:bg-zinc-100 disabled:text-zinc-300
+    disabled:ring-1 disabled:ring-inset disabled:ring-zinc-300
+    shadow-sm
+    ring-1 ring-inset ring-zinc-300
+    focus:ring-2 focus:ring-inset focus:ring-black
+    focus:outline-none
+    pl-3 pr-2
+    text-zinc-900 sm:text-sm
+    placeholder:text-zinc-400/80 placeholder:font-light
+    sm:leading-6;
+  }
+
 }
 
 @layer utilities {

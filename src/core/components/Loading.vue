@@ -1,9 +1,29 @@
+<script setup lang="ts">
+import { cn } from '@core/helpers/common.js';
+
+interface IProps {
+  classes?: string
+  variant?: 'primary' | 'secondary'
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  variant: 'primary',
+  classes: '',
+});
+
+const VARIANT_MAPS = {
+  primary: 'fill-black text-white',
+  secondary: 'fill-white text-black',
+};
+
+</script>
+
 <template>
   <div>
     <svg
       :class="cn('animate-spin w-3.5 h-3.5',
-                 VARIANT_MAPS[variant],
-                 classes
+                 VARIANT_MAPS[props.variant],
+                 props.classes
       )"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -26,35 +46,6 @@
     </svg>
   </div>
 </template>
-
-<script setup lang="ts">
-import { cn } from '@/core/helper.js';
-
-// interface Props {
-//   classes?: string
-//   variant?: 'primary' | 'secondary'
-// }
-//
-// const { classes, variant } = withDefaults(defineProps<Props>(), {
-//   variant: 'primary'
-// })
-
-const { classes, variant } = defineProps({
-  variant: {
-    type: String,
-    default: 'primary',
-  },
-  classes: {
-    type: String,
-  },
-});
-
-const VARIANT_MAPS = {
-  primary: 'fill-black text-white',
-  secondary: 'fill-white text-black',
-};
-
-</script>
 
 <style scoped>
 

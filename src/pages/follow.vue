@@ -1,31 +1,18 @@
 <script setup lang="ts">
-import {
-  onBeforeMount, onMounted, ref
-} from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { userService } from '@services/user.ts';
-import { mapGetters } from '@lib/map-state.ts';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root.ts';
-import { IUser } from '@/types/user.ts';
+import { IParamsGetUsers } from '@/types/user.ts';
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
-import User from '@components/User.vue';
 import Loading from '@core/components/Loading.vue';
 import TabsMainContent from '@components/layout/TabsMainContent.vue';
+import { PAGE_PATHS, USER_FILTER_BY } from '@config/const.ts';
+import { useGetUsers } from '@services/user.ts';
+import FollowUser from '@components/pages/follow/FollowUser.vue';
 
-const store = useStore();
 const router = useRouter();
 const route = useRoute();
-const { getStateRouter } = mapGetters();
 
-onMounted(async () => {
-  await router.isReady();
-});
-
-const user = ref<IUser>(null);
-const isLoading = ref(false);
-const users = ref<IUser[] | []>([]);
 const currentRouteUsername = route.params.username as string;
 const currentRouteName = route.name as string;
 
@@ -34,27 +21,58 @@ const tabs = [
   { name: 'Following', id: 'following' },
 ];
 
-onMounted(() => {
-  getUsers();
+const limit = 20;
+
+const params = computed(() => {
+  const base: IParamsGetUsers = {
+    page: 1,
+    by: currentRouteName === 'following' ? USER_FILTER_BY.FOLLOWING_BY_USERNAME : USER_FILTER_BY.FOLLOWERS_BY_USERNAME,
+    limit,
+    username: currentRouteUsername,
+    include: 'user',
+  };
+  return base;
 });
 
-onBeforeMount(() => {
-  if (getStateRouter.value && getStateRouter.value.username === currentRouteUsername) {
-    user.value = getStateRouter.value;
+const {
+  data: dataGetUsers,
+  isFetching,
+  fetchNextPage,
+  isFetchingNextPage,
+} = useGetUsers(params.value);
+
+const maxUsersPage = computed(() => Math.floor(dataGetUsers.value?.pages[0]?.total_users / limit));
+
+const byUser = computed(() => dataGetUsers.value?.pages[0]?.by_user);
+
+const users = computed(() => {
+  if (dataGetUsers.value?.pages && dataGetUsers.value.pages.length > 0) {
+    return dataGetUsers.value.pages.reduce((acc, next) => {
+      return [...acc, ...next.users];
+    }, []);
   }
+  return [];
 });
 
-const getUsers = async () => {
-  isLoading.value = true;
-  const { data } =
-      currentRouteName === 'following' ?
-        await userService.followingByUser(currentRouteUsername) :
-        await userService.followersByUser(currentRouteUsername);
-  isLoading.value = false;
-  users.value = data.users;
-  user.value = data.by_user;
-  store.commit(MutationEnums.SET_STATE_ROUTER, data.by_user);
-};
+onMounted(() => {
+  window.scrollTo(0, 0);
+  window.addEventListener('scroll', onScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll);
+});
+
+function onScroll() {
+  console.log('max-users-page-value', maxUsersPage.value);
+  if (
+    window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
+      !isFetchingNextPage.value &&
+      dataGetUsers.value?.pageParams?.length < maxUsersPage.value
+  ) {
+    fetchNextPage();
+  }
+}
 
 const onChangeTab = (value: string) => {
   router.push({
@@ -66,14 +84,14 @@ const onChangeTab = (value: string) => {
 </script>
 
 <template>
-  <!--  Header with tabs-->
   <HeaderMainContent
-    :title="user?.name"
-    :sub-title="user?.username"
-    :back-to="`/user/${currentRouteUsername}`"
+    :title="byUser?.name"
+    :sub-title="byUser?.username"
+    :back-to="`${PAGE_PATHS.USER}/${currentRouteUsername}`"
   >
     <template #tabs>
       <TabsMainContent
+        class="grid-cols-2"
         :tabs="tabs"
         :default-tab="currentRouteName"
         @on-change-tab="onChangeTab"
@@ -85,20 +103,23 @@ const onChangeTab = (value: string) => {
 
   <!--  Users-->
   <div>
+    <div v-if="users && users?.length > 0">
+      <div
+        v-for="user of users"
+        :key="user.id"
+      >
+        <FollowUser :user="user" />
+      </div>
+    </div>
+
     <div
-      v-if="isLoading"
+      v-if="isFetching || isFetchingNextPage"
       class="flex-center min-h-[40vh]"
     >
       <Loading
         variant="secondary"
         classes="h-7 w-7"
       />
-    </div>
-    <div
-      v-for="(userEle, idx) of users"
-      :key="idx"
-    >
-      <User :user="userEle" />
     </div>
   </div>
 </template>

@@ -1,18 +1,99 @@
+<script setup lang="ts">
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption
+} from '@headlessui/vue';
+
+import { cn } from '@core/helpers/common.js';
+import { ChevronDownIcon } from '@heroicons/vue/20/solid';
+
+export type TOption = {
+ id: string | number
+ name: string
+  disabled?: boolean
+}
+
+interface IProps {
+  modelValue: string
+  size?: 'sm'
+  label?: string
+  helperText?: string
+  name: string
+  placeholder?: string
+  options: TOption[]
+  disabled?: boolean
+  classWrapper?: string
+  classOptions?: string
+  classBtn?: string
+  defaultValue?: number | null
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  name : '',
+  placeholder: '',
+  size : 'sm',
+  classWrapper : '',
+  classBtn : '',
+  classOptions : '',
+  label : '',
+  helperText : '',
+  modelValue : '',
+  disabled : false,
+  defaultValue: 0,
+  options: () => [
+    { id: 1, name: 'Example 1' },
+    { id: 2, name: 'Example 2' },
+    { id: 3, name: 'Example 3' },
+  ],
+});
+
+let {
+  name,
+  placeholder,
+  classOptions,
+  classBtn,
+  options,
+} = props;
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: TOption): void
+}>();
+
+const indexOption = computed(() => {
+  const idx = options.findIndex(d => d.name === props.modelValue);
+  if (idx !== -1) {
+    return idx;
+  }
+  return props.defaultValue;
+});
+
+const onChangeSelect = (option: TOption) => {
+  emit('update:modelValue', option);
+};
+
+</script>
+
 <template>
-  <div>
+  <div :class="classWrapper">
     <Listbox
-      v-slot="{open}"
-      v-model="selectedOption"
+      v-slot="{ open }"
+      :default-value="options[indexOption]"
+      :name="name"
+      v-bind="$attrs"
       @update:model-value="onChangeSelect"
     >
       <div class="relative mt-1">
         <ListboxButton
+          v-slot="{ value }"
           class="list-button"
-          :class="cn(classWrapper,
-                     disabled ? 'bg-[#f7f8f9] text-[#c2c3c4] ring-1 ring-inset ring-zinc-300' : 'bg-white'
+          :class="cn(
+            disabled ? 'bg-[#f7f8f9] text-[#c2c3c4] ring-1 ring-inset ring-zinc-300' : 'bg-white',
+            classBtn
           )"
         >
-          <span class="block truncate">{{ selectedOption.name }}</span>
+          <span class="block truncate">{{ value?.name }}</span>
           <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronDownIcon
               class="h-5 w-5 text-zinc-400"
@@ -35,13 +116,14 @@
         >
           <ListboxOptions
             class="list-options"
-            :class="classWrapper"
+            :class="classOptions"
           >
             <ListboxOption
-              v-for="(option, index) in data"
+              v-for="(option, index) in props.options"
               v-slot="{ active, selected }"
               :key="option.name"
               :value="option"
+              :disabled="option?.disabled && option.disabled"
               as="div"
             >
               <li
@@ -66,119 +148,6 @@
   </div>
 </template>
 
-
-<script setup lang="ts">
-// @ts-nocheck
-
-import { onBeforeMount, onMounted, ref } from 'vue';
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption
-} from '@headlessui/vue';
-
-import { cn, toUpperCaseFirstL } from '@/core/helper.js';
-import { ChevronDownIcon } from '@heroicons/vue/20/solid';
-import { logger } from '@/core/helper';
-
-interface Props {
-  modelValue: string
-  classWrapper?: string
-  size?: 'sm'
-  label?: string
-  helperText?: string
-  name: string
-  placeholder?: string
-  data: {name: string}[]
-  disabled?: boolean
-}
-
-/*
- use withDefaults doesn't update component when props change
-  -> force use :key each component to update component
-*/
-
-// let {
-//   name,
-//   placeholder,
-//   size,
-//   classWrapper,
-//   data,
-//   label,
-//   helperText,
-//   modelValue,
-//   shape,
-//   disabled
-// } = withDefaults(defineProps<Props>(), {
-//   data: [
-//     { name: 'November' },
-//     { name: 'July' },
-//     { name: 'August' },
-//   ]
-// });
-
-let {
-  name,
-  placeholder,
-  size,
-  classWrapper,
-  data,
-  label,
-  helperText,
-  modelValue,
-  disabled,
-} = defineProps({
-  data: {
-    type: Array,
-    default: [
-      { name: 'Option 1' },
-      { name: 'Option 2' },
-      { name: 'Option 3' },
-    ],
-  },
-  name: { type: String },
-  modelValue: { type: String },
-  classWrapper: { type: String, default: '' },
-  size: { type: String, default: 'sm' },
-  label: { type: String },
-  helperText: { type: String, default: '' },
-  classHelperText: { type: String, default: '' },
-  placeholder: { type: String },
-  disabled: { type: Boolean },
-});
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: {name: string, value: string}): void
-}>();
-
-const selectedOption = ref(data[0]);
-
-onBeforeMount(() => {
-  if (modelValue) {
-    let option = data.find(d => d.name === modelValue);
-    if (!option) {
-      logger.error(`Select input execute onBeforeMount: not found option at select input with name ${name}`, 'src/core/components/forms/Select.vue');
-      option = { name: toUpperCaseFirstL(name) };
-    }
-    data.unshift(option);
-    selectedOption.value = data[0];
-    return;
-  }
-
-  if (placeholder) {
-    data.unshift({ name: placeholder });
-    selectedOption.value = data[0];
-  }
-});
-
-const onChangeSelect = (val) => {
-  emit('update:modelValue', { name, value: val.name });
-};
-
-</script>
-
-
 <style scoped>
 
 .list-button {
@@ -195,10 +164,6 @@ const onChangeSelect = (val) => {
 
 .list-options {
   @apply w-full absolute mt-1 max-h-52 overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;
-}
-
-.label {
-  @apply block text-sm font-medium leading-6 text-zinc-900;
 }
 
 </style>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { IPostTemp } from '@/types/post.ts';
-import { formatTextWithHashTags } from '@core/helper.ts';
+import { IResponseGetPost } from '@/types/post.ts';
+import { formatTextWithHashTags } from '@core/helpers/common.ts';
+
 interface IProps {
-  dataPost: IPostTemp & { time?: string },
+  dataPost: IResponseGetPost
 }
 
 const { dataPost } = defineProps<IProps>();

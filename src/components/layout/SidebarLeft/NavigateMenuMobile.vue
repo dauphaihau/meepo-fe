@@ -1,11 +1,37 @@
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+import {
+  HomeIcon, UserIcon, EnvelopeIcon
+} from '@heroicons/vue/20/solid';
+import {
+  BellIcon as BellIconOutline,
+  HomeIcon as HomeIconOutline,
+  UserIcon as UserIconOutline,
+  MagnifyingGlassIcon,
+  EnvelopeIcon as EnvelopeIconOutline
+} from '@heroicons/vue/24/outline';
+
+import { useScrollDirection } from '@/core/hooks/useScrollDirection';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@stores/auth.ts';
+import { PAGE_PATHS } from '@config/const.ts';
+
+const { isLoggedIn, user } = storeToRefs(useAuthStore());
+
+const direction = useScrollDirection();
+const route = useRoute();
+
+</script>
+
+
 <template>
   <nav
-    class="fixed bottom-0 w-full z-[3] transition-all duration-500  border-t"
+    class="md:hidden fixed bottom-0 w-full z-[3] transition-all duration-500  border-t"
     :class="{'opacity-50': direction === 'down'}"
   >
-    <div class="grid grid-cols-4 gap-4 bg-white h-[52px] w-full">
+    <div class="grid grid-cols-5 gap-4 bg-white h-[52px] w-full">
       <router-link
-        v-slot="{ href, route, navigate, isActive, isExactActive }"
+        v-slot="{ isActive }"
         class="link"
         to="/home"
       >
@@ -14,7 +40,7 @@
       </router-link>
 
       <router-link
-        v-slot="{ href, navigate, isActive, isExactActive }"
+        v-slot="{ isActive }"
         class="link"
         to="/explore"
       >
@@ -23,21 +49,25 @@
 
       <router-link
         v-if="isLoggedIn"
-        v-slot="{ href, navigate, isActive, isExactActive }"
         class="link"
-        :to="'/user/' + getUser.username"
+        :to="`${PAGE_PATHS.USER}/${user.username}`"
         active-class="active"
       >
         <UserIcon v-if="route.name === 'profile'" />
         <UserIconOutline v-else />
       </router-link>
-      <!--      <div class="link opacity-30">-->
-      <!--        <BellIcon v-if="route.name === 'notifications'"/>-->
-      <!--        <BellIconOutline v-else/>-->
-      <!--      </div>-->
 
       <router-link
-        v-slot="{ href, navigate, isActive, isExactActive }"
+        v-if="isLoggedIn"
+        class="link opacity-50 pointer-events-none"
+        to="/"
+        active-class="active"
+      >
+        <BellIconOutline />
+      </router-link>
+
+      <router-link
+        v-if="isLoggedIn"
         class="link"
         to="/messages"
         active-class="active"
@@ -49,29 +79,6 @@
   </nav>
 </template>
 
-<script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import {
-  HomeIcon, UserIcon, EnvelopeIcon, BellIcon 
-} from '@heroicons/vue/20/solid';
-import {
-  HomeIcon as HomeIconOutline,
-  UserIcon as UserIconOutline,
-  MagnifyingGlassIcon,
-  EnvelopeIcon as EnvelopeIconOutline,
-  BellIcon as BellIconOutline
-} from '@heroicons/vue/24/outline';
-
-import { mapGetters } from '@/lib/map-state';
-import { useScrollDirection } from '@/core/hooks/useScrollDirection';
-
-const { getUser, isLoggedIn } = mapGetters();
-
-const direction = useScrollDirection();
-const route = useRoute();
-const router = useRouter();
-
-</script>
 
 <style scoped>
 

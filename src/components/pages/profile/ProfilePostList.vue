@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import {
-  computed, onBeforeUnmount, onMounted, ref, watch
-} from 'vue';
-
-import Loading from '@/core/components/Loading.vue';
-import { useGetPosts } from '@/services/post';
-import { POST_FILTER_BY } from '@/config/const';
+import Loading from '@core/components/Loading.vue';
+import { useGetPosts } from '@services/post';
+import { POST_FILTER_BY } from '@config/const';
 import { IParamsGetPosts } from '@/types/post';
 import { IUser } from '@/types/user';
-import { parseCreatedAts } from '@/lib/dayjs-parse';
 import ProfilePost from '@components/pages/profile/ProfilePost.vue';
 import { POST_PIN_STATUS } from '@config/post.ts';
 
@@ -23,9 +18,6 @@ const {
   by: POST_FILTER_BY.DEFAULT,
 });
 
-const posts = ref([]);
-const isLoading = ref(false);
-const reachEndPage = ref(false);
 const keyPosts = ref(0);
 
 const limit = 10;
@@ -47,23 +39,22 @@ const params = computed(() => {
 });
 
 const {
-  data,
+  data: dataGetPosts,
   isFetching,
   fetchNextPage,
-  hasNextPage,
   isFetchingNextPage,
 } = useGetPosts(params.value);
 
-watch([data, isFetchingNextPage], () => {
-  if (data.value?.pages) {
-    let mergerPosts = [];
-    data.value.pages.forEach((page) => {
-      mergerPosts = [...mergerPosts, ...page.posts];
-    });
-    posts.value = parseCreatedAts(mergerPosts);
-    keyPosts.value++;
+const maxPostsPage = computed(() => Math.floor(dataGetPosts.value?.pages[0]?.total_posts / limit));
+
+const posts = computed(() => {
+  if (dataGetPosts.value?.pages && dataGetPosts.value.pages.length > 0) {
+    return dataGetPosts.value.pages.reduce((acc, next) => {
+      return [...acc, ...next.posts];
+    }, []);
   }
-}, { immediate: true });
+  return [];
+});
 
 onMounted(() => {
   window.scrollTo(0, 0);
@@ -77,10 +68,8 @@ onBeforeUnmount(() => {
 function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
-      !isLoading.value &&
-      !reachEndPage.value &&
       !isFetchingNextPage.value &&
-      hasNextPage.value
+      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }

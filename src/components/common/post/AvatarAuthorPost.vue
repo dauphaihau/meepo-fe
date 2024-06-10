@@ -1,11 +1,12 @@
 <script setup lang="ts">
-
-import UserPopper from '@components/UserPopper.vue';
-import { IPostTemp } from '@/types/post.ts';
 import { useRouter } from 'vue-router';
 
+import UserPopper from '@components/UserPopper.vue';
+import { IResponseGetPost } from '@/types/post.ts';
+import { PAGE_PATHS } from '@config/const.ts';
+
 interface IProps {
-  dataPost: IPostTemp
+  dataPost: IResponseGetPost
   showLineConnectSubPost?: boolean
 }
 
@@ -20,7 +21,9 @@ const onOpenPopover = (val: boolean) => {
 };
 
 const redirectProfile = () => {
-  router.push('/user/' + dataPost.author_username);
+  if (dataPost?.author?.username) {
+    router.push(`${PAGE_PATHS.USER}/${dataPost.author.username}`);
+  }
 };
 
 </script>
@@ -29,7 +32,7 @@ const redirectProfile = () => {
   <!--          Avatar-->
   <div class="mr-3 basis-11 relative flex flex-col min-w-[40px] max-w-[40px] pt-3">
     <UserPopper
-      :username="dataPost.author_username"
+      :username="dataPost?.author_username"
       class="w-fit"
       @on-open-popover="onOpenPopover"
     >

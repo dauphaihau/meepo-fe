@@ -15,7 +15,10 @@ export function useScrollDirection() {
   function onScroll() {
     const scrollY = window.scrollY;
     const direction = scrollY > scrollYBefore.value ? 'down' : 'up';
-    if (direction !== scrollDirection.value && (scrollY - scrollYBefore.value > 2 || scrollY - scrollYBefore.value < -2)) {
+    if (
+      direction !== scrollDirection.value &&
+      (scrollY - scrollYBefore.value > 2 || scrollY - scrollYBefore.value < -2)
+    ) {
       scrollDirection.value = direction;
     }
     scrollYBefore.value = scrollY > 0 ? scrollY : 0;

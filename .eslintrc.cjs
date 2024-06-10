@@ -26,6 +26,7 @@ module.exports = {
         omitLastInOneLineClassBody: true,
       },
     ],
+    'no-undef': 'off',
     indent: ['error', 2, { SwitchCase: 1 }],
     quotes: ['error', 'single'],
     'comma-dangle': ['error', {

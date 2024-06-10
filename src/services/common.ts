@@ -1,6 +1,6 @@
 import { apiHelper } from '@/lib/axios';
 import axios from 'axios';
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/vue-query';
+import { useInfiniteQuery, useMutation } from '@tanstack/vue-query';
 import { IParamsSearchAll, IResponseGetSearchAll } from '@/types/common.ts';
 
 export const commonService = {
@@ -32,13 +32,6 @@ export const commonService = {
   },
 };
 
-export function useGetSearchAll(params: IParamsSearchAll) {
-  return useQuery({
-    queryKey: ['search-all', params],
-    queryFn: () => commonService.searchAll(params),
-  });
-}
-
 export function useSearchUser() {
   return useMutation({
     mutationKey: ['search-all'],
@@ -46,17 +39,13 @@ export function useSearchUser() {
   });
 }
 
-export function useGetSearchAllTest(params: IParamsSearchAll) {
+export function useGetSearchAll(params: IParamsSearchAll) {
   return useInfiniteQuery({
     initialPageParam: 1,
     queryKey: ['search-all', params],
     queryFn: ({ pageParam = 1 }) => commonService.searchAll({ ...params, page: pageParam }),
-    getNextPageParam: (lastPage, allPages) => {
-    // getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) => {
-    //   return lastPage.posts.length > 0 ? allPages.length + 1 : undefined;
-    //   return allPages[0].
+    getNextPageParam: (_lastPage, allPages) => {
       return allPages.length + 1;
-      // return lastPage.users.length > 0 ? allPages.length + 1 : undefined;
     },
     enabled: Boolean(params),
   });

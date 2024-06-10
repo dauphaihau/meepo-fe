@@ -1,17 +1,17 @@
 import { useWebSocket } from '@vueuse/core';
-import { logger, parseJSON } from '@core/helper.ts';
+import { parseJSON } from '@core/helpers/common.ts';
 import { Ref, ref } from 'vue';
-import { IPostTemp } from '@/types/post.ts';
+import { IResponseGetPost } from '@/types/post.ts';
+import { logger } from '@core/helpers/logger.ts';
 
 interface ResponseDataMessage {
   type: string,
   message: {
-    post: IPostTemp
+    post: IResponseGetPost
   },
 }
 
-export default function useRealtimePost(post: Ref<IPostTemp>) {
-
+export default function useRealtimePost(post: Ref<IResponseGetPost>) {
   const animationLikes = ref('counter-number-initial');
   const animationComments = ref('counter-number-initial');
 
@@ -31,7 +31,6 @@ export default function useRealtimePost(post: Ref<IPostTemp>) {
         })
       );
     },
-    // onError: (e) => {
     onError: () => {
       logger.error('Something error with websocket server - PostsChannel', 'src/composables/useRealtimePost.vue');
     },

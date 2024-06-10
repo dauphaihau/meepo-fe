@@ -1,25 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { GlobeAsiaAustraliaIcon } from '@heroicons/vue/20/solid';
 import {
   Listbox,
   ListboxButton,
   ListboxOptions,
   ListboxOption
 } from '@headlessui/vue';
-import { CheckIcon } from '@heroicons/vue/20/solid';
+import { CheckIcon, GlobeAsiaAustraliaIcon } from '@heroicons/vue/20/solid';
 import { POST_WHO_CAN_COMMENT } from '@config/post.ts';
 
-interface Props {
+interface IProps {
   defaultValue: number
 }
 
-export interface OptionSelectWhoCanComment {
+export interface IOptionSelectWhoCanComment {
   title: string
   value: POST_WHO_CAN_COMMENT
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<IProps>(), {
   defaultValue: POST_WHO_CAN_COMMENT.EVERYONE,
 });
 
@@ -27,14 +25,12 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: {title: string}): void
 }>();
 
-const options: OptionSelectWhoCanComment[] = [
+const options: IOptionSelectWhoCanComment[] = [
   { title: 'Everyone', value: POST_WHO_CAN_COMMENT.EVERYONE },
   { title: 'People you follow', value: POST_WHO_CAN_COMMENT.FOLLOWED },
 ];
 
 const selectedOption = ref(options[props.defaultValue]);
-
-// const onChangeSelect = (val) => {};
 
 </script>
 
@@ -49,8 +45,6 @@ const selectedOption = ref(options[props.defaultValue]);
           class="flex items-center gap-2 text-zinc-500 font-semibold my-2 hover:bg-zinc-200
            w-fit rounded-full px-2 py-1 cursor-pointer border-none animate"
         >
-          <!--          @input="onChangeSelect"-->
-
           <GlobeAsiaAustraliaIcon class=" h-4 w-4" />
           <div class="text-sm">
             {{ selectedOption.title }} can comment

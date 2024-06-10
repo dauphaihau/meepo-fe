@@ -73,7 +73,7 @@ const {
         <div>
           <CreateSubPostForm v-if="data.post.is_current_user_can_comment" />
 
-          <!-- Comments -->
+          <!-- Replies -->
           <SubPostsList :key="keyPostsComp" />
         </div>
       </div>

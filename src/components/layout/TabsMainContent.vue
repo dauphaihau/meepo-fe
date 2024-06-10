@@ -38,7 +38,7 @@ const changeTab = (id: Tab['id']) => {
 <template>
   <div
     v-if="tabs && tabs.length > 0"
-    :class="['tabs', `grid-cols-${tabs.length}`]"
+    class="tabs"
   >
     <div
       v-for="(tab , idx) of tabs"

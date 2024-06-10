@@ -1,6 +1,7 @@
 import { apiHelper } from '@/lib/axios';
 import {
-  ICreatePost, IHashtag, IParamsGetPosts, IPostTemp, IResponseGetDetailPost, IUpdatePost
+  ICreatePost, IHashtag, IParamsGetPosts, IPost,
+  IResponseGetDetailPost, IResponseGetPosts, IUpdatePost
 } from '@/types/post';
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/vue-query';
 
@@ -12,10 +13,10 @@ export const postService = {
         queriesString.append(key, params[key]);
       }
     });
-    const res = await apiHelper.get<{posts: IPostTemp[]}>(`/posts?${queriesString}`);
+    const res = await apiHelper.get<IResponseGetPosts>(`/posts?${queriesString}`);
     return res.data;
   },
-  async detail(id: IPostTemp['id']) {
+  async detail(id: IPost['id']) {
     const res = await apiHelper.get<IResponseGetDetailPost>(`/posts/${id}`);
     return res.data;
   },
@@ -24,19 +25,19 @@ export const postService = {
     if (hashtags && hashtags.length) {
       values.hashtags = hashtags.map(v => v.replace('#', ''));
     }
-    return await apiHelper.post<{post: IPostTemp}>('/posts', values);
+    return await apiHelper.post<{post: IPost}>('/posts', values);
   },
   async update({ id, ...payload }: IUpdatePost) {
-    return apiHelper.put<{post: IPostTemp}>(`/posts/${id}`, payload);
+    return apiHelper.put<{post: IPost}>(`/posts/${id}`, payload);
   },
-  delete(id: IPostTemp['id']) {
+  delete(id: IPost['id']) {
     return apiHelper.delete(`posts/${id}`);
   },
   async listHashtags() {
     const res = await apiHelper.get<{hashtags: IHashtag[]}>('hashtags');
     return res.data;
   },
-  likePost(postId: IPostTemp['id']) {
+  likePost(postId: IPost['id']) {
     return apiHelper.post<{likes_count: number, message: string}>('/likes', { post_id: postId });
   },
 };
@@ -46,14 +47,14 @@ export function useGetPosts(params: IParamsGetPosts) {
     initialPageParam: 1,
     queryKey: ['get-posts', params],
     queryFn: ({ pageParam = 1 }) => postService.list({ ...params, page: pageParam }),
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.posts.length > 0 ? allPages.length + 1 : undefined;
+    getNextPageParam: (_lastPage, allPages) => {
+      return allPages.length + 1;
     },
     enabled: Boolean(params),
   });
 }
 
-export function useGetDetailPost(postId: IPostTemp['id']) {
+export function useGetDetailPost(postId: IPost['id']) {
   return useQuery({
     queryKey: ['detail-post', postId],
     queryFn: () => postService.detail(postId),
@@ -68,7 +69,7 @@ export function useCreatePost() {
   });
 }
 
-export function useLikePost(id: IPostTemp['id']) {
+export function useLikePost(id: IPost['id']) {
   return useMutation({
     mutationKey: ['like-post'],
     mutationFn: () => postService.likePost(id),
@@ -82,7 +83,7 @@ export function useUpdatePost() {
   });
 }
 
-export function useDeletePost(postId: IPostTemp['id']) {
+export function useDeletePost(postId: IPost['id']) {
   return useMutation({
     mutationKey: ['delete-post'],
     mutationFn: () => postService.delete(postId),

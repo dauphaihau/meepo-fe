@@ -15,7 +15,7 @@ import { MagnifyingGlassIcon, XCircleIcon } from '@heroicons/vue/24/outline';
 
 import { useSearchUser } from '@services/common';
 import { IUser } from '@/types/user';
-import { debounce, truncateText } from '@core/helper';
+import { debounce, truncateText } from '@core/helpers/common.ts';
 import { useMediaQuery } from '@vueuse/core';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
 
@@ -36,8 +36,6 @@ const storedSearches = ref([]);
 
 onMounted(async () => {
   await router.isReady();
-  console.log('query-value', query.value);
-
   if (localStorage.storedSearches) {
     storedSearches.value = JSON.parse(localStorage.storedSearches);
   }
@@ -135,7 +133,7 @@ const onChangeInput = (e: Event) => {
           <MagnifyingGlassIcon class="h-5 min-w-5 text-zinc-500" />
           <ComboboxInput
             placeholder="Search Meepo"
-            class="input group-hover:bg-white animate"
+            class="combobox-input group-hover:bg-white animate"
             :class="{'!bg-white': isFocus, 'pr-8': query }"
             @focus="handleFocus"
             @focusout="isFocus = false"
@@ -265,7 +263,7 @@ const onChangeInput = (e: Event) => {
   text-left border border-zinc-200  sm:text-sm flex items-center pl-4;
 }
 
-.input {
+.combobox-input {
   @apply
   h-9 lg:h-10
   w-[88%] md:w-[92%]

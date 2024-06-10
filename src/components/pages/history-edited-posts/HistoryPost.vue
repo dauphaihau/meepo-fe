@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { IPostTemp } from '@/types/post';
+import { IResponseGetPost } from '@/types/post';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';
 import ContentPost from '@components/common/post/ContentPost.vue';
 import PostActions from '@components/common/post/PostActions.vue';
 
 interface IProps {
-  dataPost: IPostTemp;
+  dataPost: IResponseGetPost
 }
 
 const {
@@ -56,14 +56,6 @@ const onOpenPopover = (val: boolean) => {
           </div>
         </div>
       </div>
-
-      <!--      <div class="absolute right-5 h-5 top-3.5">-->
-      <!--        <PostOptions-->
-      <!--          v-if="getUser.id === dataPost.user_id"-->
-      <!--          :key="keyOptionsPost"-->
-      <!--          :data-post="dataPost"-->
-      <!--        />-->
-      <!--      </div>-->
     </div>
   </div>
 </template>

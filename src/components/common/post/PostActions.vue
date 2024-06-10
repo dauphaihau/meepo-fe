@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { StatusCodes } from 'http-status-codes';
 import {
   ArrowPathRoundedSquareIcon,
   BookmarkIcon,
@@ -9,20 +11,17 @@ import {
 } from '@heroicons/vue/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid';
 
-import ReplyPostDialog from '@components/dialog/AddOrUpdatePost.vue';
-import { IPostTemp } from '@/types/post.ts';
+import { IResponseGetPost } from '@/types/post.ts';
 import useRealtimePost from '@/composables/useRealtimePost.ts';
-import { ref } from 'vue';
-import { MutationEnums } from '@/types/store/root.ts';
-import { StatusCodes } from 'http-status-codes';
-import { mapGetters } from '@lib/map-state.ts';
-import { useStore } from '@/store';
 import { useLikePost } from '@services/post.ts';
+import { useDialogStore } from '@stores/dialog.ts';
+import { useAuthStore } from '@stores/auth.ts';
+import { useQueryClient } from '@tanstack/vue-query';
 
 type Actions = 'repost' | 'like' | 'reply' | 'bookmark' | 'share'
 
 interface IProps {
-  dataPost: IPostTemp
+  dataPost: IResponseGetPost
   disabledActions?: Actions[]
 }
 
@@ -30,12 +29,11 @@ const { dataPost, disabledActions } = withDefaults(defineProps<IProps>(), {
   disabledActions: () => [],
 });
 
-const store = useStore();
-const { isLoggedIn } = mapGetters();
+const dialogStore = useDialogStore();
+const authStore = useAuthStore();
+const queryClient = useQueryClient();
 
 const post = ref({ ...dataPost });
-const showReplyPostDialog = ref(false);
-const keyReplyPostDialog = ref(0);
 
 const { animationLikes, animationComments } = useRealtimePost(post);
 
@@ -51,8 +49,8 @@ const handleLikePost = async () => {
   if (disabledActions.includes('like')) {
     return;
   }
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+  if (!authStore.isLoggedIn) {
+    dialogStore.showDialog = 'login';
     return;
   }
 
@@ -61,31 +59,31 @@ const handleLikePost = async () => {
 
   if (status !== StatusCodes.OK) {
     post.value.is_current_user_like = !post.value.is_current_user_like;
+    return;
   }
+  queryClient.removeQueries({
+    queryKey: ['get-posts'],
+  });
+  queryClient.removeQueries({
+    queryKey: ['detail-post'],
+  });
 };
 
 const handleShowReplyPostDialog = () => {
   if (disabledActions.includes('reply')) {
     return;
   }
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+  if (!authStore.isLoggedIn) {
+    dialogStore.showDialog = 'login';
     return;
   }
-  showReplyPostDialog.value = true;
-  keyReplyPostDialog.value++;
+  dialogStore.showDialog = 'reply-post';
+  dialogStore.data = post.value;
 };
 
 </script>
 
 <template>
-  <ReplyPostDialog
-    :key="keyReplyPostDialog"
-    :show-dialog-from-props="showReplyPostDialog"
-    :hide-trigger="true"
-    :data-post-reply="post"
-  />
-
   <div class="flex items-center mt-1 ml-[-7px] mr-[-4px]">
     <!-- Reply -->
     <div class="item-action">

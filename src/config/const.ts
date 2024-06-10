@@ -1,3 +1,15 @@
+export enum PAGE_PATHS {
+  HOME = '/home',
+  FOLLOWERS = '/followers',
+  FOLLOWING = '/following',
+  MESSAGES = '/messages',
+  POSTS = '/posts',
+  USER = '/user',
+  SEARCH = '/search',
+  ROOMS = '/rooms',
+  EXPLORE = '/explore',
+}
+
 export enum POST_FILTER_BY {
   DEFAULT,
   COMMENTS,

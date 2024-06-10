@@ -3,15 +3,15 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import PostOptions from '@components/common/post/PostOptions.vue';
-import { mapGetters } from '@/lib/map-state';
-import { IPostTemp } from '@/types/post';
+import { IPost } from '@/types/post';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';
 import ContentPost from '@components/common/post/ContentPost.vue';
 import PostActions from '@components/common/post/PostActions.vue';
+import { useAuthStore } from '@stores/auth.ts';
 
 interface IProps {
-  dataPost: IPostTemp & { time?: string },
+  dataPost: IPost
 }
 
 const {
@@ -20,7 +20,7 @@ const {
 
 const router = useRouter();
 
-const { getUser } = mapGetters();
+const authStore = useAuthStore();
 
 const post = ref(dataPost);
 const isHover = ref(false);
@@ -78,7 +78,7 @@ const redirectDetailPost = () => {
 
       <div class="absolute right-5 h-5 top-3.5">
         <PostOptions
-          v-if="getUser.id === dataPost.user_id"
+          v-if="authStore.user?.id === dataPost.user_id"
           :key="keyOptionsPost"
           :data-post="dataPost"
         />

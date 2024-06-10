@@ -1,3 +1,35 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { UserInGetList } from '@/types/user';
+import UserPopper from '@components/UserPopper.vue';
+import { truncateText } from '@core/helpers/common.ts';
+import AvatarUser from '@components/AvatarUser.vue';
+import ToggleFollowBtn from '@components/ToggleFollowBtn.vue';
+import { PAGE_PATHS } from '@config/const.ts';
+
+const props = defineProps<{ user: UserInGetList }>();
+
+const router = useRouter();
+
+const isHover = ref(false);
+const isOpenPopover = ref(false);
+const keyUserPopper = ref(0);
+const isHoverFollowBtn = ref(false);
+
+const user = ref({ ...props.user });
+
+const redirectProfile = () => {
+  router.push(`${PAGE_PATHS.USER}/${user.value.username}`);
+};
+
+const onOpenPopover = (val: boolean) => {
+  isOpenPopover.value = val;
+};
+
+</script>
+
 <template>
   <div
     class="relative"
@@ -6,38 +38,29 @@
     @mouseleave="isHover = false"
   >
     <div
-      class="block max-w-sm flex justify-between items-center px-4 py-3 hover:bg-zinc-200/50 animate"
-      :class="!isOpenPopover && 'cursor-pointer '"
-      @click="!isOpenPopover && redirectProfile"
+      class="max-w-sm flex justify-between items-center px-4 py-3 hover:bg-zinc-200/50 animate"
+      :class="!isOpenPopover && 'cursor-pointer'"
+      @click="!isOpenPopover && !isHoverFollowBtn && redirectProfile()"
     >
       <div class="flex items-center gap-2">
         <UserPopper
           :key="keyUserPopper"
-          :user-data="user"
+          :username="user.username"
           class="min-h-10 max-h-10 min-w-[40px]"
           @on-open-popover="onOpenPopover"
         >
           <div class="before:absolute">
-            <img
-              v-if="user.avatar_url"
-              alt="avatar"
-              :src="user.avatar_url"
-              class="rounded-full h-10 w-10 bg-black "
-              @click="redirectProfile"
-            >
-            <img
-              v-else
-              alt="avatar"
-              src="@assets/default-avatar.png"
-              class="rounded-full h-10 w-10 bg-black "
-              @click="redirectProfile"
-            >
+            <AvatarUser
+              :avatar-url="user.avatar_url"
+              :username="user.username"
+            />
           </div>
         </UserPopper>
+
         <div>
           <UserPopper
             :key="keyUserPopper"
-            :user-data="user"
+            :username="user.username"
             class-popover="h-5"
             @on-open-popover="onOpenPopover"
           >
@@ -50,7 +73,7 @@
           </UserPopper>
           <UserPopper
             :key="keyUserPopper"
-            :user-data="user"
+            :username="user.username"
             @on-open-popover="onOpenPopover"
           >
             <div
@@ -62,75 +85,16 @@
           </UserPopper>
         </div>
       </div>
-    </div>
 
-    <div
-      class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-72"
-      :class="isHover && 'z-[1]'"
-      @click.stop
-    >
       <ToggleFollowBtn
-        :show="true"
-        :is-following="user.is_current_user_following"
-        @click="unOrFollow"
+        v-model="user.is_current_user_following"
+        :user-id="user.id"
+        @mouseover="isHoverFollowBtn = true"
+        @mouseleave="isHoverFollowBtn = false"
       />
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
-import { userService } from '@/services/user';
-import { mapGetters } from '@/lib/map-state';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root';
-import { IUser } from '@/types/user';
-import ToggleFollowBtn from '@components/ToggleFollowBtn.vue';
-import UserPopper from '@components/UserPopper.vue';
-import { logger, truncateText } from '@/core/helper';
-
-const store = useStore();
-const router = useRouter();
-const route = useRoute();
-const isHover = ref(false);
-const isOpenPopover = ref(false);
-const keyUserPopper = ref(0);
-
-const { getUser, isLoggedIn } = mapGetters();
-const { user } = defineProps<{user: IUser}>();
-
-const currentRouteName = route.name;
-
-const unOrFollow = async () => {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
-    return;
-  }
-
-  if (!user || !user?.id) {
-    logger.error('execute unOrFollow: user is undefined', 'src/components/UserSuggest.vue');
-    return;
-  }
-
-  const { status } = user.is_current_user_following ? await userService.unfollow(user.id) : await userService.follow(user.id);
-
-  if (status === 200) {
-    user.is_current_user_following = !user.is_current_user_following;
-    keyUserPopper.value++;
-  }
-};
-
-const redirectProfile = () => {
-  router.push('/user/' + user.username);
-};
-
-const onOpenPopover = (val) => {
-  isOpenPopover.value = val;
-};
-
-</script>
 
 <style scoped>
 

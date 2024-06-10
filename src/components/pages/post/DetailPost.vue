@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import {
+  computed, onMounted, ref, watch
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useMediaQuery } from '@vueuse/core';
+import { StatusCodes } from 'http-status-codes';
+import { useMutationState, useQueryClient } from '@tanstack/vue-query';
+import { AxiosResponse } from 'axios';
 import dayjs from 'dayjs';
-
 import {
   BookmarkIcon,
   ChatBubbleOvalLeftEllipsisIcon,
@@ -13,36 +18,27 @@ import {
   ShareIcon
 } from '@heroicons/vue/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid';
+
+
 import OptionsPost from '@components/common/post/PostOptions.vue';
 
-import { mapGetters } from '@/lib/map-state.ts';
-import { IPostTemp } from '@/types/post.ts';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root.ts';
-import { IUser } from '@/types/user.ts';
+import { IPost, IResponseGetDetailPost } from '@/types/post.ts';
 import {
   formatTextWithHashTags, truncateText
-} from '@/core/helper.ts';
-import { parseCreatedAt } from '@/lib/dayjs-parse.ts';
+} from '@core/helpers/common.ts';
 import UserPopper from '@components/UserPopper.vue';
-import { useMediaQuery } from '@vueuse/core';
-import { StatusCodes } from 'http-status-codes';
-import ReplyPostDialog from '@components/dialog/AddOrUpdatePost.vue';
 import { useGetDetailPost, useLikePost } from '@services/post.ts';
-import useRealtimePost from '@/composables/useRealtimePost.ts';
+import useRealtimePost from '@composables/useRealtimePost.ts';
+import { PAGE_PATHS } from '@config/const.ts';
+import { useDialogStore } from '@stores/dialog.ts';
+import { useAuthStore } from '@stores/auth.ts';
 
 const router = useRouter();
 const route = useRoute();
-const store = useStore();
+const dialogStore = useDialogStore();
+const authStore = useAuthStore();
 const isTabletScreen = useMediaQuery('(min-width: 768px)');
-
-type PostTypes = {time?: string, date?: string} & IPostTemp
-
-const showReplyPostDialog = ref(false);
-const keyReplyPostDialog = ref(0);
-const post = ref<PostTypes | null>(null);
-const parentPost = ref<PostTypes | null>(null);
-const author = ref<IUser | null>(null);
+const queryClient = useQueryClient();
 
 const postId = route.params.id;
 
@@ -50,48 +46,63 @@ onMounted(async () => {
   await router.isReady();
 });
 
-const { isLoggedIn, getUser } = mapGetters();
-
-const { animationLikes, animationComments } = useRealtimePost(post);
 
 const {
   data: dataPost,
-  isRefetching,
 } = useGetDetailPost(Number(postId));
 
 const {
   mutateAsync: likePost,
 } = useLikePost(Number(postId));
 
-watch([dataPost, isRefetching], () => {
-  if (dataPost?.value?.post) {
-    post.value = { ...dataPost.value.post };
+const post = ref<IResponseGetDetailPost['post']>({ ...dataPost.value?.post });
 
-    post.value.time = dayjs(post.value.created_at).format('h:mm A  ');
-    post.value.date = dayjs(post.value.created_at).format('MMM D, YYYY');
+const postLastEdited = computed(() => {
+  return {
+    time: dayjs(post.value.updated_at).format('h:mm A  '),
+    date: dayjs(post.value.updated_at).format('MMM D, YYYY'),
+  };
+});
 
-    author.value = post.value.author;
+const { animationLikes, animationComments } = useRealtimePost(post);
 
-    if (dataPost.value.post?.parent_post) {
-      parentPost.value = parseCreatedAt<IPostTemp>(dataPost.value.post.parent_post);
-    }
+const dataUpdatedPost = useMutationState({
+  filters: {
+    mutationKey: ['update-post'],
+  },
+  select: (mutation) => {
+    return (mutation.state.data as AxiosResponse<{ post : IPost }>)?.data?.post;
+  },
+});
+
+watch(dataUpdatedPost, () => {
+  const lastPostUpdate = dataUpdatedPost.value.at(-1);
+  if (lastPostUpdate) {
+    post.value = { ...post.value, ...lastPostUpdate };
   }
-}, { immediate: true });
+});
 
 async function toggleLikePost() {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+  if (!authStore.isLoggedIn) {
+    dialogStore.showDialog = 'login';
     return;
   }
   const { status } = await likePost();
   post.value.is_current_user_like = !post.value.is_current_user_like;
   if (status !== StatusCodes.OK) {
     post.value.is_current_user_like = !post.value.is_current_user_like;
+    return;
   }
+  queryClient.removeQueries({
+    queryKey: ['get-posts'],
+  });
+  queryClient.removeQueries({
+    queryKey: ['detail-post'],
+  });
 }
 
 const redirectProfile = () => {
-  router.push('/user/' + author.value.username);
+  router.push(`${PAGE_PATHS.USER}/${post.value.author.username}`);
 };
 
 const redirectHistory = () => {
@@ -104,20 +115,13 @@ const replyPost = () => {
   if (!post.value.is_current_user_can_comment) {
     return;
   }
-  showReplyPostDialog.value = true;
-  keyReplyPostDialog.value++;
+  dialogStore.showDialog = 'reply-post';
+  dialogStore.data = post.value;
 };
 
 </script>
 
 <template>
-  <ReplyPostDialog
-    :key="keyReplyPostDialog"
-    :show-dialog-from-props="showReplyPostDialog"
-    :hide-trigger="true"
-    :data-post-reply="post"
-  />
-
   <div
     v-if="post"
     class="px-4"
@@ -129,11 +133,11 @@ const replyPost = () => {
           <div
             class="flex gap-2.5 mb-4"
           >
-            <UserPopper :username="author?.username">
+            <UserPopper :username="post.author?.username">
               <img
-                v-if="author?.avatar_url"
+                v-if="post.author?.avatar_url"
                 alt="avatar"
-                :src="author?.avatar_url"
+                :src="post.author?.avatar_url"
                 class="rounded-full h-10 w-10 bg-black cursor-pointer"
                 @click="redirectProfile"
               >
@@ -147,7 +151,7 @@ const replyPost = () => {
             </UserPopper>
             <div>
               <UserPopper
-                :username="author?.username"
+                :username="post.author?.username"
                 class="max-h-[18px] mb-1.5 md:mb-0 "
               >
                 <h3
@@ -155,22 +159,22 @@ const replyPost = () => {
                        hover:underline hover:underline-offset-2 cursor-pointer"
                   @click="redirectProfile"
                 >
-                  {{ truncateText(author?.name, isTabletScreen ? 20 : 10, '...') }}
+                  {{ truncateText(post.author?.name, isTabletScreen ? 20 : 10, '...') }}
                 </h3>
               </UserPopper>
-              <UserPopper :username="author?.username">
+              <UserPopper :username="post.author?.username">
                 <p
                   class="max-w-2xl text-sm leading-3 text-zinc-500 cursor-pointer"
                   @click="redirectProfile"
                 >
-                  @{{ truncateText(author?.username, isTabletScreen ? 20 : 10, '...') }}
+                  @{{ truncateText(post.author?.username, isTabletScreen ? 20 : 10, '...') }}
                 </p>
               </UserPopper>
             </div>
           </div>
 
           <OptionsPost
-            v-if="getUser.id === post?.user_id"
+            v-if="authStore.user?.id === post?.user_id"
             class-dot-icon="h-7 w-7"
             :data-post="post"
           />
@@ -200,14 +204,14 @@ const replyPost = () => {
               v-if="post?.edited_posts_count > 0"
               class="h-4 w-4 inline mr-1.5"
             />
-            Last edited {{ post?.time }} · {{ post?.date }}
+            Last edited {{ postLastEdited?.time }} · {{ postLastEdited?.date }}
           </div>
 
           <div
             v-else
             class="text-zinc-500 font-normal text-sm mt-4 flex items-center"
           >
-            {{ post?.time }} · {{ post?.date }}
+            {{ postLastEdited?.time }} · {{ postLastEdited?.date }}
           </div>
         </div>
 
@@ -246,6 +250,7 @@ const replyPost = () => {
                 class="icon-btn"
                 @click="toggleLikePost"
               >
+                <!--                  v-if="isLikePost"-->
                 <HeartIconSolid
                   v-if="post.is_current_user_like"
                   v-tooltip="'Like'"

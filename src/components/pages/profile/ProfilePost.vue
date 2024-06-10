@@ -5,16 +5,16 @@ import { useRouter } from 'vue-router';
 import { StarIcon } from '@heroicons/vue/24/solid';
 import { POST_FILTER_BY } from '@/config/const';
 import OptionsPost from '@components/common/post/PostOptions.vue';
-import { mapGetters } from '@/lib/map-state';
-import { IPostTemp } from '@/types/post';
+import { IResponseGetPost } from '@/types/post';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';
 import ContentPost from '@components/common/post/ContentPost.vue';
 import PostActions from '@components/common/post/PostActions.vue';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import { POST_PIN_STATUS } from '@config/post.ts';
+import { useAuthStore } from '@stores/auth.ts';
 
 interface Props {
-  dataPost: IPostTemp & { time?: string, sub_post?: IPostTemp },
+  dataPost: IResponseGetPost
   isSubPost?: boolean
   by?: POST_FILTER_BY
 }
@@ -25,7 +25,7 @@ let {
 
 const router = useRouter();
 
-const { getUser } = mapGetters();
+const authStore = useAuthStore();
 
 const isHover = ref(false);
 const isHoverAction = ref(false);
@@ -91,7 +91,7 @@ const redirectDetailPost = () => {
       </div>
 
       <div
-        v-if="getUser.id === dataPost.user_id"
+        v-if="authStore.user?.id === dataPost.user_id"
         class="absolute right-5 h-5"
         :class="dataPost.pin_status_int === POST_PIN_STATUS.PIN ? 'top-8' : 'top-3.5'"
       >
@@ -104,7 +104,7 @@ const redirectDetailPost = () => {
     <div
       v-if="by === POST_FILTER_BY.COMMENTS &&
         dataPost.sub_post &&
-        getUser.username === dataPost?.sub_post?.author_username"
+        authStore.user?.username === dataPost?.sub_post?.author_username"
     >
       <ProfilePost
         is-sub-post

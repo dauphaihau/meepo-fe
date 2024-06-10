@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import Button from '@/core/components/Button.vue';
+import { useMediaQuery } from '@vueuse/core';
+import { DialogTypes, useDialogStore } from '@stores/dialog.ts';
+
+const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+const dialogStore = useDialogStore();
+
+const showDialog = (type: DialogTypes) => {
+  dialogStore.showDialog = type;
+};
+
+</script>
+
 <template>
   <div class="border rounded-xl p-4 ">
     <div>
@@ -57,13 +71,22 @@
         </Button>
       </div>
     </div>
+
     <div class="flex items-center gap-2 my-3">
       <div class="border border-zinc-300/50 border-[0.1px] h-[1px] w-1/2 " />
       or
       <div class="border border-zinc-300/50 border-[0.1px] w-1/2" />
     </div>
+
     <div v-if="isLargeScreen">
-      <RegisterDialog />
+      <Button
+        class="w-full"
+        variant="secondary"
+        @click="showDialog('register')"
+      >
+        Sign Up
+      </Button>
+
       <p class="text-xs mt-2 text-zinc-500">
         By signing up, you agree to the <span class="text-link">Terms of Service</span> and <span class="text-link">Privacy
           Policy</span>, including <span class="text-link">Cookie Use</span>.
@@ -71,20 +94,16 @@
       <p class="text-base mt-4 mb-2 font-bold">
         Already have an account?
       </p>
-      <LoginDialog />
-      <ForgotPasswordDialog />
+
+      <Button
+        :variant="isLargeScreen ? 'primary' : 'outline'"
+        class="w-full"
+        @click="showDialog('login')"
+      >
+        Log In
+      </Button>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import LoginDialog from '@components/dialog/LoginDialog.vue';
-import RegisterDialog from '@components/dialog/RegisterDialog.vue';
-import ForgotPasswordDialog from '@components/dialog/ForgetPasswordDialog/index.vue';
-import Button from '@/core/components/Button.vue';
-import { useMediaQuery } from '@vueuse/core';
-
-const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-</script>
 
 <style scoped></style>

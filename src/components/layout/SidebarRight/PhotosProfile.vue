@@ -1,70 +1,51 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import {
-  computed, onMounted, watch
-} from 'vue';
-import { POST_FILTER_BY } from '@/config/const';
-import { useGetPosts } from '@/services/post';
+import { computed, onMounted } from 'vue';
+
+import { POST_FILTER_BY } from '@config/const';
+import { useGetPosts } from '@services/post';
 import { IParamsGetPosts } from '@/types/post.ts';
 
 const router = useRouter();
 const route = useRoute();
+const username = route.params.username as string;
 
 onMounted(async () => {
   await router.isReady();
-  // await getPosts();
 });
 
 const params = computed<IParamsGetPosts>(() => {
   return {
     by: POST_FILTER_BY.MEDIA,
-    username: route.params.username as string,
+    username,
     limit: 6,
     page: 1,
   };
 });
 
 const {
-  data,
-  refetch: refetchGetPosts,
+  data: dataGetPosts,
 } = useGetPosts(params.value);
 
-// const getPosts = async () => {
-//   isLoading.value = true;
-//
-//   currentRouteUsername = route.params.username;
-//   // currentRouteName = route.name;
-//
-//   const payload = {
-//     by: FILTER_POST_BY.MEDIA,
-//     username: currentRouteUsername,
-//     limit: 6,
-//   };
-//
-//   const { data } = await postService.list(payload);
-//   console.log('data by getPost', data);
-//   // posts.value = data.slice(0, 3)
-//   posts.value = data.posts;
-//   isLoading.value = false;
-// };
-
-watch(router.currentRoute, () => {
-  if (route.name === 'profile') {
-    // getPosts();
-    refetchGetPosts();
+const posts = computed(() => {
+  if (dataGetPosts.value?.pages && dataGetPosts.value.pages.length > 0) {
+    return dataGetPosts.value.pages.reduce((acc, next) => {
+      return [...acc, ...next.posts];
+    }, []);
   }
+  return [];
 });
 
 </script>
 
 <template>
-  <div v-if="data?.posts && data.posts.length > 0">
+  <div v-if="posts && posts.length > 0">
     <div
-      v-if="data.posts.length === 2"
+      v-if="posts.length === 2"
       class="grid grid-cols-2 gap-[3px]"
     >
       <div
-        v-for="(post, index) of data.posts"
+        v-for="(post, index) of posts"
         :key="index"
       >
         <img
@@ -81,12 +62,12 @@ watch(router.currentRoute, () => {
     </div>
 
     <div
-      v-else-if="data.posts.length === 3"
+      v-else-if="posts.length === 3"
       class="flex gap-[2px]"
     >
       <div class="flex flex-col flex-wrap max-h-[222px] gap-[2px]">
         <div
-          v-for="(post, index) of data.posts"
+          v-for="(post, index) of posts"
           :key="index"
         >
           <img
@@ -107,11 +88,11 @@ watch(router.currentRoute, () => {
     </div>
 
     <div
-      v-else-if="data.posts.length === 4"
+      v-else-if="posts.length === 4"
       class="grid grid-cols-2 gap-[3px]"
     >
       <div
-        v-for="(post, index) of data.posts"
+        v-for="(post, index) of posts"
         :key="index"
       >
         <img
@@ -130,12 +111,12 @@ watch(router.currentRoute, () => {
     </div>
 
     <div
-      v-else-if="data.posts.length === 5"
+      v-else-if="posts.length === 5"
       class="w-full"
     >
       <div class="flex flex-wrap gap-[3px]">
         <div
-          v-for="(post, index) of data.posts"
+          v-for="(post, index) of posts"
           :key="index"
         >
           <img
@@ -157,11 +138,11 @@ watch(router.currentRoute, () => {
     </div>
 
     <div
-      v-else-if="data.posts.length >= 6"
+      v-else-if="posts.length >= 6"
       class="grid grid-cols-3 gap-[3px]"
     >
       <div
-        v-for="(post, index) of data.posts"
+        v-for="(post, index) of posts"
         :key="index"
       >
         <img

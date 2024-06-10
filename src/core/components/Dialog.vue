@@ -7,18 +7,18 @@ import {
 } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/20/solid';
 
-import { cn } from '@/core/helper.js';
+import { cn } from '@core/helpers/common.js';
 
 interface Props {
   show: boolean,
-  closeDialog: () => void,
+  close: () => void,
   classPanel?: string
   title?: string
   hideCloseBtn?: boolean
 }
 
 const {
-  show, closeDialog, classPanel, hideCloseBtn, title, 
+  show, close, classPanel, hideCloseBtn, title,
 } = defineProps<Props>();
 
 </script>
@@ -34,7 +34,7 @@ const {
     <Dialog
       as="div"
       class="relative z-[5]"
-      @close="closeDialog"
+      @close="close"
     >
       <TransitionChild
         as="template"
@@ -77,7 +77,7 @@ const {
               <XMarkIcon
                 v-if="!hideCloseBtn"
                 class="absolute top-2 right-2 text-black h-9 w-9 cursor-pointer hover:bg-zinc-100 rounded-full p-2 animate"
-                @click="closeDialog"
+                @click="close"
               />
             </div>
 

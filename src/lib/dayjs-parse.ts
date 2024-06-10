@@ -13,9 +13,6 @@ dayjs.extend(updateLocale);
 dayjs.extend(weekdays);
 dayjs.extend(isBetween);
 
-/**
- * Unresolved function or method updateLocale()
- */
 dayjs.updateLocale('en', {
   relativeTime: {
     future: 'in %s',
@@ -35,38 +32,18 @@ dayjs.updateLocale('en', {
   },
 });
 
-// interface Post extends IPost {
-//   sub_post?: IPost
-// }
-
-export function isLastMessage(current_created_at, next_created_at) {
-  if (!current_created_at || !next_created_at) {
+export function isLastMessage(current_created_at: Date, next_created_at: Date) {
+  if (!dayjs(current_created_at).isValid() || !dayjs(next_created_at).isValid()) {
     return false;
   }
   return dayjs(current_created_at).add(2, 'm').isBefore(dayjs(next_created_at));
 }
 
-export function parseCreatedAts(arr) {
-  arr = arr.map((obj) => {
-    if (obj?.sub_post) {
-      obj.sub_post = parseCreatedAt(obj.sub_post);
-    }
-    return parseCreatedAt(obj);
-  });
-  return arr;
-}
-
-export const parseCreatedAt = <T extends {created_at: Date}>(obj: T) => {
-  if (dayjs(obj.created_at).isToday()) {
-    return {
-      ...obj,
-      time: dayjs(obj.created_at).fromNow(),
-      isExpiresEdit: dayjs().isBefore(dayjs(obj.created_at).add(1, 'h')),
-    };
+export const parseTimeFromNow = (time?: Date): string => {
+  if (dayjs(time).isValid()) {
+    return dayjs(time).fromNow();
   }
-  else {
-    return { ...obj, time: dayjs(obj.created_at).format('MMM D') };
-  }
+  return '';
 };
 
 export const parseMessageCreatedAt = <T extends {created_at: Date}>(obj: T) => {

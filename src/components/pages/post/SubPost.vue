@@ -2,17 +2,18 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { mapGetters } from '@/lib/map-state';
-import { IPostTemp } from '@/types/post';
+import { IResponseGetPost } from '@/types/post';
 import PostOptions from '@components/common/post/PostOptions.vue';
 import PostActions from '@components/common/post/PostActions.vue';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import ContentPost from '@components/common/post/ContentPost.vue';
 import { useGetDetailPost } from '@services/post.ts';
+import { PAGE_PATHS } from '@config/const.ts';
+import { useAuthStore } from '@stores/auth.ts';
 
 interface Props {
-  dataPost: IPostTemp & { sub_post?: IPostTemp },
+  dataPost: IResponseGetPost
   isSubPost?: boolean
 }
 
@@ -23,9 +24,8 @@ let {
 const route = useRoute();
 const router = useRouter();
 
-const { getUser } = mapGetters();
+const authStore = useAuthStore();
 
-const post = ref(dataPost);
 const isHover = ref(false);
 const isHoverAction = ref(false);
 const isOpenPopover = ref(false);
@@ -45,7 +45,7 @@ const onHoverAction = (val: boolean) => {
 };
 
 const redirectDetailPost = () => {
-  router.push('/posts/' + post.value.id);
+  router.push(`${PAGE_PATHS.POSTS}/${dataPost.id}`);
 };
 
 </script>
@@ -65,7 +65,9 @@ const redirectDetailPost = () => {
       >
         <div class="flex flex-row">
           <AvatarAuthorPost
-            :show-line-connect-sub-post="detailPost.post.author.username === post?.sub_post?.author_username"
+            :show-line-connect-sub-post="
+              detailPost.post.author.username === dataPost?.sub_post?.author_username
+            "
             :data-post="dataPost"
             @on-open-popover="onOpenPopover"
           />
@@ -89,13 +91,16 @@ const redirectDetailPost = () => {
 
       <div class="absolute right-5 h-5 top-3.5">
         <PostOptions
-          v-if="getUser.id === dataPost.user_id"
+          v-if="authStore.user?.id === dataPost.user_id"
           :data-post="dataPost"
         />
       </div>
     </div>
 
-    <div v-if="dataPost.sub_post && detailPost.post.author.username === post?.sub_post?.author_username">
+    <div
+      v-if="dataPost.sub_post &&
+        detailPost?.post?.author?.username === dataPost?.sub_post?.author_username"
+    >
       <SubPost
         is-sub-post
         :data-post="dataPost.sub_post"

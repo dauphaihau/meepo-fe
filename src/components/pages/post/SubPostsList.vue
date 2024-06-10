@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  computed, onBeforeUnmount, onMounted, ref
+  computed, onBeforeUnmount, onMounted
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { UserGroupIcon } from '@heroicons/vue/20/solid';
 
-import Loading from '@/core/components/Loading.vue';
-import { useGetDetailPost, useGetPosts } from '@/services/post';
-import { POST_FILTER_BY } from '@/config/const';
+import Loading from '@core/components/Loading.vue';
+import { useGetDetailPost, useGetPosts } from '@services/post';
+import { POST_FILTER_BY } from '@config/const';
 import { IParamsGetPosts } from '@/types/post';
 import SubPost from '@components/pages/post/SubPost.vue';
 import { IUser } from '@/types/user.ts';
@@ -34,16 +34,17 @@ const params = computed(() => {
 });
 
 const {
-  data,
+  data: dataGetPosts,
   isFetching,
   fetchNextPage,
-  hasNextPage,
   isFetchingNextPage,
 } = useGetPosts(params.value);
 
+const maxPostsPage = computed(() => Math.floor(dataGetPosts.value.pages[0].total_posts / limit));
+
 const posts = computed(() => {
-  if (data.value?.pages && data.value.pages.length > 0) {
-    return data.value.pages.reduce((acc, next) => {
+  if (dataGetPosts.value?.pages && dataGetPosts.value.pages.length > 0) {
+    return dataGetPosts.value.pages.reduce((acc, next) => {
       return [...acc, ...next.posts];
     }, []);
   }
@@ -63,7 +64,7 @@ function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
       !isFetchingNextPage.value &&
-      hasNextPage.value
+      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }

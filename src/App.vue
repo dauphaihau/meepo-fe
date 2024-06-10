@@ -1,26 +1,25 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useMediaQuery } from '@vueuse/core';
+import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import SidebarLeft from '@components/layout/SidebarLeft/index.vue';
 import SidebarRight from '@components/layout/SidebarRight/index.vue';
-import ChatBox from '@/components/layout/Chatbox.vue';
-import { mapGetters } from '@/lib/map-state';
+import ChatBox from '@components/chatbox/Chatbox.vue';
 import AuthBar from '@components/AuthBar.vue';
-import ToastCustom from '@components/ToastCustom.vue';
+import { useChatStore } from '@stores/chat.ts';
+import NavigatePageMobile from '@components/layout/SidebarLeft/NavigateMenuMobile.vue';
+import { useAuthStore } from '@stores/auth.ts';
+import Dialogs from '@components/dialogs/Dialogs.vue';
+import Notifications from '@components/Notifications.vue';
+import LoadingFullPage from '@components/LoadingFullPage.vue';
+import Drawers from '@components/drawers/Drawers.vue';
+import CreatePostBtnMobile from '@components/layout/CreatePostBtnMobile.vue';
 
-const isTabletScreen = useMediaQuery('(min-width: 768px)');
 const route = useRoute();
-const router = useRouter();
+const chatStore = useChatStore();
+const authStore = useAuthStore();
 
-const {
-  isLoggedIn, getUser, getShowChatbox, getLoadingAuth,
-} = mapGetters();
-
-onMounted(async () => {
-  await router.isReady();
-});
+const { isLoggedIn, loadingAuth, user } = storeToRefs(authStore);
 
 </script>
 
@@ -29,25 +28,15 @@ onMounted(async () => {
     id="app"
     class="w-full"
   >
-    <div
-      v-if="getLoadingAuth"
-      class="fixed bg-white inset-0 z-[10] flex justify-center items-center"
-    >
-      <p class="font-black text-black font-[Alphabets4] py-2 px-3 lg:px-4 text-7xl">
-        m
-      </p>
-    </div>
+    <Dialogs />
+    <Notifications />
+    <Drawers />
+
+    <LoadingFullPage v-if="loadingAuth" />
+
     <div v-else>
-      <ToastCustom />
-      <AuthBar
-        class="lg:hidden"
-        :class="isLoggedIn ? 'absolute z-[-1] invisible' : ''"
-      />
       <div class="flex mx-auto max-w-[100vw] lg:max-w-4xl xl:max-w-[76rem]">
-        <SidebarLeft
-          v-if="isTabletScreen || (!isTabletScreen && isLoggedIn)"
-          class="w-0 md:w-auto md:ml-8 lg:ml-0"
-        />
+        <SidebarLeft />
         <main class="flex gap-6 w-full min-h-[100vh] md:min-h-[200vh]">
           <div
             class="flex flex-col w-full  border-l border-r md:min-w-[598px] md:max-w-[598px] min-h-screen"
@@ -58,7 +47,14 @@ onMounted(async () => {
           <SidebarRight class="hidden lg:block" />
         </main>
       </div>
-      <ChatBox v-if="isLoggedIn && ( getUser.rooms_private_count > 0 || getShowChatbox)" />
+
+      <ChatBox v-if="isLoggedIn && ( user.last_message_count > 0 || chatStore.showChatbox)" />
+
+      <AuthBar v-if="!isLoggedIn" />
+
+      <CreatePostBtnMobile />
+
+      <NavigatePageMobile v-if="isLoggedIn" />
     </div>
   </div>
 </template>

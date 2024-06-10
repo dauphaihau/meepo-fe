@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
-import { toUpperCaseFirstL } from '@core/helper.ts';
+import { toUpperCaseFirstL } from '@core/helpers/common.ts';
 import TabsMainContent from '@components/layout/TabsMainContent.vue';
 import UserPostList from '@components/pages/search/UserPostList.vue';
 
@@ -39,6 +39,7 @@ const onChangeTab = async (value: FILTER_SEARCH_ALL) => {
       <template #tabs>
         <TabsMainContent
           :tabs="tabs"
+          class="grid-cols-4"
           :default-tab="currentFilter.toString()"
           @on-change-tab="onChangeTab"
         />

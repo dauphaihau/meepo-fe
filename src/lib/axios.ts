@@ -3,7 +3,7 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig
 } from 'axios';
-import { logger } from '@/core/helper';
+import { logger } from '@core/helpers/logger.ts';
 
 export interface IConfigReq extends InternalAxiosRequestConfig {
   whereSrcRequest?: string
@@ -18,9 +18,9 @@ const axiosInstance = axios.create({
 
 const onRequest = (configReq: IConfigReq): IConfigReq => {
   const { method, url, whereSrcRequest } = configReq;
-  const auth_token = localStorage.getItem('auth_token');
-  if (auth_token) {
-    configReq.headers.Authorization = auth_token;
+  const authToken = sessionStorage.getItem('auth_token');
+  if (authToken) {
+    configReq.headers.Authorization = authToken;
   }
   logger.debug(`🔺 Request | [API] ${method?.toUpperCase()} ${url} `, configReq.data ?? 'req with undefined data', whereSrcRequest);
   if (method === 'get') {

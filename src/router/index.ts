@@ -1,78 +1,66 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-
-import Home from '@pages/home.vue';
-import Post from '@pages/post.vue';
-import History from '@pages/history-edited-posts.vue';
-import Profile from '@pages/profile.vue';
-import Follow from '@pages/follow.vue';
-import Search from '@pages/search.vue';
-import Explore from '@pages/explore.vue';
-import Room from '@pages/room.vue';
-import Messages from '@pages/messages.vue';
-import NotFound from '@pages/not-found.vue';
-import { mapGetters } from '@/lib/map-state';
-import { ActionEnums } from '@/types/store/root';
-import { store } from '@/store';
+import { PAGE_PATHS } from '@config/const.ts';
+import { useAuthStore } from '@stores/auth.ts';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/home',
+    path: PAGE_PATHS.HOME,
     name: 'home',
-    component: Home,
+    component: () => import('@pages/home.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/posts/:id',
+    path: `${PAGE_PATHS.POSTS}/:id`,
     name: 'post',
-    component: Post,
+    component: () => import('@pages/post.vue'),
   },
   {
-    path: '/posts/:id/history',
+    path: `${PAGE_PATHS.POSTS}/:id/history`,
     name: 'history',
-    component: History,
+    component: () => import('@pages/history-edited-posts.vue'),
   },
   {
-    path: '/user/:username',
+    path: `${PAGE_PATHS.USER}/:username`,
     name: 'profile',
-    component: Profile,
+    component: () => import('@pages/profile.vue'),
   },
   {
-    path: '/user/:username/following',
+    path: `${PAGE_PATHS.USER}/:username/following`,
     name: 'following',
-    component: Follow,
+    component: () => import('@pages/follow.vue'),
     props: true,
   },
   {
-    path: '/user/:username/followers',
+    path: `${PAGE_PATHS.USER}/:username/followers`,
     name: 'followers',
-    component: Follow,
+    component: () => import('@pages/follow.vue'),
     props: true,
   },
   {
-    path: '/search',
+    path: PAGE_PATHS.SEARCH,
     name: 'search',
-    component: Search,
+    component: () => import('@pages/search.vue'),
     props: true,
   },
   {
-    path: '/explore',
+    path: PAGE_PATHS.EXPLORE,
     name: 'explore',
-    component: Explore,
+    component: () => import('@pages/explore.vue'),
   },
   {
-    path: '/messages',
+    path: PAGE_PATHS.MESSAGES,
     name: 'messages',
-    component: Messages,
+    component: () => import('@pages/messages.vue'),
   },
   {
-    path: '/room',
-    name: 'room',
-    component: Room,
+    path: PAGE_PATHS.ROOMS,
+    name: 'rooms',
+    component: () => import('@pages/rooms.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: NotFound,
+    component: () => import('@pages/not-found.vue'),
   },
 ];
 
@@ -90,30 +78,28 @@ const router = createRouter({
 });
 
 router.beforeResolve(async (to, from, next) => {
-  const { isLoggedIn } = mapGetters();
+  const authStore = useAuthStore();
 
-  if (!isLoggedIn.value) {
-    const localAuthToken = localStorage.auth_token;
-    const tokenExists = localAuthToken !== 'undefined' && localAuthToken !== null;
+  if (!authStore.isLoggedIn) {
+    const tokenExists = sessionStorage.getItem('auth_token');
     if (tokenExists) {
-      const auth_token = localStorage.getItem('auth_token');
-      const authTokenExists = auth_token !== 'undefined' && auth_token !== null;
-      if (authTokenExists) {
-        await store.dispatch(ActionEnums.LOGIN_WITH_TOKEN);
-      }
+      await authStore.me();
+    }
+    else {
+      authStore.loadingAuth = false;
     }
   }
 
-  if (to.meta.requiresAuth && !isLoggedIn.value) {
-    return next('/explore');
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    return next(PAGE_PATHS.EXPLORE);
   }
 
   if (to.path === '/') {
-    if (isLoggedIn.value) {
-      return next('/home');
+    if (authStore.isLoggedIn) {
+      return next(PAGE_PATHS.HOME);
     }
     else {
-      return next('/explore');
+      return next(PAGE_PATHS.EXPLORE);
     }
   }
 

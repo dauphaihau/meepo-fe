@@ -8,19 +8,20 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import { useCreatePost } from '@/services/post';
-import { mapGetters } from '@/lib/map-state';
 import Button from '@/core/components/Button.vue';
-import { ICreatePost } from '@/types/post';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root';
-import { logger } from '@/core/helper';
+import { ICreateSubPost } from '@/types/post';
 import { useUploadImage } from '@/services/common';
 import { useQueryClient } from '@tanstack/vue-query';
 import { StatusCodes } from 'http-status-codes';
+import { useAuthStore } from '@stores/auth.ts';
+import { useDialogStore } from '@stores/dialog.ts';
+import { useNotificationStore } from '@stores/notification.ts';
+import { logger } from '@core/helpers/logger.ts';
 
-const store = useStore();
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
+const notificationStore = useNotificationStore();
 
 const content = ref('');
 const fileInput = ref(null);
@@ -32,8 +33,6 @@ const urlImage = ref(null);
 
 const postId = route.params.id;
 
-const { isLoggedIn, getUser } = mapGetters();
-
 const {
   isPending: isPendingCreatePost,
   mutateAsync: createPost,
@@ -44,6 +43,8 @@ const {
   mutateAsync: uploadImage,
 } = useUploadImage();
 
+
+const dialogStore = useDialogStore();
 const queryClient = useQueryClient();
 
 const onChangeImage = ({ target }: Event) => {
@@ -55,15 +56,14 @@ const onChangeImage = ({ target }: Event) => {
 };
 
 const handleCreatePost = async () => {
-
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+  if (!authStore.isLoggedIn) {
+    dialogStore.showDialog = 'login';
     return;
   }
 
-  const payload: ICreatePost = {
-    content: content.value,
+  const payload: ICreateSubPost = {
     parent_id: Number(postId),
+    content: content.value,
   };
 
   if (whoCanComment.value !== null) {
@@ -91,9 +91,12 @@ const handleCreatePost = async () => {
       logger.error('response from postAPI.create, post id is null', 'src/components/CreatePostForm.vue');
     }
 
-    store.commit(MutationEnums.SHOW_TOAST, {
-      message: 'Your post was sent.',
-      onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
+    notificationStore.notify({
+      text: 'Your post was sent.',
+      btnRight: {
+        title: 'View',
+        onClick: () => router.push({ name: 'post', params: { id: data.post.id } }),
+      },
     });
 
     content.value = '';
@@ -156,18 +159,18 @@ watch(content, () => {
           class="h-full "
         >
           <img
-            v-if="getUser.avatar_url"
-            :src="getUser.avatar_url"
+            v-if="authStore.user?.avatar_url"
+            :src="authStore.user?.avatar_url"
             class="rounded-full h-10 w-10 bg-black cursor-pointer"
             alt="avatar"
-            @click="router.push('/user/' + getUser.username)"
+            @click="router.push('/user/' + authStore.user?.username)"
           >
           <img
             v-else
             src="@/assets/default-avatar.png"
             class="rounded-full h-10 w-10 bg-black cursor-pointer"
             alt="avatar"
-            @click="router.push('/user/' + getUser.username)"
+            @click="router.push('/user/' + authStore.user?.username)"
           >
         </div>
       </div>
@@ -195,7 +198,7 @@ watch(content, () => {
               <div v-if="!isFocus">
                 <Button
                   classes="px-6"
-                  disabled-click
+                  disabled
                   @click.prevent="handleCreatePost"
                 >
                   Post
@@ -269,8 +272,8 @@ watch(content, () => {
 
         <Button
           classes="px-6"
-          :is-loading="isPendingUploadImage || isPendingCreatePost"
-          :disabled-click="!content && !fileImage"
+          :loading="isPendingUploadImage || isPendingCreatePost"
+          :disabled="!content && !fileImage"
           @click.prevent="handleCreatePost"
         >
           Post

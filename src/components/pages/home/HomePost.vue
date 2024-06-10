@@ -3,15 +3,16 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import PostOptions from '@components/common/post/PostOptions.vue';
-import { mapGetters } from '@/lib/map-state';
-import { IPostTemp } from '@/types/post';
+import { IResponseGetPost } from '@/types/post';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';
 import ContentPost from '@components/common/post/ContentPost.vue';
 import PostActions from '@components/common/post/PostActions.vue';
+import { useAuthStore } from '@stores/auth.ts';
+import { PAGE_PATHS } from '@config/const.ts';
 
 interface IProps {
-  dataPost: IPostTemp & { time?: string },
+  dataPost: IResponseGetPost
 }
 
 const {
@@ -19,10 +20,8 @@ const {
 } = defineProps<IProps>();
 
 const router = useRouter();
+const authStore = useAuthStore();
 
-const { getUser } = mapGetters();
-
-const post = ref(dataPost);
 const isHover = ref(false);
 const isOpenPopover = ref(false);
 const keyOptionsPost = ref(0);
@@ -37,7 +36,7 @@ const onHoverAction = (val: boolean) => {
 };
 
 const redirectDetailPost = () => {
-  router.push('/posts/' + post.value.id);
+  router.push(`${PAGE_PATHS.POSTS}/${dataPost.id}`);
 };
 
 </script>
@@ -78,7 +77,7 @@ const redirectDetailPost = () => {
 
       <div class="absolute right-5 h-5 top-3.5">
         <PostOptions
-          v-if="getUser.id === dataPost.user_id"
+          v-if="authStore.user?.id === dataPost?.user_id"
           :key="keyOptionsPost"
           :data-post="dataPost"
         />

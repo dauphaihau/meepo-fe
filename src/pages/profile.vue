@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
-
 import Loading from '@core/components/Loading.vue';
 import { useGetProfileUser } from '@services/user.ts';
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
-import UserInfo from '@components/pages/profile/UserInfo.vue';
+import UserInfo from '@components/pages/profile/ProfileUserInfo.vue';
 import TabsMainContent from '@components/layout/TabsMainContent.vue';
 import ProfilePostList from '@components/pages/profile/ProfilePostList.vue';
 
@@ -66,7 +63,7 @@ const onChangeTab = (value: number) => {
 
         <TabsMainContent
           :tabs="tabs"
-          class="border-b"
+          class="border-b grid-cols-4"
           @on-change-tab="onChangeTab"
         />
 

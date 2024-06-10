@@ -2,52 +2,31 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { userService } from '@/services/user';
-import { mapGetters } from '@/lib/map-state';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root';
-import { IUser } from '@/types/user';
-import ToggleFollowBtn from '@components/ToggleFollowBtn.vue';
+import { UserInGetList } from '@/types/user';
 import UserPopper from '@components/UserPopper.vue';
-import { logger, truncateText } from '@/core/helper';
+import { truncateText } from '@core/helpers/common.ts';
 import { useMediaQuery } from '@vueuse/core';
-import { StatusCodes } from 'http-status-codes';
+import { useAuthStore } from '@stores/auth.ts';
+import ToggleFollowBtn from '@components/ToggleFollowBtn.vue';
+import { PAGE_PATHS } from '@config/const.ts';
+import AvatarUser from '@components/AvatarUser.vue';
 
-const store = useStore();
+type TProps = {
+  user: UserInGetList
+}
+
 const router = useRouter();
-const isTabletScreen = useMediaQuery('(min-width: 768px)');
+const minTabletScreen = useMediaQuery('(min-width: 768px)');
+const authStore = useAuthStore();
 
 const isHover = ref(false);
 const isOpenPopover = ref(false);
-const keyUserPopper = ref(0);
 
-const { getUser, isLoggedIn } = mapGetters();
-const { user } = defineProps<{user: IUser}>();
+const { user } = defineProps<TProps>();
 const is_current_user_following = ref(user.is_current_user_following);
 
-const unOrFollow = async () => {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
-    return;
-  }
-
-  if (!user || !user?.id) {
-    logger.error('execute unOrFollow: user is undefined', 'src/components/User.vue');
-    return;
-  }
-
-  const { status } = is_current_user_following.value ?
-    await userService.unfollow(user.id) :
-    await userService.follow(user.id);
-
-  if (status === StatusCodes.OK) {
-    is_current_user_following.value = !is_current_user_following.value;
-    keyUserPopper.value++;
-  }
-};
-
 const redirectProfile = () => {
-  router.push('/user/' + user.username);
+  router.push(`${PAGE_PATHS.USER}/${user.username}`);
 };
 
 const onOpenPopover = (val) => {
@@ -64,37 +43,25 @@ const onOpenPopover = (val) => {
     @mouseleave="isHover = false"
   >
     <div
-      class="block px-4 py-3 bg-white flex flex-col animate hover:bg-zinc-100"
+      class="px-4 py-3 bg-white flex flex-col animate hover:bg-zinc-100"
       :class="{'cursor-pointer': !isOpenPopover }"
       @click="!isOpenPopover && redirectProfile()"
     >
       <div class="flex flex-grow">
         <UserPopper
-          :key="keyUserPopper"
-          :user-data="user"
+          :username="user.username"
           class="mr-3 min-w-[40px] h-10"
           @on-open-popover="onOpenPopover"
         >
-          <img
-            v-if="user.avatar_url"
-            alt="avatar"
-            :src="user.avatar_url"
-            class="rounded-full h-10 w-10 bg-black "
-            @click="redirectProfile"
-          >
-          <img
-            v-else
-            alt="avatar"
-            src="@/assets/default-avatar.png"
-            class="rounded-full h-10 w-10 bg-black "
-            @click="redirectProfile"
-          >
+          <AvatarUser
+            :avatar-url="user.avatar_url"
+            :username="user.username"
+          />
         </UserPopper>
 
         <div class="text-[15px]">
           <UserPopper
-            :key="keyUserPopper"
-            :user-data="user"
+            :username="user.username"
             class="h-5"
             @on-open-popover="onOpenPopover"
           >
@@ -102,18 +69,18 @@ const onOpenPopover = (val) => {
               class="font-bold text-black hover:underline hover:underline-offset-2 animate"
               @click="redirectProfile"
             >
-              @{{ truncateText(user?.name, isTabletScreen ? 25 : 15, '...') }}
+              @{{ truncateText(user?.name, minTabletScreen ? 25 : 15, '...') }}
             </div>
           </UserPopper>
           <UserPopper
-            :user-data="user"
+            :username="user.username"
             class="h-5"
           >
             <div
               class="text-zinc-500"
               @click="redirectProfile"
             >
-              @{{ truncateText(user?.username, isTabletScreen ? 25 : 15, '...') }}
+              @{{ truncateText(user?.username, minTabletScreen ? 25 : 15, '...') }}
             </div>
           </UserPopper>
         </div>
@@ -121,15 +88,13 @@ const onOpenPopover = (val) => {
     </div>
 
     <div
-      v-if="getUser.id !== user.id"
+      v-if="authStore.user?.id !== user.id"
       class="absolute top-4 right-5"
     >
       <ToggleFollowBtn
-        :show="isLoggedIn"
-        :is-following="is_current_user_following"
-        @click="unOrFollow"
+        v-model="is_current_user_following"
+        :user-id="user.id"
       />
-<!--        :is-following="user.is_current_user_following"-->
     </div>
   </div>
 </template>

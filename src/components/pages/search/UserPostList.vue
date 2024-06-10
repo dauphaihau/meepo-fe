@@ -4,14 +4,13 @@ import {
 } from 'vue';
 
 import Post from '@components/common/post/Post.vue';
-import { useRoute, useRouter } from 'vue-router';
 import Loading from '@core/components/Loading.vue';
-import { useGetSearchAllTest } from '@services/common.ts';
+import { useRoute } from 'vue-router';
+import { useGetSearchAll } from '@services/common.ts';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
-import User from '@components/User.vue';
+import FollowUser from '@components/pages/follow/FollowUser.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 let limit = 20;
 
@@ -19,50 +18,13 @@ const currentFilter = route.query.f;
 
 onMounted(async () => {
   window.addEventListener('scroll', onScroll);
-
-  await router.isReady();
-
-  // if (!route.query?.f) {
-  //   route.query.f = FILTER_SEARCH_ALL.TOP;
-  //
-  //   await router.push({
-  //     name: 'search',
-  //     query: {
-  //       q: route.query.q,
-  //       f: FILTER_SEARCH_ALL.TOP,
-  //     },
-  //   });
-  //   // }).catch(() => false);
-  // }
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
 });
 
-// watch(router.currentRoute, (value, oldValue) => {
-//   if (value && oldValue.query.q !== value.query.q) {
-//     resetState();
-//     getSearch();
-//   }
-// });
-
 const params = computed(() => {
-
-  // console.log('route-query', route.query);
-  // const queries: IParamsSearchAll = { ...route.query };
-  // const queries: IParamsSearchAll = { ...queriesTemp.value, f: filter };
-  // if (!queries?.f) {
-  //   queries.f = FILTER_SEARCH_ALL.TOP;
-  // }
-  // if (queries?.f && queries.f !== FILTER_SEARCH_ALL.TOP) {
-  //   queries.page = page_count.value.toString();
-  //   if (queries.f === FILTER_SEARCH_ALL.PEOPLE) {
-  //     perPage = 15;
-  //   }
-  //   queries.limit = perPage.toString();
-  // }
-  // return queries;
   return {
     ...route.query,
     limit,
@@ -73,9 +35,8 @@ const {
   data,
   isPending: isPendingGetSearchAll,
   fetchNextPage,
-  hasNextPage,
   isFetchingNextPage,
-} = useGetSearchAllTest(params.value);
+} = useGetSearchAll(params.value);
 
 const maxPostsPage = ref(0);
 const maxUsersPage = ref(0);
@@ -101,7 +62,6 @@ const posts = computed(() => {
 });
 
 function onScroll() {
-  console.log('has-next-page-value', hasNextPage.value);
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 90 / 100) &&
     !isFetchingNextPage.value &&
@@ -134,7 +94,7 @@ function onScroll() {
         v-for="(user, idx) of users"
         :key="idx"
       >
-        <User
+        <FollowUser
           :user="user"
           :class="currentFilter === FILTER_SEARCH_ALL.PEOPLE && 'border-b'"
         />

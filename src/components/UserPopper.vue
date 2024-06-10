@@ -1,51 +1,56 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { Fn } from '@vueuse/core';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
 
-import Loading from '@/core/components/Loading.vue';
+import Loading from '@core/components/Loading.vue';
+import { IResponseGetProfile, IUser } from '@/types/user';
+import { useMutationGetProfileUser } from '@services/user';
 import ToggleFollowBtn from '@components/ToggleFollowBtn.vue';
-import { IUser } from '@/types/user';
-import { useRouter } from 'vue-router';
-import { userService } from '@/services/user';
-import { MutationEnums } from '@/types/store/root';
-import { mapGetters } from '@/lib/map-state';
-import { useStore } from '@/store';
-import { logger } from '@/core/helper';
-import { Fn } from '@vueuse/core';
+import { PAGE_PATHS } from '@config/const.ts';
+import AvatarUser from '@components/AvatarUser.vue';
+import { useAuthStore } from '@stores/auth.ts';
 
 const router = useRouter();
-const store = useStore();
-const { isLoggedIn, getUser } = mapGetters();
 const popoverHover = ref(false);
-const isLoading = ref(false);
 const popoverTimeout = ref();
 
 interface IProps {
-  userData?: Partial<IUser>;
-  username?: string;
+  username: IUser['username'];
   classPopover?: string;
 }
 
-let { userData: userDataFromProp, username, classPopover } = defineProps<IProps>();
+let { username, classPopover } = defineProps<IProps>();
 
 const emit = defineEmits<{
   (e: 'onOpenPopover', value: boolean)
 }>();
 
-const is_current_user_following = ref(false);
-const userNameProp = ref(username ?? userDataFromProp?.username);
-const user = ref(null);
+const authStore = useAuthStore();
+
+const user = ref<IResponseGetProfile['user'] | null>(null);
+
+const {
+  isPending: isPendingGetProfileUser,
+  mutateAsync: getProfileUser,
+} = useMutationGetProfileUser(username);
 
 const hoverPopover = (e: Event, open: boolean): void => {
   const target = e.target as Element;
   popoverHover.value = true;
 
-  if (popoverTimeout.value) clearTimeout(popoverTimeout.value);
-  popoverTimeout.value = setTimeout(() => {
-    if (!open && !isLoading.value) {
+  if (popoverTimeout.value) {
+    clearTimeout(popoverTimeout.value);
+  }
+  popoverTimeout.value = setTimeout(async () => {
+    if (!open && !isPendingGetProfileUser.value) {
       const parentNode = target.parentNode as HTMLElement;
-      parentNode.click();
-      getProfile();
+      parentNode.click(); // click show popper
+      const data = await getProfileUser();
+      if (data.user) {
+        user.value = data.user;
+      }
     }
   }, 500);
 };
@@ -53,7 +58,9 @@ const hoverPopover = (e: Event, open: boolean): void => {
 const closePopover = (close: Fn): void => {
   popoverHover.value = false;
 
-  if (popoverTimeout.value) clearTimeout(popoverTimeout.value);
+  if (popoverTimeout.value) {
+    clearTimeout(popoverTimeout.value);
+  }
   popoverTimeout.value = setTimeout(() => {
     if (!popoverHover.value) {
       close();
@@ -61,64 +68,22 @@ const closePopover = (close: Fn): void => {
   }, 300);
 };
 
-async function getProfile() {
-  if (user.value && user.value?.username === userNameProp.value) {
-    return;
+function onUnOrFollowSuccess() {
+  if (user.value.is_current_user_following) {
+    user.value.followers_count++;
   }
-
-  if (!userNameProp.value) {
-    logger.error('execute getProfile: username is undefined', 'src/components/UserPopper.vue');
-    return;
-  }
-
-  isLoading.value = true;
-  const { data } = await userService.getProfile(userNameProp.value);
-  isLoading.value = false;
-
-  if (data) {
-    user.value = data.user;
-    is_current_user_following.value = user.value?.is_current_user_following;
-  }
-}
-
-async function unOrFollow() {
-  if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
-    return;
-  }
-
-  if (!user.value || !user.value?.id) {
-    logger.error('execute getProfile: user is undefined', 'src/components/UserPopper.vue');
-    return;
-  }
-
-  const { status } = user.value?.is_current_user_following && user.value.is_current_user_following ?
-    await userService.unfollow(user.value.id) :
-    await userService.follow(user.value.id);
-
-  if (status === 200) {
-    user.value.is_current_user_following = !user.value?.is_current_user_following;
-    if (userDataFromProp) {
-      user.value.is_current_user_following = !userDataFromProp?.is_current_user_following;
-      // userDataFromProp.is_current_user_following = !userDataFromProp?.is_current_user_following;
-    }
-    user.value.followers_count = user.value.is_current_user_following ?
-      user.value.followers_count + 1 :
-      user.value.followers_count - 1;
-  }
+  else user.value.followers_count--;
 }
 
 function redirectFollowPage(name: string) {
-  localStorage.setItem('state', JSON.stringify(user.value));
   router.push({
     name,
     params: { username: user.value.username },
   });
 }
 
-function redirectProfilePage(close) {
-  router.push('/user/' + user.value.username);
-  close();
+function redirectProfilePage() {
+  router.push(`${PAGE_PATHS.USER}/${user.value?.username}`);
 }
 
 watch(popoverHover, (value: boolean) => {
@@ -132,6 +97,7 @@ watch(popoverHover, (value: boolean) => {
     <div class="md:hidden">
       <slot />
     </div>
+
     <div class="hidden md:block">
       <Popover
         v-slot="{ open, close }"
@@ -141,13 +107,11 @@ watch(popoverHover, (value: boolean) => {
         <PopoverButton
           :class="open ? '' : 'text-opacity-90'"
           class="focus:outline-none inline-flex items-center"
-          @mouseover="(e) => hoverPopover(e, open)"
+          @mouseover="(e: Event) => hoverPopover(e, open)"
           @mouseleave="closePopover(close)"
         >
           <slot />
         </PopoverButton>
-        <!--    <PopoverOverlay class="fixed inset-0 bg-black opacity-30" />-->
-        <!--    <PopoverOverlay :class="open && 'fixed inset-0'" />-->
 
         <transition
           enter-active-class="transition duration-500 ease-out"
@@ -165,10 +129,10 @@ watch(popoverHover, (value: boolean) => {
           >
             <div
               class="overflow-hidden bg-white w-[300px] max-w-[300px]
-            p-4 rounded-xl popper-shadow ring-1 ring-black ring-opacity-5"
+                     p-4 rounded-xl popper-shadow ring-1 ring-black ring-opacity-5"
             >
               <div
-                v-if="isLoading"
+                v-if="isPendingGetProfileUser"
                 class="flex-center h-32"
               >
                 <Loading
@@ -177,63 +141,55 @@ watch(popoverHover, (value: boolean) => {
                 />
               </div>
               <div v-else>
-                <div class="flex justify-between mb-2">
-                  <img
-                    v-if="user?.avatar_url"
-                    alt="avatar"
-                    :src="user.avatar_url"
-                    class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
-                    @click="redirectProfilePage(close)"
-                  >
-                  <img
-                    v-else
-                    alt="avatar"
-                    src="@/assets/default-avatar.png"
-                    class="rounded-full h-16 w-16 bg-black col-span-1 cursor-pointer"
-                    @click="redirectProfilePage(close)"
-                  >
+                <div v-if="user">
+                  <div class="flex justify-between mb-2">
+                    <AvatarUser
+                      class="!h-16 !w-16"
+                      :avatar-url="user?.avatar_url"
+                      @click="redirectProfilePage"
+                    />
+                    <ToggleFollowBtn
+                      v-if="authStore.user?.id !== user?.id"
+                      v-model="user.is_current_user_following"
+                      :user-id="user?.id"
+                      @on-un-or-follow-success="onUnOrFollowSuccess"
+                    />
+                  </div>
 
-                  <ToggleFollowBtn
-                    v-if="getUser.id !== user?.id"
-                    :show="true"
-                    :is-following="user?.is_current_user_following"
-                    @click="unOrFollow"
-                  />
-                </div>
-                <div
-                  class="text-[15px] font-bold text-black hover:underline
-                   hover:underline-offset-2 animate cursor-pointer"
-                  @click="redirectProfilePage(close)"
-                >
-                  {{ user?.name }}
-                </div>
-                <div
-                  class="text-[15px] text-zinc-500 mb-2 cursor-pointer w-fit"
-                  @click="redirectProfilePage(close)"
-                >
-                  @{{
-                    user?.username
-                  }}
-                </div>
-                <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">
-                  {{ user?.bio }}
-                </p>
-                <div>
-                  <div class="flex gap-4">
-                    <div
-                      class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
-                      @click="redirectFollowPage('followers')"
-                    >
-                      <span class="font-bold text-[14px] text-black">{{ user?.followers_count ?? 0 }}</span>
-                      <span class="text-zinc-500 text-[14px]">Follower</span>
-                    </div>
+                  <div
+                    class="text-[15px] font-bold text-black hover:underline hover:underline-offset-2 animate cursor-pointer"
+                    @click="redirectProfilePage"
+                  >
+                    {{ user?.name }}
+                  </div>
+                  <div
+                    class="text-[15px] text-zinc-500 mb-2 cursor-pointer w-fit"
+                    @click="redirectProfilePage"
+                  >
+                    @{{
+                      user?.username
+                    }}
+                  </div>
+                  <p class="font-normal text-zinc-700 dark:text-zinc-400 text-[15px] mb-2">
+                    {{ user?.bio }}
+                  </p>
+                  <div>
+                    <div class="flex gap-4">
+                      <div
+                        class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
+                        @click="redirectFollowPage('followers')"
+                      >
+                        <span class="font-bold text-[14px] text-black">{{ user?.followers_count ?? 0 }}</span>
+                        <span class="text-zinc-500 text-[14px]">Follower</span>
+                      </div>
 
-                    <div
-                      class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
-                      @click="redirectFollowPage('following')"
-                    >
-                      <span class="font-bold text-[14px] text-black">{{ user?.followed_count ?? 0 }}</span>
-                      <span class="text-zinc-500 text-[14px]">Following</span>
+                      <div
+                        class="hover:underline hover:underline-offset-2 cursor-pointer flex items-center gap-1"
+                        @click="redirectFollowPage('following')"
+                      >
+                        <span class="font-bold text-[14px] text-black">{{ user?.followed_count ?? 0 }}</span>
+                        <span class="text-zinc-500 text-[14px]">Following</span>
+                      </div>
                     </div>
                   </div>
                 </div>

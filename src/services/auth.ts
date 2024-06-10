@@ -1,26 +1,36 @@
-import { IUser } from '@/types/user.ts';
+import {
+  IRequestDataLogin,
+  IUser,
+  IResponseLogin,
+  IResponseRegister,
+  IRequestDataRegister, IResponseMe, IRequestDataResetPassword
+} from '@/types/user.ts';
 import { apiHelper } from '@lib/axios.ts';
 
 export const authService = {
-  login(payload) {
-    return apiHelper.post<{ user: IUser, message: string }>('/users/sign_in', payload);
+  async login(data: IRequestDataLogin) {
+    return await apiHelper.post<IResponseLogin>('/users/sign_in', {
+      user: data,
+    });
   },
-  register(payload) {
-    return apiHelper.post<{ user: IUser, message: string }>('/users', payload);
+  async register(data: IRequestDataRegister) {
+    return await apiHelper.post<IResponseRegister>('/users', {
+      user: data,
+    });
   },
-  forgetPassword(query) {
+  forgetPassword(query: string) {
     return apiHelper.post<{ message: string }>('/users/password/reset', { query });
   },
-  verifyCodeFromEmail(token) {
+  verifyCodeFromEmail(token: string) {
     return apiHelper.patch<{ message: string }>('/users/password/reset', { token });
   },
-  resetPassword(payload) {
+  resetPassword(payload: IRequestDataResetPassword) {
     return apiHelper.put<{ user: IUser, message: string }>('/users/password/reset', payload);
   },
-  logout() {
-    return apiHelper.delete('/users/sign_out');
+  async logout() {
+    return await apiHelper.delete('/users/sign_out');
   },
-  me() {
-    return apiHelper.get<{ user: IUser }>('/me');
+  async me() {
+    return await apiHelper.get<IResponseMe>('/me');
   },
 };

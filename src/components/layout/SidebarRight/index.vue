@@ -4,25 +4,29 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import About from '@components/About.vue';
+import About from '@components/layout/SidebarRight/About.vue';
 import PhotosProfile from '@components/layout/SidebarRight/PhotosProfile.vue';
-import UsersSuggest from '@components/layout/SidebarRight/UsersSuggest.vue';
+import UsersSuggestList from '@components/layout/SidebarRight/UserSuggestList.vue';
 import Trends from '@components/layout/SidebarRight/Trends.vue';
 import SearchUserBar from '@components/layout/SearchUserBar.vue';
 import Auth from '@components/layout/SidebarRight/Auth.vue';
-import { mapGetters } from '@/lib/map-state';
+import { useAuthStore } from '@stores/auth.ts';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();
-const { isLoggedIn } = mapGetters();
 
-const routerIsReady = ref(false);
-const showPhotoComp = ref(false);
-const showSearchBar = ref(false);
-const keySearchAllComp = ref(0);
+const {
+  isLoggedIn,
+} = storeToRefs(useAuthStore());
+
+const showPhotoProfileComp = ref(false);
+const showSearchUserBar = ref(false);
+const keySearchUserComp = ref(0);
+const keyPhotoProfileComp = ref(0);
 const query = ref('');
-let sidebar = ref<HTMLDivElement | null>(null);
-let content = ref<HTMLDivElement | null>(null);
+const sidebar = ref<HTMLDivElement | null>(null);
+const content = ref<HTMLDivElement | null>(null);
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
@@ -30,16 +34,13 @@ onBeforeUnmount(() => {
 
 onMounted(async () => {
   window.addEventListener('scroll', onScroll);
-  await router.isReady();
-  routerIsReady.value = true;
 });
 
 const onScroll = () => {
-  let scrollTop = window.scrollY; // current scroll position
-  let viewportHeight = window.innerHeight; // viewport height
-  let sidebarTop = sidebar.value?.getBoundingClientRect()?.top + window.pageYOffset; // current content height
-  let contentHeight = content.value?.getBoundingClientRect().height; // distance from top to sidebar
-  // console.log('dauphaihau debug: -scroll-top-viewport-height-sidebar-top-content-height-', [scrollTop, viewportHeight, sidebarTop, contentHeight])
+  const scrollTop = window.scrollY; // current scroll position
+  const viewportHeight = window.innerHeight; // viewport height
+  const sidebarTop = sidebar.value?.getBoundingClientRect()?.top + window.pageYOffset; // current content height
+  const contentHeight = content.value?.getBoundingClientRect().height; // distance from top to sidebar
 
   if (scrollTop >= contentHeight - viewportHeight + sidebarTop) {
     content.value.style.transform = `translateY(-${(contentHeight - viewportHeight + sidebarTop)}px)`;
@@ -52,11 +53,16 @@ const onScroll = () => {
 };
 
 watch(router.currentRoute, (value) => {
-  showSearchBar.value = value.name !== 'search' && value.name !== 'explore';
-  showPhotoComp.value = value.name === 'profile';
+  showSearchUserBar.value = value.name !== 'search' && value.name !== 'explore';
+
+  showPhotoProfileComp.value = value.name === 'profile';
+  if (value.name === 'profile') {
+    keyPhotoProfileComp.value++;
+  }
+
   if (route.query?.q) {
     query.value = route.query.q as string;
-    keySearchAllComp.value++;
+    keySearchUserComp.value++;
   }
   else {
     query.value = '';
@@ -64,7 +70,7 @@ watch(router.currentRoute, (value) => {
 });
 
 const changeRoute = () => {
-  keySearchAllComp.value++;
+  keySearchUserComp.value++;
 };
 
 </script>
@@ -77,8 +83,8 @@ const changeRoute = () => {
     <div class="fixed top-0 z-[3] w-sidebar">
       <div class="h-2 bg-white" />
       <SearchUserBar
-        v-if="showSearchBar"
-        :key="keySearchAllComp"
+        v-if="showSearchUserBar"
+        :key="keySearchUserComp"
         class="bg-white"
         :query="query"
         @change-route="changeRoute"
@@ -86,16 +92,19 @@ const changeRoute = () => {
       <div class="h-5 bg-gradient-to-b from-white" />
     </div>
 
-    <div :class="!showSearchBar ? 'pb-8' : 'pb-[4.5rem]'" />
+    <div :class="!showSearchUserBar ? 'pb-8' : 'pb-[4.5rem]'" />
 
     <div
       ref="content"
       class="flex flex-col gap-5 pb-40 w-sidebar"
     >
       <Auth :class="isLoggedIn ? 'absolute z-[-1] invisible' : ''" />
-      <PhotosProfile v-if="showPhotoComp" />
-      <UsersSuggest />
-<!--      <Trends v-if="route.name !== 'explore'" />-->
+      <PhotosProfile
+        v-if="showPhotoProfileComp"
+        :key="keyPhotoProfileComp"
+      />
+      <UsersSuggestList />
+      <Trends v-if="route.name !== 'explore'" />
       <div class="flex-center gap-2 text-zinc-500 -mt-2">
         <About />
         ·

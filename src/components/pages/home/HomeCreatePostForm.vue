@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import {
-  nextTick, ref, watch
-} from 'vue';
-import { useRouter } from 'vue-router';
+import { useQueryClient } from '@tanstack/vue-query';
+import { StatusCodes } from 'http-status-codes';
+import { storeToRefs } from 'pinia';
 import {
   CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon
 } from '@heroicons/vue/24/outline';
 
 import { useCreatePost } from '@/services/post';
-import { mapGetters } from '@/lib/map-state';
 import Button from '@/core/components/Button.vue';
 import SelectWhoCanComment from '@/components/SelectWhoCanComment.vue';
 import { ICreatePost } from '@/types/post';
-import { useStore } from '@/store';
-import { MutationEnums } from '@/types/store/root';
-import { logger } from '@/core/helper';
 import { useUploadImage } from '@/services/common';
-import { useQueryClient } from '@tanstack/vue-query';
-import { StatusCodes } from 'http-status-codes';
-import { OptionSelectWhoCanComment } from '@components/SelectWhoCanComment.vue';
+import { IOptionSelectWhoCanComment } from '@components/SelectWhoCanComment.vue';
+import { useAuthStore } from '@stores/auth.ts';
+import { useDialogStore } from '@stores/dialog.ts';
+import { useNotificationStore } from '@stores/notification.ts';
+import { logger } from '@core/helpers/logger.ts';
 
-const store = useStore();
+const dialogStore = useDialogStore();
+const notificationStore = useNotificationStore();
 const router = useRouter();
+
+const { isLoggedIn, user } = storeToRefs(useAuthStore());
 
 const content = ref('');
 const fileInput = ref(null);
@@ -30,8 +30,6 @@ const whoCanComment = ref(null);
 const textareaRef = ref(null);
 const fileImage = ref(null);
 const urlImage = ref(null);
-
-const { isLoggedIn, getUser } = mapGetters();
 
 const {
   isPending: isPendingCreatePost,
@@ -45,7 +43,7 @@ const {
 
 const queryClient = useQueryClient();
 
-const onChangeImage = ({ target }: Event) => {
+const onChangeFile = ({ target }: Event) => {
   if (!(target instanceof HTMLInputElement)) {
     return;
   }
@@ -54,9 +52,8 @@ const onChangeImage = ({ target }: Event) => {
 };
 
 const handleCreatePost = async () => {
-
   if (!isLoggedIn.value) {
-    store.commit(MutationEnums.SET_LOGIN_DIALOG, true);
+    dialogStore.showDialog = 'login';
     return;
   }
 
@@ -89,9 +86,12 @@ const handleCreatePost = async () => {
       logger.error('response from postAPI.create, post id is null', 'src/components/CreatePostForm.vue');
     }
 
-    store.commit(MutationEnums.SHOW_TOAST, {
-      message: 'Your post was sent. You have 1 hour to make any edits.',
-      onClickBtn: () => router.push({ name: 'post', params: { id: data.post.id } }),
+    notificationStore.notify({
+      text: 'Your post was sent. You have 1 hour to make any edits.',
+      btnRight: {
+        title: 'View',
+        onClick: () => router.push({ name: 'post', params: { id: data.post.id } }),
+      },
     });
 
     content.value = '';
@@ -108,7 +108,7 @@ const handleCreatePost = async () => {
   }
 };
 
-const onChangeSelectWhoCanComment = (val: OptionSelectWhoCanComment) => {
+const onChangeSelectWhoCanComment = (val: IOptionSelectWhoCanComment) => {
   whoCanComment.value = val.value;
 };
 
@@ -152,18 +152,18 @@ watch(content, () => {
           class="h-full "
         >
           <img
-            v-if="getUser.avatar_url"
-            :src="getUser.avatar_url"
+            v-if="user?.avatar_url"
+            :src="user?.avatar_url"
             class="rounded-full h-10 w-10 bg-black cursor-pointer"
             alt="avatar"
-            @click="router.push('/user/' + getUser.username)"
+            @click="router.push('/user/' + user?.username)"
           >
           <img
             v-else
             src="@/assets/default-avatar.png"
             class="rounded-full h-10 w-10 bg-black cursor-pointer"
             alt="avatar"
-            @click="router.push('/user/' + getUser.username)"
+            @click="router.push('/user/' + user?.username)"
           >
         </div>
       </div>
@@ -234,7 +234,7 @@ watch(content, () => {
               name="file"
               accept="image/*"
               class="hidden"
-              @change="onChangeImage"
+              @change="onChangeFile"
             >
 
             <GifIcon
@@ -254,8 +254,8 @@ watch(content, () => {
 
         <Button
           classes="px-6"
-          :is-loading="isPendingUploadImage || isPendingCreatePost"
-          :disabled-click="!content && !fileImage"
+          :loading="isPendingUploadImage || isPendingCreatePost"
+          :disabled="!content && !fileImage"
           @click.prevent="handleCreatePost"
         >
           Post

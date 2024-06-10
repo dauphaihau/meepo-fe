@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { StatusCodes } from 'http-status-codes';
+import dayjs from 'dayjs';
+import { useMutationState, useQueryClient } from '@tanstack/vue-query';
 import {
   Menu, MenuButton, MenuItem, MenuItems
 } from '@headlessui/vue';
@@ -9,45 +13,60 @@ import {
 import { StarIcon as SolidStarIcon } from '@heroicons/vue/20/solid';
 
 import { useDeletePost, useUpdatePost } from '@services/post.ts';
-import EditPostDialog from '@components/dialog/AddOrUpdatePost.vue';
-import { IPostTemp, IUpdatePost } from '@/types/post.ts';
-import { useRoute, useRouter } from 'vue-router';
-import { store } from '@/store';
-import { MutationEnums } from '@/types/store/root.ts';
-import { StatusCodes } from 'http-status-codes';
-import { useQueryClient } from '@tanstack/vue-query';
-import dayjs from 'dayjs';
-import { logger } from '@core/helper.ts';
+import { IPost, IResponseGetPost, IUpdatePost } from '@/types/post.ts';
 import { POST_CONFIG, POST_PIN_STATUS } from '@config/post.ts';
+import { useNotificationStore } from '@stores/notification.ts';
+import { useDialogStore } from '@stores/dialog.ts';
+import { AxiosResponse } from 'axios';
 
 interface Props {
-  dataPost: IPostTemp
+  dataPost: IResponseGetPost
   classDotIcon?: string
 }
 
+const dialogStore = useDialogStore();
 const route = useRoute();
 const router = useRouter();
+const notificationStore = useNotificationStore();
 
 const currentRouteName = route.name;
 const postId = route.params.id;
 
 const { dataPost, classDotIcon } = defineProps<Props>();
 
-const showAddOrUpdatePost = ref(false);
-const keyAddPostDialog = ref(0);
 const menuItemsRef = ref(null);
 const confirmDelete = ref(false);
 const pinStatus = ref(dataPost.pin_status_int);
+const editedPostCount = ref(dataPost?.edited_posts_count);
 
-const isExpiresEdit = computed(() => {
-  if (dataPost?.created_at) {
-    return !dayjs().isBefore(dayjs(dataPost.created_at).add(POST_CONFIG.HOUR_EXPIRES_EDIT, 'h'));
+const showEditBtn = computed(() => {
+  if (dayjs(dataPost?.created_at).isValid() && Number.isInteger(editedPostCount.value)) {
+    const isExpiresEdit = dayjs()
+      .isAfter(dayjs(dataPost.created_at)
+        .add(POST_CONFIG.HOUR_EXPIRES_EDIT, 'h'));
+    return !isExpiresEdit && editedPostCount.value < POST_CONFIG.MAX_EDIT_POST;
   }
-  logger.error(`dataPost of created_at be ${dataPost?.created_at}`, 'src/components/OptionsPost.vue');
-  return true;
+  return false;
 });
 
 const queryClient = useQueryClient();
+
+
+const dataUpdatedPost = useMutationState({
+  filters: {
+    mutationKey: ['update-post'],
+  },
+  select: (mutation) => {
+    return (mutation.state.data as AxiosResponse<{ post : IPost }>)?.data?.post;
+  },
+});
+
+watch(dataUpdatedPost, () => {
+  const lastPostUpdate = dataUpdatedPost.value.at(-1);
+  if (Number.isInteger(lastPostUpdate?.edited_posts_count)) {
+    editedPostCount.value = lastPostUpdate.edited_posts_count + 1;
+  }
+});
 
 const {
   mutateAsync: deletePost,
@@ -64,8 +83,8 @@ watch(menuItemsRef, () => {
 const handleDeletePost = async () => {
   const { status } = await deletePost();
   if (status === StatusCodes.OK) {
-    store.commit(MutationEnums.SHOW_TOAST, {
-      message: 'Your post was deleted',
+    notificationStore.notify({
+      text: 'Your post was deleted',
     });
 
     if (
@@ -95,8 +114,8 @@ const handlePinPost = async () => {
   };
   const { status } = await updatePost(payload);
   if (status === StatusCodes.OK) {
-    store.commit(MutationEnums.SHOW_TOAST, {
-      message: `Your post was ${payload.pin_status === POST_PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,
+    notificationStore.notify({
+      text: `Your post was ${payload.pin_status === POST_PIN_STATUS.PIN ? 'pinned' : 'unpinned'} to your profile.`,
     });
     pinStatus.value = payload.pin_status;
     if (currentRouteName === 'profile') {
@@ -107,21 +126,14 @@ const handlePinPost = async () => {
   }
 };
 
-const handleShowAddOrUpdatePost = () => {
-  showAddOrUpdatePost.value = true;
-  keyAddPostDialog.value++;
+const handleShowUpdatePost = () => {
+  dialogStore.showDialog = 'update-post';
+  dialogStore.data = dataPost;
 };
 
 </script>
 
 <template>
-  <EditPostDialog
-    :key="keyAddPostDialog"
-    :show-dialog-from-props="showAddOrUpdatePost"
-    :hide-trigger="true"
-    :data-post="dataPost"
-  />
-
   <Menu
     v-slot="{open}"
     as="div"
@@ -173,13 +185,13 @@ const handleShowAddOrUpdatePost = () => {
           </MenuItem>
 
           <MenuItem
-            v-if="!isExpiresEdit && dataPost.edited_posts_count < 5"
+            v-if="showEditBtn"
             v-slot="{ active }"
             as="div"
           >
             <span
               :class="['menu-item', active ? 'active' : 'inactive']"
-              @click="handleShowAddOrUpdatePost"
+              @click="handleShowUpdatePost"
             >
               <PencilIcon class="icon" />
               Edit

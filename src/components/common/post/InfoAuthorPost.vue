@@ -1,16 +1,16 @@
 <script setup lang="ts">
 
-import { truncateText } from '@core/helper.ts';
+import { truncateText } from '@core/helpers/common.ts';
 import { PencilIcon } from '@heroicons/vue/24/outline';
 import UserPopper from '@components/UserPopper.vue';
-import { IPostTemp } from '@/types/post.ts';
+import { IResponseGetPost } from '@/types/post.ts';
 import { computed } from 'vue';
 import { useMediaQuery } from '@vueuse/core';
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 
 interface IProps {
-  dataPost: IPostTemp
+  dataPost: IResponseGetPost
 }
 
 const { dataPost } = defineProps<IProps>();

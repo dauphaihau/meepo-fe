@@ -8,6 +8,8 @@ import { useGetPosts } from '@services/post';
 import { POST_FILTER_BY } from '@config/const';
 import { IParamsGetPosts } from '@/types/post';
 import HomePost from '@components/pages/home/HomePost.vue';
+import useRealtimePost from '@composables/useRealtimePost.ts';
+import useRealtimePosts from '@composables/useRealtimePosts.ts';
 
 interface IProps {
   by?: POST_FILTER_BY.DEFAULT | POST_FILTER_BY.FOLLOWING,
@@ -34,16 +36,17 @@ const params = computed(() => {
 });
 
 const {
-  data,
+  data: dataGetPosts,
   isFetching,
   fetchNextPage,
-  hasNextPage,
   isFetchingNextPage,
 } = useGetPosts(params.value);
 
+const maxPostsPage = computed(() => Math.floor(dataGetPosts.value.pages[0].total_posts / limit));
+
 const posts = computed(() => {
-  if (data.value?.pages && data.value.pages.length > 0) {
-    return data.value.pages.reduce((acc, next) => {
+  if (dataGetPosts.value?.pages && dataGetPosts.value.pages.length > 0) {
+    return dataGetPosts.value.pages.reduce((acc, next) => {
       return [...acc, ...next.posts];
     }, []);
   }
@@ -63,7 +66,7 @@ function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
       !isFetchingNextPage.value &&
-      hasNextPage.value
+      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }

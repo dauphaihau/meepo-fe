@@ -10,30 +10,31 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import SearchUserBar from '@components/layout/SearchUserBar.vue';
-import { mapGetters } from '@/lib/map-state';
 import { useScrollDirection } from '@/core/hooks/useScrollDirection';
-import SidebarMobile from '@components/layout/SidebarMobile.vue';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@stores/auth.ts';
+import { useDrawerStore } from '@stores/drawer.ts';
 
-interface Props {
+interface IProps {
   title?: string;
   subTitle?: string;
   backTo?: string;
 }
 
-let { title, subTitle, backTo } = defineProps<Props>();
+let { title, subTitle, backTo } = defineProps<IProps>();
 
-const { getUser, isLoggedIn } = mapGetters();
+const { isLoggedIn, user } = storeToRefs(useAuthStore());
 
-const isMobileScreen = useMediaQuery('(max-width: 375px)');
-const isTabletScreen = useMediaQuery('(min-width: 768px)');
+const minMobileScreen = useMediaQuery('(max-width: 375px)');
+const minTabletScreen = useMediaQuery('(min-width: 768px)');
 const { y: scrollY } = useWindowScroll();
 const direction = useScrollDirection();
 const router = useRouter();
 const route = useRoute();
 const slots = useSlots();
+const drawerStore = useDrawerStore();
 
 const routerIsReady = ref(false);
-const showSidebarMobile = ref(false);
 const keySearchAllComp = ref(0);
 const query = ref('');
 
@@ -61,6 +62,10 @@ watch(router.currentRoute, () => {
   }
 });
 
+const showSidebarMobile = () => {
+  drawerStore.showDrawer = 'sidebar-mobile';
+};
+
 </script>
 
 <template>
@@ -68,17 +73,10 @@ watch(router.currentRoute, () => {
     <div
       class="wrapper"
       :class="[
-        (isMobileScreen && direction === 'down' ? '-top-28' : 'top-0'),
+        (minMobileScreen && direction === 'down' ? '-top-28' : 'top-0'),
         (slots.tabs ? 'border-b' : scrollY > 0 ? 'border-b' : 'border-b-white')
       ]"
     >
-<!--      <p-->
-<!--        v-if="currentRouteName === 'home'"-->
-<!--        class="capitalize text-[18px] font-bold leading-6 ml-4 mt-4 lg:my-4 hidden md:block"-->
-<!--      >-->
-<!--        {{ currentRouteName }}-->
-<!--      </p>-->
-
       <!--      Header mobile ( logo + user ) -->
       <div
         v-if="currentRouteName === 'home'"
@@ -86,12 +84,12 @@ watch(router.currentRoute, () => {
       >
         <div
           class="cursor-pointer"
-          @click="showSidebarMobile = !showSidebarMobile"
+          @click="showSidebarMobile"
         >
           <img
-            v-if="getUser.avatar_url"
+            v-if="user?.avatar_url"
             alt="avatar"
-            :src="getUser.avatar_url"
+            :src="user?.avatar_url"
             class="h-8 w-8 lg:h-8 lg:w-8 rounded-full "
           >
           <img
@@ -131,15 +129,15 @@ watch(router.currentRoute, () => {
 
         <div
           v-if="
-            isTabletScreen ? (!['search', 'messages', 'profile'].includes(currentRouteName)) :
+            minTabletScreen ? (!['search', 'messages', 'profile'].includes(currentRouteName)) :
             (['messages'].includes(currentRouteName))"
           class="cursor-pointer md:hidden"
-          @click="showSidebarMobile = !showSidebarMobile"
+          @click="showSidebarMobile"
         >
           <img
-            v-if="getUser.avatar_url"
+            v-if="user?.avatar_url"
             alt="avatar"
-            :src="getUser.avatar_url"
+            :src="user?.avatar_url"
             class="h-8 w-8 lg:h-8 lg:w-8 rounded-full "
           >
           <img
@@ -151,7 +149,6 @@ watch(router.currentRoute, () => {
         </div>
 
 
-        <!--      <div :class="title && subTitle && 'mt-1.5'">-->
         <div
           :class="title && subTitle && ''"
           class="grow"
@@ -168,7 +165,6 @@ watch(router.currentRoute, () => {
             </p>
           </div>
 
-          <!--              class="md:w-[450px] md:max-w-[450px]"-->
           <SearchUserBar
             v-if="showSearchBar && routerIsReady"
             :key="keySearchAllComp"
@@ -196,11 +192,6 @@ watch(router.currentRoute, () => {
         class="relative max-w-[100vw] md:max-w-full"
       />
     </div>
-
-    <SidebarMobile
-      :show="showSidebarMobile"
-      @set-show-sidebar="(val) => showSidebarMobile = val"
-    />
   </div>
 </template>
 
