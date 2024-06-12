@@ -15,7 +15,7 @@ export function formatTextWithHashTags(text: string) {
 
 export const mapKeyEnum = (enumObj: EnumLike) => {
   return Object.keys(enumObj)
-    .filter((v) => isNaN(Number(v)));
+    .filter(v => isNaN(Number(v)));
 };
 
 export const truncateText = (text: string, limit: number, suffix = '') => {

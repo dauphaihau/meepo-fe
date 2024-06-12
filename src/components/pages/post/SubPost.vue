@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import { IResponseGetPost } from '@/types/post';
 import PostOptions from '@components/common/post/PostOptions.vue';
 import PostActions from '@components/common/post/PostActions.vue';

@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import {
-  computed, onBeforeUnmount, onMounted, ref
-} from 'vue';
-
 import Post from '@components/common/post/Post.vue';
 import Loading from '@core/components/Loading.vue';
-import { useRoute } from 'vue-router';
 import { useGetSearchAll } from '@services/common.ts';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
 import FollowUser from '@components/pages/follow/FollowUser.vue';
@@ -65,10 +60,10 @@ function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 90 / 100) &&
     !isFetchingNextPage.value &&
-      (
-        (currentFilter === FILTER_SEARCH_ALL.PEOPLE && data.value.pageParams.length <= maxUsersPage.value) ||
-          (currentFilter !== FILTER_SEARCH_ALL.PEOPLE && data.value.pageParams.length <= maxPostsPage.value)
-      )
+    (
+      (currentFilter === FILTER_SEARCH_ALL.PEOPLE && data.value.pageParams.length <= maxUsersPage.value) ||
+      (currentFilter !== FILTER_SEARCH_ALL.PEOPLE && data.value.pageParams.length <= maxPostsPage.value)
+    )
   ) {
     console.log('data-value-page-params', data.value.pageParams.length);
     console.log('max-users-page', maxUsersPage.value);

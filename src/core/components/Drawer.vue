@@ -2,7 +2,7 @@
 
 interface IProps {
   show?: boolean
-  close: () => void,
+  close: () => void
 }
 
 const { show, close } = defineProps<IProps>();

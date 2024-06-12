@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, nextTick,
-  onMounted, onUnmounted, ref, watch
-} from 'vue';
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid';
 import { PaperAirplaneIcon } from '@heroicons/vue/20/solid';
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
@@ -61,8 +57,8 @@ const {
   onScroll() {
     if (
       arrivedState.top &&
-        !isFetchingNextPage.value &&
-        dataGetMessages.value?.pageParams?.length <= maxMessagesPage.value
+      !isFetchingNextPage.value &&
+      dataGetMessages.value?.pageParams?.length <= maxMessagesPage.value
     ) {
       fetchNextPage();
       nextTick(() => {

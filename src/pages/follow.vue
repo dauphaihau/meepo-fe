@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import { IParamsGetUsers } from '@/types/user.ts';
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
 import Loading from '@core/components/Loading.vue';
@@ -67,8 +64,8 @@ function onScroll() {
   console.log('max-users-page-value', maxUsersPage.value);
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
-      !isFetchingNextPage.value &&
-      dataGetUsers.value?.pageParams?.length < maxUsersPage.value
+    !isFetchingNextPage.value &&
+    dataGetUsers.value?.pageParams?.length < maxUsersPage.value
   ) {
     fetchNextPage();
   }

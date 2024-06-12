@@ -26,9 +26,9 @@ interface IProps {
   size?: keyof typeof SIZE_MAPS
   radius?: keyof typeof RADIUS_MAPS
   variant?: keyof typeof VARIANT_MAPS
-  loading?: boolean,
-  disabled?: boolean,
-  classes?: string,
+  loading?: boolean
+  disabled?: boolean
+  classes?: string
 }
 
 const props = withDefaults(defineProps<IProps>(), {

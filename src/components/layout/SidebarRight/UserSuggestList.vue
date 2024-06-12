@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import { useGetUsers } from '@services/user';
 import { IParamsGetUsers, UserInGetList } from '@/types/user';
 import UserSuggest from '@components/layout/SidebarRight/UserSuggest.vue';
@@ -74,7 +72,6 @@ const users = computed<UserInGetList[]>(() => {
 
 .wrapper {
   @apply bg-zinc-100 rounded-2xl py-3 w-[348px];
-  /*min-height: 672px;*/
 }
 
 .title {

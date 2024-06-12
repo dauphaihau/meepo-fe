@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch
-} from 'vue';
-import { useRouter } from 'vue-router';
 import { PlusCircleIcon, PaperAirplaneIcon, ArrowLeftIcon } from '@heroicons/vue/20/solid';
 
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
@@ -112,8 +108,8 @@ function onScroll() {
   const isReachTop = document.documentElement.scrollTop === 0;
   if (
     isReachTop &&
-      !isFetchingNextPage.value &&
-      dataGetMessages.value?.pageParams?.length <= maxMessagesPage.value
+    !isFetchingNextPage.value &&
+    dataGetMessages.value?.pageParams?.length <= maxMessagesPage.value
   ) {
     fetchNextPage();
     nextTick(() => {

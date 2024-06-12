@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { RouterLink, RouterLinkProps } from 'vue-router';
+
+type Props = {
+  inactiveClass?: string
+  to: string
+} & RouterLinkProps;
+
+const { to, activeClass, inactiveClass } = defineProps<Props>();
+
+const isExternalLink = computed(() => typeof to === 'string' && to.startsWith('http'));
+
+</script>
+
 <template>
   <a
     v-if="isExternalLink"
@@ -24,19 +38,3 @@
     </a>
   </router-link>
 </template>
-
-<script setup lang="ts">
-import { RouterLink, RouterLinkProps } from 'vue-router';
-import { computed } from 'vue';
-
-type Props = {
-  inactiveClass?: string
-  to: string
-} & RouterLinkProps
-
-const { to, activeClass, inactiveClass } = defineProps<Props>();
-
-const isExternalLink = computed(() => typeof to === 'string' && to.startsWith('http'));
-
-
-</script>

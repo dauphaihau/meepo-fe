@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import {
-  onMounted, ref, useSlots, watch
-} from 'vue';
 import { ArrowLeftIcon, EllipsisHorizontalIcon } from '@heroicons/vue/20/solid';
 import { useMediaQuery, useWindowScroll } from '@vueuse/core';
 import {
@@ -11,14 +7,13 @@ import {
 
 import SearchUserBar from '@components/layout/SearchUserBar.vue';
 import { useScrollDirection } from '@/core/hooks/useScrollDirection';
-import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@stores/auth.ts';
 import { useDrawerStore } from '@stores/drawer.ts';
 
 interface IProps {
-  title?: string;
-  subTitle?: string;
-  backTo?: string;
+  title?: string
+  subTitle?: string
+  backTo?: string
 }
 
 let { title, subTitle, backTo } = defineProps<IProps>();
@@ -109,7 +104,6 @@ const showSidebarMobile = () => {
         <div class="w-8" />
       </div>
 
-
       <!--      Search Bar, title , arrow back -->
       <div
         v-if="title || subTitle"
@@ -147,7 +141,6 @@ const showSidebarMobile = () => {
             class="h-8 w-8 lg:h-8 lg:w-8 rounded-full "
           >
         </div>
-
 
         <div
           :class="title && subTitle && ''"

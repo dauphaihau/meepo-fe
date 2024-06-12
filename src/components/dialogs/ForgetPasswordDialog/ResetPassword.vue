@@ -16,7 +16,7 @@ const emit = defineEmits<{
   (e: 'changeStep')
 }>();
 
-const { token } = defineProps<{token: string}>();
+const { token } = defineProps<{ token: string }>();
 
 const notificationStore = useNotificationStore();
 const authStore = useAuthStore();

@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import {
-  ref, watch, nextTick
-} from 'vue';
-import { useRouter } from 'vue-router';
-import {
   CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon
 } from '@heroicons/vue/24/outline';
 import { useMediaQuery } from '@vueuse/core';
 import { StatusCodes } from 'http-status-codes';
 import { useQueryClient } from '@tanstack/vue-query';
-import { storeToRefs } from 'pinia';
 
 import Dialog from '@core/components/Dialog.vue';
 import Button from '@core/components/Button.vue';

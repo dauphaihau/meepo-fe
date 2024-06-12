@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
 import PostOptions from '@components/common/post/PostOptions.vue';
 import { IResponseGetPost } from '@/types/post';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';

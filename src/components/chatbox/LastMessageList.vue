@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/20/solid';
 import { useScroll } from '@vueuse/core';
 
@@ -63,7 +62,7 @@ const {
     if (
       arrivedState.bottom &&
       !isFetchingNextPage.value &&
-        dataGetLastMessages.value.pageParams.length <= maxRoomsPage.value
+      dataGetLastMessages.value.pageParams.length <= maxRoomsPage.value
     ) {
       fetchNextPage();
     }

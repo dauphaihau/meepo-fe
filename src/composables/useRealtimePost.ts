@@ -5,17 +5,17 @@ import { IResponseGetPost } from '@/types/post.ts';
 import { logger } from '@core/helpers/logger.ts';
 
 interface ResponseDataMessage {
-  type: string,
+  type: string
   message: {
     post: IResponseGetPost
-  },
+  }
 }
 
 export default function useRealtimePost(post: Ref<IResponseGetPost>) {
   const animationLikes = ref('counter-number-initial');
   const animationComments = ref('counter-number-initial');
 
-  const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  const { data, send } = useWebSocket(import.meta.env.VITE_BASE_URL_WEBSOCKET, {
     autoReconnect: true,
     onConnected: () => {
       logger.info('Connected to websocket server - PostsChannel', 'src/composables/useRealtimePost.vue');
@@ -52,7 +52,6 @@ export default function useRealtimePost(post: Ref<IResponseGetPost>) {
       }
 
       if (post.value.id === message.post.id) {
-
         if (message?.post.likes_count !== post.value.likes_count) {
           handleAnimationCount('likes_count');
         }
@@ -60,7 +59,6 @@ export default function useRealtimePost(post: Ref<IResponseGetPost>) {
         if (message.post.sub_posts_count !== post.value.sub_posts_count) {
           handleAnimationCount('sub_posts_count');
         }
-
       }
 
       function handleAnimationCount(key: string) {

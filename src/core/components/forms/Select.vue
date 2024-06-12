@@ -1,4 +1,8 @@
-<script setup lang="ts">
+<script
+    setup
+    lang="ts"
+    generic="TOption extends TOptionDefault, TValue = TOption"
+>
 import {
   Listbox,
   ListboxButton,
@@ -7,69 +11,58 @@ import {
 } from '@headlessui/vue';
 
 import { cn } from '@core/helpers/common.js';
-import { ChevronDownIcon } from '@heroicons/vue/20/solid';
+import { ChevronDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
 
-export type TOption = {
- id: string | number
- name: string
+export type TOptionDefault = {
+  id: number
+  name: string
   disabled?: boolean
-}
+};
 
 interface IProps {
   modelValue: string
   size?: 'sm'
-  label?: string
   helperText?: string
   name: string
-  placeholder?: string
   options: TOption[]
   disabled?: boolean
+  defaultValue?: number | null
   classWrapper?: string
   classOptions?: string
   classBtn?: string
-  defaultValue?: number | null
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  name : '',
-  placeholder: '',
-  size : 'sm',
-  classWrapper : '',
-  classBtn : '',
-  classOptions : '',
-  label : '',
-  helperText : '',
-  modelValue : '',
-  disabled : false,
+  name: '',
+  size: 'sm',
+  classWrapper: '',
+  classBtn: '',
+  classOptions: '',
+  helperText: '',
+  modelValue: '',
+  disabled: false,
   defaultValue: 0,
-  options: () => [
-    { id: 1, name: 'Example 1' },
-    { id: 2, name: 'Example 2' },
-    { id: 3, name: 'Example 3' },
-  ],
 });
 
 let {
   name,
-  placeholder,
   classOptions,
   classBtn,
-  options,
 } = props;
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: TOption): void
+  (e: 'update:modelValue', value: TValue): void
 }>();
 
 const indexOption = computed(() => {
-  const idx = options.findIndex(d => d.name === props.modelValue);
+  const idx = props.options.findIndex(d => d.name === props.modelValue);
   if (idx !== -1) {
     return idx;
   }
   return props.defaultValue;
 });
 
-const onChangeSelect = (option: TOption) => {
+const onChangeSelect = (option: TValue) => {
   emit('update:modelValue', option);
 };
 
@@ -106,7 +99,6 @@ const onChangeSelect = (option: TOption) => {
           v-if="open"
           class="fixed inset-0"
         />
-        <!--      <div v-if="open" class="fixed inset-0 bg-black opacity-30" />-->
 
         <transition
           v-if="!disabled"
@@ -119,26 +111,34 @@ const onChangeSelect = (option: TOption) => {
             :class="classOptions"
           >
             <ListboxOption
-              v-for="(option, index) in props.options"
+              v-for="option in props.options"
               v-slot="{ active, selected }"
-              :key="option.name"
+              :key="option.id"
               :value="option"
               :disabled="option?.disabled && option.disabled"
-              as="div"
+              as="ul"
             >
               <li
-                v-if="placeholder && index > 0 "
                 :class="[
+                  'relative cursor-pointer select-none py-2 pl-3 pr-4 truncate flex items-center gap-2',
+                  selected ? 'font-medium' : 'font-normal',
                   active ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-900',
-                  'relative cursor-pointer select-none py-2 pl-3 pr-4',
                 ]"
               >
-                <span
-                  :class="[
-                    selected ? 'font-medium' : 'font-normal',
-                    'block truncate',
-                  ]"
-                >{{ option.name }}</span>
+                <div v-if="$slots.option">
+                  <slot
+                    name="option"
+                    :option="option"
+                  />
+                </div>
+                <div v-else>
+                  {{ option.name }}
+                </div>
+
+                <CheckIcon
+                  v-show="selected"
+                  class="h-4 w-4 stroke-[2px]"
+                />
               </li>
             </ListboxOption>
           </ListboxOptions>
@@ -160,7 +160,6 @@ const onChangeSelect = (option: TOption) => {
   focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-black
   ;
 }
-
 
 .list-options {
   @apply w-full absolute mt-1 max-h-52 overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm;

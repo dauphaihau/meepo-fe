@@ -30,13 +30,12 @@ export const useNotificationStore = defineStore('notification', {
   }),
   actions: {
     updateState(payload: NotificationPayload, status: TNotificationStatus) {
-
       const notification = createNotification(payload, status);
 
       this.notifications.push(notification);
 
       setTimeout(() => {
-        this.notifications = this.notifications.filter((t) => t.id !== notification.id);
+        this.notifications = this.notifications.filter(t => t.id !== notification.id);
       }, payload.timeout ?? defaultTimeout);
     },
 
@@ -57,7 +56,7 @@ export const useNotificationStore = defineStore('notification', {
     },
 
     clearNotiById(notificationId) {
-      this.notifications = this.notifications.filter((t) => t.id !== notificationId);
+      this.notifications = this.notifications.filter(t => t.id !== notificationId);
     },
   },
 });

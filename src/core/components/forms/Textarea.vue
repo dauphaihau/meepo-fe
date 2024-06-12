@@ -12,10 +12,6 @@ const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
 });
 
-const {
-  size,
-} = props;
-
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void
 }>();

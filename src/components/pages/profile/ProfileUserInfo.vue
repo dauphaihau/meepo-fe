@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, ref, watch
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import {
   CakeIcon, CalendarDaysIcon, EnvelopeIcon, LinkIcon, MapPinIcon
@@ -46,7 +42,7 @@ const userProfile = ref<IResponseGetProfile['user']>({ ...dataGetProfileUser.val
 
 const userProfileWebsite = computed(() => {
   return userProfile.value.website &&
-        userProfile.value.website.includes('http') ?
+    userProfile.value.website.includes('http') ?
     new URL(userProfile.value.website).host :
     userProfile.value.website;
 });
@@ -56,14 +52,14 @@ const userProfileDateJoin = computed(() => {
 });
 
 watch(dataUpdatedProfile, () => {
-  const lastUserUpdate = dataUpdatedProfile.value.at(-1);
+  const lastUserUpdate = dataUpdatedProfile.value[dataUpdatedProfile.value.length - 1];
   if (lastUserUpdate) {
     userProfile.value = { ...userProfile.value, ...lastUserUpdate };
   }
 });
 
 watch(dataUpdatedFollow, () => {
-  const lastUserUpdate = dataUpdatedFollow.value.at(-1);
+  const lastUserUpdate = dataUpdatedFollow.value[dataUpdatedFollow.value.length - 1];
   if (lastUserUpdate && authStore.user.username === currentRouteUsername) {
     if (lastUserUpdate.includes('unfollow')) {
       userProfile.value.followed_count--;

@@ -30,7 +30,7 @@ export const chatService = {
     return res.data;
   },
   async sendMessage(values: ISendMessage) {
-    return apiHelper.post<{message: IMessage}>('/messages', values);
+    return apiHelper.post<{ message: IMessage }>('/messages', values);
   },
 };
 

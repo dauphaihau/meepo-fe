@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { StatusCodes } from 'http-status-codes';
 import {
   ArrowPathRoundedSquareIcon,
@@ -18,7 +17,7 @@ import { useDialogStore } from '@stores/dialog.ts';
 import { useAuthStore } from '@stores/auth.ts';
 import { useQueryClient } from '@tanstack/vue-query';
 
-type Actions = 'repost' | 'like' | 'reply' | 'bookmark' | 'share'
+type Actions = 'repost' | 'like' | 'reply' | 'bookmark' | 'share';
 
 interface IProps {
   dataPost: IResponseGetPost

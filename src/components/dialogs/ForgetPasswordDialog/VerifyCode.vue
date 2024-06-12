@@ -1,28 +1,29 @@
 <script setup lang="ts">
+import { StatusCodes } from 'http-status-codes';
+
 import Input from '@core/components/forms/Input.vue';
 import Button from '@core/components/Button.vue';
 import { authService } from '@services/auth.ts';
 import FormGroup from '@core/components/forms/FormGroup.vue';
-import { StatusCodes } from 'http-status-codes';
 
 const emit = defineEmits<{
   (e: 'changeStep', value: string)
 }>();
 
-const token = ref('');
-const errorTokenMsg = ref('');
-const isLoading = ref(false);
+const token = $ref('');
+let errorTokenMsg = $ref('');
+let isLoading = $ref(false);
 
 const onSubmit = async () => {
-  isLoading.value = true;
-  const { status } = await authService.verifyCodeFromEmail(token.value);
-  isLoading.value = false;
+  isLoading = true;
+  const { status } = await authService.verifyCodeFromEmail(token);
+  isLoading = false;
 
   if (status === StatusCodes.UNAUTHORIZED) {
-    errorTokenMsg.value = 'Invalid or expired code';
+    errorTokenMsg = 'Invalid or expired code';
   }
   if (status === StatusCodes.OK) {
-    emit('changeStep', token.value);
+    emit('changeStep', token);
   }
 };
 
@@ -62,6 +63,10 @@ const onSubmit = async () => {
       >
         Next
       </Button>
+      <div>
+        Here is a
+        <a>link</a>
+      </div>
     </form>
   </div>
 </template>

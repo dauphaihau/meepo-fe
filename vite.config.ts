@@ -26,38 +26,16 @@ export default ({ mode }) => {
           /\.vue\?vue/, // .vue
           /\.md$/, // .md
         ],
-
         // global imports to register
         imports: [
           'vue',
           'vue-router',
           'pinia',
-          {
-            '@vueuse/core': [
-              // named imports
-              'useMouse', // import { useMouse } from '@vueuse/core',
-              // alias
-              ['useFetch', 'useMyFetch'], // import { useFetch as useMyFetch } from '@vueuse/core',
-            ],
-          },
-          // example type import
-          {
-            from: 'vue-router',
-            imports: ['RouteLocationRaw'],
-            type: true,
-          },
+          '@vueuse/core',
         ],
         // Enable auto import by filename for default module exports under directories
         defaultExportByFilename: false,
         dts: 'src/auto-imports.d.ts',
-        // Generate corresponding .eslintrc-auto-import.json file.
-        // eslint globals Docs - https://eslint.org/docs/user-guide/configuring/language-options#specifying-globals
-        eslintrc: {
-          enabled: true, // Default `false`
-          // provide path ending with `.mjs` or `.cjs` to generate the file with the respective format
-          filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`
-          globalsPropValue: true, // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
-        },
       }),
       vueJsx(),
       ReactivityTransform(),

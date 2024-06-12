@@ -2,58 +2,47 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-import Select from '@/core/components/forms/Select.vue';
+import Select, { TOptionDefault } from '@core/components/forms/Select.vue';
 import { logger } from '@core/helpers/logger.ts';
-import { TOption } from '@core/components/forms/Select.vue';
 import { USER_CONFIG } from '@config/user.ts';
+import { IUser } from '@/types/user.ts';
 
 // strict isValid()
 dayjs.extend(customParseFormat);
+
+interface IProps {
+  disabled?: boolean
+  defaultValue?: null | number
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  disabled: false,
+  defaultValue: 0,
+});
+
+const model = defineModel<IUser['dob']>({
+  required: true,
+});
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>();
 
-interface Props {
-  helperText?: string
-  disabled?: boolean
-  defaultValue?: null | number,
-  classWrapper?: string
-  label?: string
-  modelValue?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  helperText: '',
-  disabled: false,
-  classWrapper : '',
-  label : '',
-  modelValue: '',
-  defaultValue: 0,
-});
-
-const {
-  defaultValue,
-} = props;
-
-const dob = ref({ month: '', day: '', year: '' });
-const month = ref('');
-const day = ref('');
-const year = ref('');
+let dob = $ref({ month: '', day: '', year: '' });
 
 const months = [
-  { id: 0, name: 'January' },
-  { id: 1, name: 'February' },
-  { id: 2, name: 'March' },
-  { id: 3, name: 'April' },
-  { id: 4, name: 'May' },
-  { id: 5, name: 'June' },
-  { id: 6, name: 'July' },
-  { id: 7, name: 'August' },
-  { id: 8, name: 'September' },
-  { id: 9, name: 'October' },
-  { id: 10, name: 'November' },
-  { id: 11, name: 'December' },
+  { id: 1, name: 'January' },
+  { id: 2, name: 'February' },
+  { id: 3, name: 'March' },
+  { id: 4, name: 'April' },
+  { id: 5, name: 'May' },
+  { id: 6, name: 'June' },
+  { id: 7, name: 'July' },
+  { id: 8, name: 'August' },
+  { id: 9, name: 'September' },
+  { id: 10, name: 'October' },
+  { id: 11, name: 'November' },
+  { id: 12, name: 'December' },
 ];
 
 const years = new Array(new Date().getFullYear() - USER_CONFIG.MIN_YEAR_BIRTH)
@@ -64,15 +53,29 @@ const years = new Array(new Date().getFullYear() - USER_CONFIG.MIN_YEAR_BIRTH)
   }))
   .reverse();
 
+let keyDaySelectComponent = $ref(0);
+let numsDay = $ref(31);
+
+const days = computed(() => {
+  return new Array(numsDay).fill('').map((_, i) => ({
+    id: i,
+    name: (i + 1).toString(),
+  }));
+});
+
 onBeforeMount(() => {
-  if (props.modelValue && typeof props.modelValue === 'string') {
-    const formatModelValue = dayjs(props.modelValue).format('YYYY-MMMM-D');
+  if (
+    model.value &&
+      typeof model.value === 'string' &&
+      dayjs(model.value).isValid()
+  ) {
+    const formatModelValue = dayjs(model.value).format('YYYY-MMMM-D');
     if (!formatModelValue.includes('-')) {
-      logger.error(`Invalid format date: with modelValue is ${props.modelValue} `, 'src/components/DateBirthInput.vue');
+      logger.error(`Invalid format date: with modelValue is ${model.value} `, 'src/components/DateBirthInput.vue');
       return;
     }
     const dobSplit = formatModelValue.split('-');
-    dob.value = {
+    dob = {
       year: dobSplit[0],
       month: dobSplit[1],
       day: dobSplit[2],
@@ -80,53 +83,28 @@ onBeforeMount(() => {
   }
 });
 
-const keyDaySelectComponent = ref(0);
-const numsDay = ref(31);
+const onChangeSelect = (nameSelect: string, option: TOptionDefault) => {
+  dob[nameSelect] = option.name;
 
-const days = computed(() => {
-  return new Array(numsDay.value).fill('').map((_, i) => ({
-    id: i,
-    name: (i + 1).toString(),
-  }));
-});
+  let dayTemp = dob.day ? dob.day : 1;
+  const monthTemp = dob.month ? dob.month : 1;
+  const yearTemp = dob.year ? dob.year : USER_CONFIG.MIN_YEAR_BIRTH;
 
-const onChangeSelect = (nameSelect: string, option: TOption) => {
-  switch (nameSelect) {
-    case 'month':
-      month.value = option.name;
-      break;
-    case 'day':
-      day.value = option.name;
-      break;
-    case 'year':
-      year.value = option.name;
-      break;
-  }
+  const isValid = dayjs(`${yearTemp}-${monthTemp}-${dayTemp}`, 'YYYY-MMMM-D', true).isValid();
 
-  let defDay = day.value ? day.value : 1;
-  const defMonth = month.value ? month.value : 1;
-  const defYear = year.value ? year.value : USER_CONFIG.MIN_YEAR_BIRTH;
-
-  const isValid = dayjs(`${defYear}-${defMonth}-${defDay}`, 'YYYY-MMMM-D', true).isValid();
   if (!isValid) {
-    dob.value.day = '';
-    defDay = 1;
-    keyDaySelectComponent.value++;
+    dob.day = '';
+    dayTemp = 1;
+    keyDaySelectComponent++;
   }
 
-  const newNumsDay = dayjs(`${defYear}-${defMonth}-${defDay}`).daysInMonth();
-  if (newNumsDay !== numsDay.value) {
-    numsDay.value = newNumsDay;
+  const newNumsDay = dayjs(`${yearTemp}-${monthTemp}-${dayTemp}`).daysInMonth();
+  if (newNumsDay !== numsDay) {
+    numsDay = newNumsDay;
   }
 
-  if (props.modelValue) {
-    const output = `${year.value ? year.value : dob.value.year}-${month.value ? month.value : dob.value.month}-${day.value ? day.value : dob.value.day} `;
-    emit('update:modelValue', output);
-    return;
-  }
-
-  if (![month.value, day.value, year.value].includes('')) {
-    const output = `${year.value}-${month.value}-${day.value}`;
+  if (!Object.values(toRaw(dob)).includes('')) {
+    const output = `${dob.year}-${dob.month}-${dob.day}`;
     emit('update:modelValue', output);
   }
 };
@@ -140,9 +118,8 @@ const onChangeSelect = (nameSelect: string, option: TOption) => {
       class-wrapper="w-[40%]"
       :options="months"
       :disabled="props.disabled"
-      placeholder="Month"
+      :default-value="props.defaultValue"
       name="month"
-      :default-value="defaultValue"
       @update:model-value="(opt) => onChangeSelect('month', opt)"
     />
     <Select
@@ -151,9 +128,8 @@ const onChangeSelect = (nameSelect: string, option: TOption) => {
       class-wrapper="w-[26%]"
       :options="days"
       :disabled="props.disabled"
-      placeholder="Day"
+      :default-value="props.defaultValue"
       name="day"
-      :default-value="defaultValue"
       @update:model-value="(opt) => onChangeSelect('day', opt)"
     />
     <Select
@@ -161,9 +137,8 @@ const onChangeSelect = (nameSelect: string, option: TOption) => {
       :options="years"
       class-wrapper="w-[30%]"
       :disabled="props.disabled"
-      placeholder="Year"
+      :default-value="props.defaultValue"
       name="year"
-      :default-value="defaultValue"
       @update:model-value="(opt) => onChangeSelect('year', opt)"
     />
   </div>

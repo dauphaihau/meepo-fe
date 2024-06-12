@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-
 import Dialog from '@core/components/Dialog.vue';
 import RequestInfoUser from '@components/dialogs/ForgetPasswordDialog/RequestInfoUser.vue';
 import VerifyCode from '@components/dialogs/ForgetPasswordDialog/VerifyCode.vue';

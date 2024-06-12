@@ -37,7 +37,8 @@
       "@stores/*": ["./src/stores/*"],
       "@composables/*": ["./src/composables/*"],
       "@schemas/*": ["./src/schemas/*"],
-    }
+    },
+    "types": ["unplugin-vue-macros/macros-global"]
   },
   "filesGlob": [
     "**/*.ts",
@@ -56,6 +57,5 @@
     "src/auto-import.d.ts",
     "auto-import.d.ts"
   ],
-  "types": ["@vue-macros/reactivity-transform/macros-global"],
   "files": ["node_modules/@vue/runtime-core/dist/runtime-core.d.ts"],
 }

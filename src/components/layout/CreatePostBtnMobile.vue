@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import { PencilIcon } from '@heroicons/vue/20/solid';
 
 import { useScrollDirection } from '@core/hooks/useScrollDirection.ts';

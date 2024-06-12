@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { Fn } from '@vueuse/core';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
 
@@ -17,8 +15,8 @@ const popoverHover = ref(false);
 const popoverTimeout = ref();
 
 interface IProps {
-  username: IUser['username'];
-  classPopover?: string;
+  username: IUser['username']
+  classPopover?: string
 }
 
 let { username, classPopover } = defineProps<IProps>();

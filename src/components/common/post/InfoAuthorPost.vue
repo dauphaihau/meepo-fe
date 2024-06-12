@@ -1,13 +1,11 @@
 <script setup lang="ts">
+import { useMediaQuery } from '@vueuse/core';
+import dayjs from 'dayjs';
 
 import { truncateText } from '@core/helpers/common.ts';
 import { PencilIcon } from '@heroicons/vue/24/outline';
 import UserPopper from '@components/UserPopper.vue';
 import { IResponseGetPost } from '@/types/post.ts';
-import { computed } from 'vue';
-import { useMediaQuery } from '@vueuse/core';
-import { useRouter } from 'vue-router';
-import dayjs from 'dayjs';
 
 interface IProps {
   dataPost: IResponseGetPost

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { StatusCodes } from 'http-status-codes';
 import dayjs from 'dayjs';
 import { useMutationState, useQueryClient } from '@tanstack/vue-query';
@@ -51,18 +49,17 @@ const showEditBtn = computed(() => {
 
 const queryClient = useQueryClient();
 
-
 const dataUpdatedPost = useMutationState({
   filters: {
     mutationKey: ['update-post'],
   },
   select: (mutation) => {
-    return (mutation.state.data as AxiosResponse<{ post : IPost }>)?.data?.post;
+    return (mutation.state.data as AxiosResponse<{ post: IPost }>)?.data?.post;
   },
 });
 
 watch(dataUpdatedPost, () => {
-  const lastPostUpdate = dataUpdatedPost.value.at(-1);
+  const lastPostUpdate = dataUpdatedPost.value[dataUpdatedPost.value.length - 1];
   if (Number.isInteger(lastPostUpdate?.edited_posts_count)) {
     editedPostCount.value = lastPostUpdate.edited_posts_count + 1;
   }
@@ -89,7 +86,7 @@ const handleDeletePost = async () => {
 
     if (
       (currentRouteName === 'post' && dataPost.id === Number(postId)) ||
-        currentRouteName === 'history'
+      currentRouteName === 'history'
     ) {
       await router.push('/');
       return;

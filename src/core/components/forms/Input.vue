@@ -21,10 +21,9 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void
 }>();
 
-const model = defineModel({
+const model = defineModel<string>({
   default: '',
   required: true,
-  type: String,
 });
 
 const onChangeInput = (event: Event) => {

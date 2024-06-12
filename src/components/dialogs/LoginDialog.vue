@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
-import { useRouter } from 'vue-router';
 import { toTypedSchema } from '@vee-validate/zod';
 import { StatusCodes } from 'http-status-codes';
 
@@ -50,7 +48,7 @@ const onSubmit = handleSubmit(async (dataLogin) => {
 
   switch (status) {
     case StatusCodes.OK:
-      await router.push(PAGE_PATHS.HOME);
+      router.push(PAGE_PATHS.HOME);
       closeDialog();
       resetForm();
       break;
@@ -64,7 +62,6 @@ const onSubmit = handleSubmit(async (dataLogin) => {
         text: 'Something wrong',
       });
   }
-
 });
 
 function closeDialog() {

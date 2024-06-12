@@ -46,7 +46,7 @@ export const parseTimeFromNow = (time?: Date): string => {
   return '';
 };
 
-export const parseMessageCreatedAt = <T extends {created_at: Date}>(obj: T) => {
+export const parseMessageCreatedAt = <T extends { created_at: Date }>(obj: T) => {
   if (dayjs(obj.created_at).isToday()) {
     return { ...obj, time: dayjs(obj.created_at).format('hh:mm A') };
   }

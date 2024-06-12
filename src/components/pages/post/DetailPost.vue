@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, onMounted, ref, watch
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { useMediaQuery } from '@vueuse/core';
 import { StatusCodes } from 'http-status-codes';
 import { useMutationState, useQueryClient } from '@tanstack/vue-query';
@@ -18,7 +14,6 @@ import {
   ShareIcon
 } from '@heroicons/vue/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid';
-
 
 import OptionsPost from '@components/common/post/PostOptions.vue';
 
@@ -46,7 +41,6 @@ onMounted(async () => {
   await router.isReady();
 });
 
-
 const {
   data: dataPost,
 } = useGetDetailPost(Number(postId));
@@ -71,12 +65,12 @@ const dataUpdatedPost = useMutationState({
     mutationKey: ['update-post'],
   },
   select: (mutation) => {
-    return (mutation.state.data as AxiosResponse<{ post : IPost }>)?.data?.post;
+    return (mutation.state.data as AxiosResponse<{ post: IPost }>)?.data?.post;
   },
 });
 
 watch(dataUpdatedPost, () => {
-  const lastPostUpdate = dataUpdatedPost.value.at(-1);
+  const lastPostUpdate = dataUpdatedPost.value[dataUpdatedPost.value.length - 1];
   if (lastPostUpdate) {
     post.value = { ...post.value, ...lastPostUpdate };
   }

@@ -3,10 +3,10 @@ import { parseJSON } from '@core/helpers/common.ts';
 import { IResponseDataMessageChannel } from '@/types/chat.ts';
 import { logger } from '@core/helpers/logger.ts';
 
-type Callback = (msd: IResponseDataMessageChannel['message']) => void
+type Callback = (msd: IResponseDataMessageChannel['message']) => void;
 
 export default function useRealtimeMessage(cb: Callback) {
-  const { data, send } = useWebSocket(process.env.BASE_URL_WEBSOCKET, {
+  const { data, send } = useWebSocket(import.meta.env.VITE_BASE_URL_WEBSOCKET, {
     autoReconnect: true,
     onConnected: () => {
       logger.info('Connected to websocket server - MessagesChannel', 'src/composables/useRealtimeMessage.vue');

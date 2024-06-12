@@ -15,7 +15,7 @@ const showDialog = (type: DialogTypes) => {
 <template>
   <div class="border rounded-xl p-4 ">
     <div>
-      <p class="text-2xl text-black font-black text-black mb-4">
+      <p class="text-2xl font-black text-black mb-4">
         Join today.
       </p>
       <div class=" flex flex-col justify-center gap-3">
@@ -54,7 +54,7 @@ const showDialog = (type: DialogTypes) => {
         <Button
           v-tooltip="'Not available'"
           variant="secondary"
-          class="items-center flex inline-flex"
+          class="items-center flex"
         >
           <svg
             class="w-4 mr-2"
@@ -73,9 +73,9 @@ const showDialog = (type: DialogTypes) => {
     </div>
 
     <div class="flex items-center gap-2 my-3">
-      <div class="border border-zinc-300/50 border-[0.1px] h-[1px] w-1/2 " />
+      <div class="border-zinc-300/50 border-[0.1px] h-[1px] w-1/2 " />
       or
-      <div class="border border-zinc-300/50 border-[0.1px] w-1/2" />
+      <div class="border-zinc-300/50 border-[0.1px] w-1/2" />
     </div>
 
     <div v-if="isLargeScreen">

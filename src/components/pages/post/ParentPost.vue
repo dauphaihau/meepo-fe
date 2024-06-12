@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import { IResponseGetDetailPost } from '@/types/post';
 import PostOptions from '@components/common/post/PostOptions.vue';
 import PostActions from '@components/common/post/PostActions.vue';
@@ -46,7 +43,6 @@ const onHoverAction = (val: boolean) => {
 const redirectDetailPost = () => {
   router.push(`${PAGE_PATHS.POSTS}/${dataPost.id}`);
 };
-
 
 </script>
 

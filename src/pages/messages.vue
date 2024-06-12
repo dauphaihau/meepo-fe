@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, onBeforeMount, onBeforeUnmount, onMounted
-} from 'vue';
 import { useMediaQuery } from '@vueuse/core';
 
 import Loading from '@core/components/Loading.vue';
@@ -78,8 +75,8 @@ function onScroll() {
 
   if (
     isBottomOfWindow &&
-      !isFetchingNextPage.value &&
-      dataGetLastMessages.value?.pageParams?.length <= maxRoomsPage.value
+    !isFetchingNextPage.value &&
+    dataGetLastMessages.value?.pageParams?.length <= maxRoomsPage.value
   ) {
     fetchNextPage();
   }

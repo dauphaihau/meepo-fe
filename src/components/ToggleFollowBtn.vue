@@ -2,7 +2,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { useMutationState } from '@tanstack/vue-query';
 import { AxiosResponse } from 'axios';
-import { watch } from 'vue';
 
 import Button from '@/core/components/Button.vue';
 import { useUnOrFollowUser } from '@services/user.ts';
@@ -12,7 +11,7 @@ import { useDialogStore } from '@stores/dialog.ts';
 import { logger } from '@core/helpers/logger.ts';
 
 interface Props {
-  userId: IUser['id'];
+  userId: IUser['id']
 }
 
 const { userId } = defineProps<Props>();
@@ -21,10 +20,9 @@ const emit = defineEmits<{
   (e: 'onUnOrFollowSuccess')
 }>();
 
-const model = defineModel({
+const model = defineModel<boolean>({
   default: false,
   required: true,
-  type: Boolean,
 });
 
 const authStore = useAuthStore();
@@ -33,7 +31,6 @@ const dialogStore = useDialogStore();
 const {
   mutateAsync: unOrFollowUser,
 } = useUnOrFollowUser(userId);
-
 
 const unOrFollow = async () => {
   if (!authStore.isLoggedIn) {
@@ -60,14 +57,12 @@ const dataUpdatedFollow = useMutationState({
     mutationKey: ['un-or-follow-user', userId],
   },
   select: (mutation) => {
-    return (mutation.state.data as AxiosResponse<{ message : string }>)?.data?.message;
+    return (mutation.state.data as AxiosResponse<{ message: string }>)?.data?.message;
   },
 });
 
-// const dataUpdatedFollow = useGetStateUnOrFollowUser(userId);
-
 watch(dataUpdatedFollow, () => {
-  const lastFollowUpdated = dataUpdatedFollow.value.at(-1);
+  const lastFollowUpdated = dataUpdatedFollow.value[dataUpdatedFollow.value.length - 1];
   if (lastFollowUpdated) {
     if (lastFollowUpdated.includes('unfollow')) {
       model.value = false;
@@ -79,7 +74,6 @@ watch(dataUpdatedFollow, () => {
 });
 
 </script>
-
 
 <template>
   <Button
@@ -97,7 +91,6 @@ watch(dataUpdatedFollow, () => {
     {{ model ? 'Following' : 'Follow' }}
   </Button>
 </template>
-
 
 <style scoped>
 

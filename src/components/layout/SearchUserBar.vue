@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import {
-  computed, onMounted, ref, watch
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import {
   Combobox,
   ComboboxButton,
   ComboboxInput,
@@ -105,7 +101,7 @@ const onClickHistorySearch = (historySearch: string) => {
 
 const removeSearch = (search: string) => {
   const storedSearchesArr = JSON.parse(localStorage.storedSearches);
-  storedSearches.value = storedSearchesArr.filter((s) => s !== search);
+  storedSearches.value = storedSearchesArr.filter(s => s !== search);
   localStorage.storedSearches = JSON.stringify(storedSearches.value);
   isFocus.value = true;
 };
@@ -151,7 +147,6 @@ const onChangeInput = (e: Event) => {
             @click.stop="query = ''"
           />
         </div>
-
 
         <TransitionRoot
           leave="transition ease-in duration-100"

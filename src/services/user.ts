@@ -80,7 +80,7 @@ export function useGetStateUpdateProfile(userId: IUser['id']) {
       mutationKey: ['update-profile', userId],
     },
     select: (mutation) => {
-      return (mutation.state.data as AxiosResponse<{ user : IUser }>)?.data?.user;
+      return (mutation.state.data as AxiosResponse<{ user: IUser }>)?.data?.user;
     },
   });
 }
@@ -102,7 +102,7 @@ export function useGetStateUnOrFollowUser(userId?: IUser['id']) {
       mutationKey,
     },
     select: (mutation) => {
-      return (mutation.state.data as AxiosResponse<{ message : string }>)?.data?.message;
+      return (mutation.state.data as AxiosResponse<{ message: string }>)?.data?.message;
     },
   });
 }

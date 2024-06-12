@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useMediaQuery } from '@vueuse/core';
 
 import { UserInGetList } from '@/types/user';
@@ -13,7 +11,7 @@ import AvatarUser from '@components/AvatarUser.vue';
 
 type TProps = {
   user: UserInGetList
-}
+};
 
 const router = useRouter();
 const minTabletScreen = useMediaQuery('(min-width: 768px)');

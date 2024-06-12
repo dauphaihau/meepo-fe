@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import {
-  ref
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import { useGetDetailPost } from '@services/post.ts';
 import Loading from '@core/components/Loading.vue';
 
@@ -26,7 +21,6 @@ const {
 } = useGetDetailPost(postId);
 
 </script>
-
 
 <template>
   <div class="pb-20 md:pb-0">

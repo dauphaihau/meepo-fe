@@ -6,7 +6,7 @@ import { IUser } from '@/types/user.ts';
 type TProp = {
   avatarUrl: IUser['avatar_url']
   username?: IUser['username']
-}
+};
 
 const { username, avatarUrl } = defineProps<TProp>();
 

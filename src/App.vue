@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-
 import SidebarLeft from '@components/layout/SidebarLeft/index.vue';
 import SidebarRight from '@components/layout/SidebarRight/index.vue';
 import ChatBox from '@components/chatbox/Chatbox.vue';

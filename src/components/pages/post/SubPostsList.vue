@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, onBeforeUnmount, onMounted
-} from 'vue';
-import { useRoute } from 'vue-router';
 import { UserGroupIcon } from '@heroicons/vue/20/solid';
 
 import Loading from '@core/components/Loading.vue';
@@ -63,8 +59,8 @@ onBeforeUnmount(() => {
 function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
-      !isFetchingNextPage.value &&
-      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
+    !isFetchingNextPage.value &&
+    dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }

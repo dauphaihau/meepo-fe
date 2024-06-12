@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { StatusCodes } from 'http-status-codes';
 import { XMarkIcon, PhotoIcon } from '@heroicons/vue/24/outline';
-import { $ref } from 'unplugin-vue-macros/macros';
 
 import Dialog from '@core/components/Dialog.vue';
 import Input from '@core/components/forms/Input.vue';
@@ -16,11 +15,13 @@ import { useNotificationStore } from '@stores/notification.ts';
 import { logger } from '@core/helpers/logger.ts';
 import FormGroup from '@core/components/forms/FormGroup.vue';
 import Textarea from '@core/components/forms/Textarea.vue';
+import { useQueryClient } from '@tanstack/vue-query';
 
 const { user: currentUser } = useAuthStore();
 const dialogStore = useDialogStore();
 const authStore = useAuthStore();
 const notificationStore = useNotificationStore();
+const queryClient = useQueryClient();
 
 const user = dialogStore.data as IUser;
 
@@ -40,8 +41,6 @@ const website = $ref(user?.website ?? '');
 const dob = $ref(user?.dob);
 let fileImage = $ref<File | null>(null);
 let urlImage = $ref(user?.avatar_url);
-
-const errorDate = ref('');
 
 const onChangeImage = ({ target }: Event) => {
   if (!(target instanceof HTMLInputElement)) {
@@ -80,6 +79,11 @@ const onSubmit = async () => {
       notificationStore.notify({
         text: 'Your profile was updated',
       });
+      if (payload?.name || payload?.avatar_url) {
+        await queryClient.invalidateQueries({
+          queryKey: ['get-posts'],
+        });
+      }
       break;
     default:
       notificationStore.notify({
@@ -209,14 +213,12 @@ function closeDialog() {
 
               <FormGroup
                 class="mb-6"
-                :error="errorDate"
                 label="Date of birth"
                 description="Month, Day and Year"
               >
                 <DateBirthInput
                   v-model="dob"
                   :disabled="isLoadingSubmit"
-                  class-wrapper="mb-8 md:w-[400px]"
                 />
               </FormGroup>
               <FormGroup

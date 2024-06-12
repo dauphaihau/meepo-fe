@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import { POST_FILTER_BY } from '@config/const.ts';
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
 import TabsMainContent from '@components/layout/TabsMainContent.vue';

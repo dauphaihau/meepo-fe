@@ -25,20 +25,20 @@ export const postService = {
     if (hashtags && hashtags.length) {
       values.hashtags = hashtags.map(v => v.replace('#', ''));
     }
-    return await apiHelper.post<{post: IPost}>('/posts', values);
+    return await apiHelper.post<{ post: IPost }>('/posts', values);
   },
   async update({ id, ...payload }: IUpdatePost) {
-    return apiHelper.put<{post: IPost}>(`/posts/${id}`, payload);
+    return apiHelper.put<{ post: IPost }>(`/posts/${id}`, payload);
   },
   delete(id: IPost['id']) {
     return apiHelper.delete(`posts/${id}`);
   },
   async listHashtags() {
-    const res = await apiHelper.get<{hashtags: IHashtag[]}>('hashtags');
+    const res = await apiHelper.get<{ hashtags: IHashtag[] }>('hashtags');
     return res.data;
   },
   likePost(postId: IPost['id']) {
-    return apiHelper.post<{likes_count: number, message: string}>('/likes', { post_id: postId });
+    return apiHelper.post<{ likes_count: number, message: string }>('/likes', { post_id: postId });
   },
 };
 

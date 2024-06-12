@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import {
-  onBeforeUnmount, onMounted, ref, watch
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import About from '@components/layout/SidebarRight/About.vue';
 import PhotosProfile from '@components/layout/SidebarRight/PhotosProfile.vue';
 import UsersSuggestList from '@components/layout/SidebarRight/UserSuggestList.vue';
@@ -11,7 +6,6 @@ import Trends from '@components/layout/SidebarRight/Trends.vue';
 import SearchUserBar from '@components/layout/SearchUserBar.vue';
 import Auth from '@components/layout/SidebarRight/Auth.vue';
 import { useAuthStore } from '@stores/auth.ts';
-import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();

@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import {
-  nextTick, ref, watch
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import {
   CalendarIcon, FaceSmileIcon, GifIcon, PhotoIcon, XMarkIcon
 } from '@heroicons/vue/24/outline';
 
@@ -43,7 +39,6 @@ const {
   mutateAsync: uploadImage,
 } = useUploadImage();
 
-
 const dialogStore = useDialogStore();
 const queryClient = useQueryClient();
 
@@ -82,7 +77,6 @@ const handleCreatePost = async () => {
     }
   }
 
-
   logger.debug('execute postAPI.create', payload, 'src/components/CreatePostForm.vue');
   const { status, data } = await createPost(payload);
 
@@ -112,7 +106,6 @@ const handleCreatePost = async () => {
     });
   }
 };
-
 
 const onFocus = () => {
   isFocus.value = true;
@@ -193,7 +186,6 @@ watch(content, () => {
               />
               <!--                    @focusout="onFocusOut"-->
               <!--                    :class="isFocus ? 'h-auto': 'h-[28px] overscroll-y-none'"-->
-
 
               <div v-if="!isFocus">
                 <Button
@@ -289,7 +281,6 @@ watch(content, () => {
   focus:ring-0 focus:outline-none sm:text-sm lg:text-xl sm:leading-6;
   max-height: 100%;
 }
-
 
 .icon-btn {
   @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500

@@ -3,29 +3,29 @@ import { IRoom } from '@/types/room.ts';
 import { IUser } from '@/types/user.ts';
 
 export interface IMessage {
-  id: number,
+  id: number
   user_id: number
-  room_id: number,
+  room_id: number
   text: string
   created_at: Date
 }
 
 export type ILastMessage = {
-  participant_name?: string,
-  participant_username?: string,
-  participant_avatar_url?: string,
-} & IMessage
+  participant_name?: string
+  participant_username?: string
+  participant_avatar_url?: string
+} & IMessage;
 
 export interface IResponseGetLastMessages {
   messages: ILastMessage[]
   total_messages: number
 }
 
-export type IParamsGetLastMessages = IBaseParamsGetList
+export type IParamsGetLastMessages = IBaseParamsGetList;
 
 export type IParamsGetMessages = IBaseParamsGetList & {
   room_id: IRoom['id']
-}
+};
 
 export interface ISendMessage {
   room_id?: IRoom['id']
@@ -34,6 +34,6 @@ export interface ISendMessage {
 }
 
 export interface IResponseDataMessageChannel {
-  type: string,
+  type: string
   message: IMessage & Pick<IUser, 'username'>
 }

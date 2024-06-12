@@ -15,5 +15,4 @@ import Trends from '@components/layout/SidebarRight/Trends.vue';
   </div>
 </template>
 
-
 <style scoped></style>

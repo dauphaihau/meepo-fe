@@ -10,7 +10,7 @@ export interface IConfigReq extends InternalAxiosRequestConfig {
 }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
   validateStatus: (status) => {
     return status >= 200 && status < 500;
   },

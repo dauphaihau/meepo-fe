@@ -3,10 +3,10 @@ import { IUser } from '@/types/user.ts';
 import { IMessage } from '@/types/chat.ts';
 
 export interface IState {
-  showChatbox: boolean,
-  showViewChatPrivate: boolean,
-  showFullChatbox: boolean,
-  currentUserToMessage: Pick<IUser, 'name' | 'username' | 'avatar_url'> & Partial<Pick<IMessage, 'room_id'>> | null,
+  showChatbox: boolean
+  showViewChatPrivate: boolean
+  showFullChatbox: boolean
+  currentUserToMessage: Pick<IUser, 'name' | 'username' | 'avatar_url'> & Partial<Pick<IMessage, 'room_id'>> | null
 }
 
 export const useChatStore = defineStore('chat', {

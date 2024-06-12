@@ -7,7 +7,7 @@ export enum PAGE_PATHS {
   USER = '/user',
   SEARCH = '/search',
   ROOMS = '/rooms',
-  EXPLORE = '/explore',
+  EXPLORE = '/explore'
 }
 
 export enum POST_FILTER_BY {
@@ -15,19 +15,19 @@ export enum POST_FILTER_BY {
   COMMENTS,
   LIKES,
   MEDIA,
-  FOLLOWING,
+  FOLLOWING
 }
 
 export enum FILTER_SEARCH_ALL {
   TOP = 'top',
   LATEST = 'latest',
   PEOPLE = 'people',
-  MEDIA = 'media',
+  MEDIA = 'media'
 }
 
 export enum USER_FILTER_BY {
   DEFAULT,
   UNFOLLOW_CURRENT_USER,
   FOLLOWERS_BY_USERNAME,
-  FOLLOWING_BY_USERNAME,
+  FOLLOWING_BY_USERNAME
 }

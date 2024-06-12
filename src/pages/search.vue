@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
 import HeaderMainContent from '@components/layout/HeaderMainContent.vue';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
 import { toUpperCaseFirstL } from '@core/helpers/common.ts';
@@ -13,7 +10,7 @@ const router = useRouter();
 
 const keyPostUserComp = ref(0);
 
-const tabs = Object.values(FILTER_SEARCH_ALL).map((name) => ({
+const tabs = Object.values(FILTER_SEARCH_ALL).map(name => ({
   id: name,
   name: toUpperCaseFirstL(name),
 }));

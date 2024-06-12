@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import { computed, onMounted } from 'vue';
-
 import { POST_FILTER_BY } from '@config/const';
 import { useGetPosts } from '@services/post';
 import { IParamsGetPosts } from '@/types/post.ts';

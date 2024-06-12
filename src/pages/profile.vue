@@ -8,11 +8,8 @@ import ProfilePostList from '@components/pages/profile/ProfilePostList.vue';
 
 const route = useRoute();
 
-const isUserNotExist = ref(false);
-const keyPostsComp = ref(0);
-
 const tabs = ['Posts', 'Replies', 'Likes', 'Media'].map((name, index) => ({ id: index, name }));
-const currentTab = ref(0);
+let currentTab = $ref(0);
 
 const {
   data,
@@ -20,8 +17,7 @@ const {
 } = useGetProfileUser(route.params.username as string);
 
 const onChangeTab = (value: number) => {
-  keyPostsComp.value += 1;
-  currentTab.value = value;
+  currentTab = value;
 };
 
 </script>
@@ -56,7 +52,7 @@ const onChangeTab = (value: number) => {
 
       <div v-else>
         <HeaderMainContent
-          :title="!isUserNotExist ? data.user?.name : 'Profile' "
+          :title="data.user?.name ?? 'Profile' "
           :sub-title="`${data.user?.posts_count ?? 0 } posts`"
         />
         <UserInfo />
@@ -66,10 +62,9 @@ const onChangeTab = (value: number) => {
           class="border-b grid-cols-4"
           @on-change-tab="onChangeTab"
         />
-
         <ProfilePostList
           v-if="data.user"
-          :key="keyPostsComp"
+          :key="currentTab"
           :author="data.user"
           :by="currentTab"
         />

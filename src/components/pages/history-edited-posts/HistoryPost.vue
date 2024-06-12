@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import { IResponseGetPost } from '@/types/post';
 import AvatarAuthorPost from '@components/common/post/AvatarAuthorPost.vue';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';

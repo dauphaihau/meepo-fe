@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
 import { UserInGetList } from '@/types/user';
 import UserPopper from '@components/UserPopper.vue';
 import { truncateText } from '@core/helpers/common.ts';

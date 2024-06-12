@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue';
-
-type Tab = { id: number | string, name: string }
+type Tab = { id: number | string, name: string };
 
 interface IProps {
   tabs?: Tab[]
@@ -20,7 +18,7 @@ const emit = defineEmits<{
 
 const defaultTabComputed = computed(() => {
   if (defaultTab) {
-    return tabs.find((tab) => tab.id === defaultTab).id;
+    return tabs.find(tab => tab.id === defaultTab).id;
   }
   return tabs[0].id;
 });

@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, onMounted, ref
-} from 'vue';
-import { useRoute } from 'vue-router';
-
 import Loading from '@/core/components/Loading.vue';
 import { useGetDetailPost, useGetPosts } from '@/services/post';
 import { POST_FILTER_BY } from '@/config/const';

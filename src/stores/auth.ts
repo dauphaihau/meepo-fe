@@ -10,9 +10,9 @@ import { apiHelper } from '@lib/axios.ts';
 import { AxiosResponse } from 'axios';
 
 export interface IState {
-  user: Partial<IUserAuthenticated>;
-  authToken: string;
-  loadingAuth: boolean;
+  user: Partial<IUserAuthenticated>
+  authToken: string
+  loadingAuth: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', {
     loadingAuth: true,
   }),
   getters: {
-    isLoggedIn: (state) => Boolean(state.authToken),
+    isLoggedIn: state => Boolean(state.authToken),
   },
   actions: {
     async register(dataRegister: IRequestDataRegister) {

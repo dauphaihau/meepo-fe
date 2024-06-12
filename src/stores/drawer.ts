@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 
-export type DrawerTypes = 'sidebar-mobile'
+export type DrawerTypes = 'sidebar-mobile';
 
 export interface IState {
-  showDrawer: DrawerTypes | null,
+  showDrawer: DrawerTypes | null
   data: unknown
 }
 

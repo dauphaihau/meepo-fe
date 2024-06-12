@@ -27,7 +27,6 @@ const {
   validateOnMount: false,
 });
 
-const errorDate = ref('');
 const isSubmitted = ref(false);
 const isLoading = ref(false);
 
@@ -52,7 +51,7 @@ const onSubmit = handleSubmit(async (dataRegister) => {
 
   switch (status) {
     case StatusCodes.OK:
-      await router.push(PAGE_PATHS.HOME);
+      router.push(PAGE_PATHS.HOME);
       closeDialog();
       break;
     case StatusCodes.CONFLICT:
@@ -82,7 +81,6 @@ const openLoginDialog = () => {
 function closeDialog() {
   if (isLoading.value) return;
   dialogStore.close();
-  errorDate.value = '';
   resetForm();
   isSubmitted.value = false;
 }

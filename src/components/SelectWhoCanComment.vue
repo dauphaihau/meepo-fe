@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<IProps>(), {
 });
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: {title: string}): void
+  (e: 'update:modelValue', value: { title: string }): void
 }>();
 
 const options: IOptionSelectWhoCanComment[] = [
@@ -31,6 +31,7 @@ const options: IOptionSelectWhoCanComment[] = [
 ];
 
 const selectedOption = ref(options[props.defaultValue]);
+
 
 </script>
 
@@ -50,7 +51,6 @@ const selectedOption = ref(options[props.defaultValue]);
             {{ selectedOption.title }} can comment
           </div>
         </ListboxButton>
-
 
         <transition
           leave-active-class="transition duration-100 ease-in"

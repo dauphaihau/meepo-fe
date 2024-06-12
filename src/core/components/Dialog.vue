@@ -10,8 +10,8 @@ import { XMarkIcon } from '@heroicons/vue/20/solid';
 import { cn } from '@core/helpers/common.js';
 
 interface Props {
-  show: boolean,
-  close: () => void,
+  show: boolean
+  close: () => void
   classPanel?: string
   title?: string
   hideCloseBtn?: boolean

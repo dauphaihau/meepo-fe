@@ -153,7 +153,6 @@ import {
           dark:ring-white/10 dark:group-hover:ring-white/20"
           />
 
-
           <div class="relative rounded-2xl px-4 pb-4 pt-4">
             <div
               class="flex h-7 w-7 items-center justify-center rounded-full

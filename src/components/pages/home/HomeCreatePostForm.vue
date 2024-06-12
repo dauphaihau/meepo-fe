@@ -272,7 +272,6 @@ watch(content, () => {
   max-height: 100%;
 }
 
-
 .icon-btn {
   @apply flex items-center justify-center hover:bg-zinc-100 p-2 rounded-full mx-auto h-9 w-9 text-zinc-500
   cursor-pointer transition transform duration-200 ease-in-out;

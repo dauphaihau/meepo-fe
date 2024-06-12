@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
 import { StarIcon } from '@heroicons/vue/24/solid';
-import { POST_FILTER_BY } from '@/config/const';
+import { POST_FILTER_BY } from '@config/const';
 import OptionsPost from '@components/common/post/PostOptions.vue';
 import { IResponseGetPost } from '@/types/post';
 import InfoAuthorPost from '@components/common/post/InfoAuthorPost.vue';

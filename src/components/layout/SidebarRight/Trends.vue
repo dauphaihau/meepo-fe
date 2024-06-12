@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useGetHashtags } from '@/services/post';
-import { useRoute, useRouter } from 'vue-router';
 import Loading from '@/core/components/Loading.vue';
 import { FILTER_SEARCH_ALL } from '@config/const.ts';
 
@@ -16,7 +15,7 @@ const {
 
 const search = (value: string) => {
   router.push({
-    name:'search',
+    name: 'search',
     query: {
       q: value,
       f: FILTER_SEARCH_ALL.TOP,

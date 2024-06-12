@@ -30,11 +30,9 @@ const params = computed(() => {
     user_id: author.id,
     pin_status: POST_PIN_STATUS.PIN,
   };
-
   if (POST_FILTER_BY[by]) {
     base.by = by;
   }
-
   return base;
 });
 
@@ -68,8 +66,8 @@ onBeforeUnmount(() => {
 function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
-      !isFetchingNextPage.value &&
-      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
+    !isFetchingNextPage.value &&
+    dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }
@@ -79,7 +77,6 @@ function onScroll() {
 
 <template>
   <div class="flex flex-col">
-
     <!-- Posts -->
     <div
       v-if="posts && posts.length > 0"

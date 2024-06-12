@@ -16,16 +16,16 @@ export const commonService = {
     return res.data;
   },
   async uploadImage(fileImage: File) {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-    const folderName = process.env.CLOUDINARY_FOLDER_NAME;
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    const folderName = import.meta.env.VITE_CLOUDINARY_FOLDER_NAME;
 
     const formData = new FormData();
     formData.append('file', fileImage);
     formData.append('upload_preset', uploadPreset);
     formData.append('folder', folderName);
 
-    return await axios.post<{url: string }>(
+    return await axios.post<{ url: string }>(
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       formData
     );

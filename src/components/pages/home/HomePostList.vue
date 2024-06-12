@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  computed, onBeforeUnmount, onMounted
-} from 'vue';
-
 import Loading from '@core/components/Loading.vue';
 import { useGetPosts } from '@services/post';
 import { POST_FILTER_BY } from '@config/const';
@@ -10,7 +6,7 @@ import { IParamsGetPosts } from '@/types/post';
 import HomePost from '@components/pages/home/HomePost.vue';
 
 interface IProps {
-  by?: POST_FILTER_BY.DEFAULT | POST_FILTER_BY.FOLLOWING,
+  by?: POST_FILTER_BY.DEFAULT | POST_FILTER_BY.FOLLOWING
 }
 
 const {
@@ -63,8 +59,8 @@ onBeforeUnmount(() => {
 function onScroll() {
   if (
     window.scrollY + window.innerHeight >= (document.body.scrollHeight * 85 / 100) &&
-      !isFetchingNextPage.value &&
-      dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
+    !isFetchingNextPage.value &&
+    dataGetPosts.value?.pageParams?.length <= maxPostsPage.value
   ) {
     fetchNextPage();
   }

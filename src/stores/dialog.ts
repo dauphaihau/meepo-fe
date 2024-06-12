@@ -6,10 +6,10 @@ export type DialogTypes = 'register'
   | 'update-profile'
   | 'update-post'
   | 'create-post'
-  | 'reply-post'
+  | 'reply-post';
 
 export interface IState {
-  showDialog: DialogTypes | null,
+  showDialog: DialogTypes | null
   data: unknown
 }
 

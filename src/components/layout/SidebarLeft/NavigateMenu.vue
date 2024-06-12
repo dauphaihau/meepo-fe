@@ -20,7 +20,6 @@ const { isLoggedIn, user } = storeToRefs(useAuthStore());
 
 </script>
 
-
 <template>
   <nav>
     <router-link
@@ -89,7 +88,6 @@ const { isLoggedIn, user } = storeToRefs(useAuthStore());
     </div>
   </nav>
 </template>
-
 
 <style scoped>
 
