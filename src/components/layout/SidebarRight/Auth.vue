@@ -19,7 +19,7 @@ const showDialog = (type: DialogTypes) => {
       <p class="mb-4 text-2xl font-black text-black">
         Join today.
       </p>
-      <div class=" flex flex-col justify-center gap-3">
+      <!-- <div class=" flex flex-col justify-center gap-3">
         <Button
           v-tooltip="'Not available'"
           variant="secondary"
@@ -70,14 +70,14 @@ const showDialog = (type: DialogTypes) => {
           </svg>
           Sign up with Apple
         </Button>
-      </div>
+      </div> -->
     </div>
 
-    <div class="my-3 flex items-center gap-2">
+    <!-- <div class="my-3 flex items-center gap-2">
       <div class="h-px w-1/2 border-[0.1px] border-zinc-300/50 " />
       or
       <div class="w-1/2 border-[0.1px] border-zinc-300/50" />
-    </div>
+    </div> -->
 
     <div v-if="isLargeScreen">
       <Button
