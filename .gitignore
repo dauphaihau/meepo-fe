@@ -10,6 +10,7 @@ node_modules
 dist
 *.local
 .env
+.env.production
 
 # Yarn - keep only essential files
 .yarn/*
@@ -32,3 +33,6 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Local Netlify folder
+.netlify
